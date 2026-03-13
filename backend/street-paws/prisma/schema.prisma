@@ -1,0 +1,109 @@
+datasource db {
+  provider = "postgresql"
+ 
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Roles {
+  id_rol   Int      @id @default(autoincrement())
+  rol      String
+  usuarios Usuario[]
+}
+
+model Usuario {
+  id_usuario      Int       @id @default(autoincrement())
+  nombre          String
+  direccion       String
+  telefono        String
+  email           String    @unique
+  contrasena      String
+  fecha_registro  DateTime
+
+  id_rol          Int
+  rol             Roles     @relation(fields: [id_rol], references: [id_rol])
+
+  publicaciones   Publicacion[]
+  comentarios     Comentario[]
+  likes           Like[]
+  solicitudes     Solicitud_Adopcion[]
+}
+model Publicacion {
+  id_publicacion     Int       @id @default(autoincrement())
+  id_usuario         Int
+  contenido_texto    String
+  fecha_publicacion  DateTime
+
+  usuario     Usuario    @relation(fields: [id_usuario], references: [id_usuario])
+  comentarios  Comentario[]
+  likes        Like[]
+  imagenes     Imagen_Post[]
+}
+
+model Comentario {
+  id_comentario    Int       @id @default(autoincrement())
+  id_publicacion   Int
+  id_usuario       Int
+  contenido        String
+  fecha_comentario DateTime
+
+  publicacion Publicacion @relation(fields: [id_publicacion], references: [id_publicacion])
+  usuario     Usuario     @relation(fields: [id_usuario], references: [id_usuario])
+}
+
+model Like {
+  id_like       Int      @id @default(autoincrement())
+  id_publicacion Int
+  id_usuario     Int
+  fecha_like     DateTime
+
+  publicacion Publicacion @relation(fields: [id_publicacion], references: [id_publicacion])
+  usuario     Usuario     @relation(fields: [id_usuario], references: [id_usuario])
+}
+
+model Imagen_Post {
+  id_imagen      Int    @id @default(autoincrement())
+  id_publicacion Int
+  url_imagen     String
+
+  publicacion Publicacion @relation(fields: [id_publicacion], references: [id_publicacion])
+}
+
+model Mascota {
+  id_mascota        Int      @id @default(autoincrement())
+  nombre           String
+  especie          String
+  raza             String
+  edad             Int
+  sexo             String
+  estado_salud     String
+  fecha_ingreso    DateTime
+  estado_adopcion  String
+  id_admin_registro Int
+
+  fotos       Foto_Mascota[]
+  solicitudes Solicitud_Adopcion[]
+}
+
+model Foto_Mascota {
+  id_foto      Int     @id @default(autoincrement())
+  id_mascota    Int
+  url_foto     String
+  es_principal Boolean
+
+  mascota Mascota @relation(fields: [id_mascota], references: [id_mascota])
+}
+
+model Solicitud_Adopcion {
+  id_solicitud  Int      @id @default(autoincrement())
+  id_usuario    Int
+  id_mascota     Int
+  fecha_solicitud DateTime
+  estado        String
+  notas         String?
+
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  mascota  Mascota  @relation(fields: [id_mascota], references: [id_mascota])
+}

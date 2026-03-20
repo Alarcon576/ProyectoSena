@@ -1,10 +1,15 @@
-const express = require("express");
+import "dotenv/config"; 
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
+import express from "express";
+import cookieParser from "cookie-parser";
+import authRoutes from "./routes/auth.routes.js";
+
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Servidor funcionando");
-});
+app.use(express.json());
+app.use(cookieParser());
 
-app.listen(3000, () => {
-  console.log("Servidor corriendo en puerto 3000");
-});
+app.use("/api/auth", authRoutes);
+
+app.listen(3000, () => console.log("Servidor corriendo 🔥"));

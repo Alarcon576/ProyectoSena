@@ -2,13 +2,16 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
+// Rutas
 import authRoutes from "./routes/auth.routes.js";
+import mascotaRoutes from "./routes/mascota.routes.js";
 
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
-const app = express(); // 🔹 Primero declaramos app
+const app = express();
 
-// Middlewares
+// 🔹 Middlewares
 app.use(cors({
     origin: "http://localhost:5173",
     credentials: true
@@ -16,8 +19,19 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Rutas
-app.use("/api/auth", authRoutes);   
+// 🔹 Ruta de prueba
+app.get("/", (req, res) => {
+    res.send("API funcionando ");
+});
 
-// Servidor
-app.listen(3000, () => console.log("Servidor corriendo"));
+// 🔹 Rutas principales
+app.use("/api/auth", authRoutes);
+app.use("/api/mascotas", mascotaRoutes);
+
+// 🔹 Puerto (mejor usar variable de entorno)
+const PORT = process.env.PORT || 3000;
+
+// 🔹 Servidor
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});

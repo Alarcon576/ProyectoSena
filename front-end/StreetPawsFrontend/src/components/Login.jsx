@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./Auth.css";
 
 function Login() {
   const [form, setForm] = useState({
@@ -6,87 +7,108 @@ function Login() {
     password: ""
   });
 
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const validate = () => {
+    let err = {};
+
+    if (!form.email) err.email = "Correo obligatorio";
+    else if (!form.email.includes("@")) err.email = "Correo inválido";
+
+    if (!form.password) err.password = "Contraseña obligatoria";
+
+    return err;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones
-    if (!form.email || !form.password) {
-      setError("Todos los campos son obligatorios");
+    const err = validate();
+    if (Object.keys(err).length > 0) {
+      setErrors(err);
       return;
     }
 
-    if (!form.email.includes("@")) {
-      setError("Correo inválido");
-      return;
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          email: form.email,
+          contrasena: form.password
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrors({ general: data.msg });
+        return;
+      }
+
+      localStorage.setItem("token", data.token);
+      alert("Bienvenido ");
+
+    } catch {
+      setErrors({ general: "Error servidor" });
     }
-
-    setError("");
-    console.log("Login:", form);
-
-    // Aquí luego conectas API
   };
 
   return (
-    <div className="login-container">
-      <form onSubmit={handleSubmit}>
-        <h2>Iniciar Sesión</h2>
+    <div className="auth-container">
+      <div className="auth-left">
+        <h1>Ayudando a encontrar hogares felices </h1>
+      </div>
 
-        {/* EMAIL */}
-        <input
-          type="email"
-          name="email"
-          placeholder="Correo electrónico"
-          value={form.email}
-          onChange={handleChange}
-        />
+      <div className="auth-right">
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <h2>Iniciar sesión</h2>
 
-        {/* PASSWORD */}
-        <div style={{ position: "relative" }}>
           <input
-            type={showPassword ? "text" : "password"}
-            name="password"
-            placeholder="Contraseña"
-            value={form.password}
+            type="email"
+            name="email"
+            placeholder="Correo"
+            value={form.email}
             onChange={handleChange}
           />
+          {errors.email && <p className="error">{errors.email}</p>}
 
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            style={{
-              position: "absolute",
-              right: "10px",
-              top: "5px"
-            }}
-          >
-            {showPassword ? "Ocultar" : "Mostrar"}
-          </button>
-        </div>
+          <div style={{ position: "relative" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Contraseña"
+              value={form.password}
+              onChange={handleChange}
+            />
 
-        {/* ERROR */}
-        {error && <p style={{ color: "red" }}>{error}</p>}
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                right: "10px",
+                top: "10px",
+                cursor: "pointer"
+              }}
+            >
+              mostrar
+            </span>
+          </div>
 
-        {/* BOTÓN */}
-        <button type="submit">Ingresar</button>
+          {errors.password && <p className="error">{errors.password}</p>}
+          {errors.general && <p className="error">{errors.general}</p>}
 
-        {/* OLVIDÉ CONTRASEÑA */}
-        <p
-          style={{ color: "blue", cursor: "pointer" }}
-          onClick={() => alert("......")}
-        >
-          ¿Olvidaste tu contraseña?
-        </p>
-      </form>
+          <button>Ingresar</button>
+
+        
+        </form>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./Auth.css";
 
 function Register() {
   const [form, setForm] = useState({
@@ -9,105 +10,95 @@ function Register() {
     phone: ""
   });
 
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const validate = () => {
+    let err = {};
+
+    if (!form.name) err.name = "Nombre obligatorio";
+    if (!form.email) err.email = "Correo obligatorio";
+    else if (!form.email.includes("@")) err.email = "Correo inválido";
+
+    if (!form.password) err.password = "Contraseña obligatoria";
+    if (!form.address) err.address = "Dirección obligatoria";
+    if (!form.phone) err.phone = "Teléfono obligatorio";
+
+    return err;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validación de campos obligatorios
-    if (
-      !form.name ||
-      !form.email ||
-      !form.password ||
-      !form.address ||
-      !form.phone
-    ) {
-      setError("Todos los campos son obligatorios");
-      setSuccess("");
+    const err = validate();
+    if (Object.keys(err).length > 0) {
+      setErrors(err);
       return;
     }
 
-    // Validación básica de correo
-    if (!form.email.includes("@")) {
-      setError("Correo inválido");
-      setSuccess("");
-      return;
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: form.name,
+          email: form.email,
+          contrasena: form.password,
+          direccion: form.address,
+          telefono: form.phone
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrors({ general: data.msg });
+        return;
+      }
+
+      setSuccess("Usuario registrado ");
+
+    } catch {
+      setErrors({ general: "Error servidor" });
     }
-
-    // Validación básica de teléfono (solo números)
-    if (isNaN(form.phone)) {
-      setError("El teléfono debe ser numérico");
-      setSuccess("");
-      return;
-    }
-
-    setError("");
-    setSuccess("Usuario registrado correctamente ✅");
-
-    console.log("Registro:", form);
-
-    // Aquí luego conectas la API
   };
 
   return (
-    <div className="register-container">
-      <form onSubmit={handleSubmit}>
-        <h2>Registro</h2>
+    <div className="auth-container">
+      <div className="auth-left">
+        <h1>Únete a nuestra comunidad :p</h1>
+      </div>
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre completo"
-          value={form.name}
-          onChange={handleChange}
-        />
+      <div className="auth-right">
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <h2>Crear cuenta</h2>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Correo electrónico"
-          value={form.email}
-          onChange={handleChange}
-        />
+          <input name="name" placeholder="Nombre" onChange={handleChange} />
+          {errors.name && <p className="error">{errors.name}</p>}
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={form.password}
-          onChange={handleChange}
-        />
+          <input name="email" placeholder="Correo" onChange={handleChange} />
+          {errors.email && <p className="error">{errors.email}</p>}
 
-        <input
-          type="text"
-          name="address"
-          placeholder="Dirección"
-          value={form.address}
-          onChange={handleChange}
-        />
+          <input name="password" type="password" placeholder="Contraseña" onChange={handleChange} />
+          {errors.password && <p className="error">{errors.password}</p>}
+          
 
-        <input
-          type="text"
-          name="phone"
-          placeholder="Teléfono"
-          value={form.phone}
-          onChange={handleChange}
-        />
+          <input name="address" placeholder="Dirección" onChange={handleChange} />
+          {errors.address && <p className="error">{errors.address}</p>}
 
-        {/* MENSAJES */}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {success && <p style={{ color: "green" }}>{success}</p>}
+          <input name="phone" type="number" placeholder="Teléfono" onChange={handleChange} />
+          {errors.phone && <p className="error">{errors.phone}</p>}
 
-        <button type="submit">Registrarse</button>
-      </form>
+          {errors.general && <p className="error">{errors.general}</p>}
+          {success && <p className="success">{success}</p>}
+
+          <button>Crear cuenta</button>
+        </form>
+      </div>
     </div>
   );
 }

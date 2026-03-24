@@ -9,6 +9,8 @@ import {
 
 import { verificarToken } from '../middlewares/auth.middleware.js';
 import { soloAdmin } from '../middlewares/role.middleware.js';
+import { upload } from "../middlewares/upload.middleware.js";
+
 
 const router = express.Router();
 
@@ -17,10 +19,10 @@ router.get('/', listar);
 router.get('/:id', obtener);
 
 // 🔐 Solo usuarios autenticados
-router.post('/', verificarToken, soloAdmin, crear);
+router.post('/', verificarToken, soloAdmin,upload.single("foto"), crear);
 
 // 🔐 Solo admin
-router.put('/:id', verificarToken, soloAdmin, actualizar);
-router.delete('/:id', verificarToken, soloAdmin, eliminar);
+router.put('/:id', verificarToken, soloAdmin, upload.single("foto"), actualizar);
+router.delete('/:id', verificarToken, soloAdmin, upload.single("foto"), eliminar);
 
 export default router;

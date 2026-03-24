@@ -38,8 +38,20 @@ export const actualizarMascota = async (id, data) => {
   });
 };
 
-// Eliminar
+// 🔥 ELIMINAR (ARREGLADO)
 export const eliminarMascota = async (id) => {
+
+  // 1️⃣ eliminar fotos relacionadas
+  await prisma.foto_Mascota.deleteMany({
+    where: { id_mascota: id }
+  });
+
+  // 2️⃣ eliminar solicitudes (IMPORTANTE también)
+  await prisma.solicitud_Adopcion.deleteMany({
+    where: { id_mascota: id }
+  });
+
+  // 3️⃣ eliminar mascota
   return await prisma.mascota.delete({
     where: { id_mascota: id }
   });

@@ -13,7 +13,8 @@ function Mascotas({ onSwitch, user }) {
     sexo: "",
     estado_salud: "",
     fecha_ingreso: "",
-    estado_adopcion: ""
+    estado_adopcion: "",
+    foto: null // 🔥 NUEVO
   });
   const [editando, setEditando] = useState(null);
   const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
@@ -37,6 +38,10 @@ function Mascotas({ onSwitch, user }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setForm({ ...form, foto: e.target.files[0] });
+  };
+
   const limpiarForm = () => {
     setForm({
       nombre: "",
@@ -46,10 +51,12 @@ function Mascotas({ onSwitch, user }) {
       sexo: "",
       estado_salud: "",
       fecha_ingreso: "",
-      estado_adopcion: ""
+      estado_adopcion: "",
+      foto: null
     });
   };
 
+  // 🔥 SUBMIT CON FORM DATA
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -57,35 +64,34 @@ function Mascotas({ onSwitch, user }) {
       const method = editando ? "PUT" : "POST";
       const endpoint = editando ? `${URL}/${editando}` : URL;
 
-      const dataEnviar = {
-        nombre: form.nombre,
-        especie: form.especie,
-        raza: form.raza,
-        edad: parseInt(form.edad),
-        sexo: form.sexo,
-        estado_salud: form.estado_salud,
-        fecha_ingreso: form.fecha_ingreso
-          ? new Date(form.fecha_ingreso)
-          : null,
-        estado_adopcion: form.estado_adopcion
-      };
+      const formData = new FormData();
 
-      console.log("ENVIANDO:", dataEnviar);
+      formData.append("nombre", form.nombre);
+      formData.append("especie", form.especie);
+      formData.append("raza", form.raza);
+      formData.append("edad", form.edad);
+      formData.append("sexo", form.sexo);
+      formData.append("estado_salud", form.estado_salud);
+      formData.append("fecha_ingreso", form.fecha_ingreso);
+      formData.append("estado_adopcion", form.estado_adopcion);
+
+      if (form.foto) {
+        formData.append("foto", form.foto);
+      }
 
       const res = await fetch(endpoint, {
         method,
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(dataEnviar)
+        body: formData
       });
 
       if (res.ok) {
         setMensaje({
           texto: editando
             ? "Actualizado correctamente ✅"
-            : "¡Mascota creada! 🐶",
+            : "¡Mascota creada con imagen! 🐶",
           tipo: "success"
         });
 
@@ -95,6 +101,7 @@ function Mascotas({ onSwitch, user }) {
       } else {
         setMensaje({ texto: "Error al guardar datos", tipo: "error" });
       }
+
     } catch {
       setMensaje({ texto: "Error de servidor", tipo: "error" });
     }
@@ -128,7 +135,7 @@ function Mascotas({ onSwitch, user }) {
 
         <div>
           <span className="rol">
-            {esAdmin ? "Admin " : "Usuario "}
+            {esAdmin ? "Admin 👑" : "Usuario 👤"}
           </span>
 
           <button onClick={handleLogout} className="logout-btn">
@@ -139,7 +146,7 @@ function Mascotas({ onSwitch, user }) {
 
       <div className="mascotas-content">
 
-        {/* FORM SOLO ADMIN */}
+        {/* FORM */}
         {esAdmin && (
           <div className="form-card">
             <h3>{editando ? "Editar mascota" : "Nueva mascota"}</h3>
@@ -153,6 +160,9 @@ function Mascotas({ onSwitch, user }) {
               <input name="estado_salud" placeholder="Salud" value={form.estado_salud} onChange={handleChange} />
               <input name="fecha_ingreso" type="date" value={form.fecha_ingreso} onChange={handleChange} />
               <input name="estado_adopcion" placeholder="Adopción" value={form.estado_adopcion} onChange={handleChange} />
+
+              {/* 📸 INPUT FILE */}
+              <input type="file" onChange={handleFileChange} />
 
               <button className="btn-save">
                 {editando ? "Actualizar" : "Crear"}
@@ -174,6 +184,7 @@ function Mascotas({ onSwitch, user }) {
           <table>
             <thead>
               <tr>
+                <th>Foto</th> {/* 🔥 NUEVO */}
                 <th>Nombre</th>
                 <th>Especie</th>
                 <th>Edad</th>
@@ -184,6 +195,18 @@ function Mascotas({ onSwitch, user }) {
             <tbody>
               {mascotas.map((m) => (
                 <tr key={m.id_mascota}>
+                  
+                  {/* 📸 MOSTRAR IMAGEN */}
+                  <td>
+                    {m.fotos?.[0] && (
+                      <img 
+                        src={m.fotos[0].url_foto} 
+                        width="60" 
+                        style={{ borderRadius: "8px" }}
+                      />
+                    )}
+                  </td>
+
                   <td>{m.nombre}</td>
                   <td>{m.especie}</td>
                   <td>{m.edad}</td>
@@ -199,7 +222,8 @@ function Mascotas({ onSwitch, user }) {
                           sexo: m.sexo,
                           estado_salud: m.estado_salud,
                           fecha_ingreso: m.fecha_ingreso?.split("T")[0] || "",
-                          estado_adopcion: m.estado_adopcion
+                          estado_adopcion: m.estado_adopcion,
+                          foto: null
                         });
 
                         setEditando(m.id_mascota);
@@ -212,6 +236,7 @@ function Mascotas({ onSwitch, user }) {
                       </button>
                     </td>
                   )}
+
                 </tr>
               ))}
             </tbody>

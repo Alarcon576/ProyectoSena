@@ -110,7 +110,7 @@ function Mascotas({ onSwitch, user }) {
 
         <div>
           <span className="rol">
-            {esAdmin ? "Admin 👑" : "Usuario 👤"}
+            {esAdmin ? "Admin " : "Usuario "}
           </span>
 
           <button onClick={handleLogout} className="logout-btn">

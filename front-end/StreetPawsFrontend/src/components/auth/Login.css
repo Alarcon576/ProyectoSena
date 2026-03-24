@@ -17,6 +17,7 @@
 }
 
 .logo {
+  color:white;
   position: absolute;
   top: 20px;
   left: 30px;
@@ -116,4 +117,14 @@
 .error {
   color: red;
   margin-bottom: 10px;
+}
+.input-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  color: #000; /* 🔥 TEXTO NEGRO */
+}
+h2{
+  color:black;
 }

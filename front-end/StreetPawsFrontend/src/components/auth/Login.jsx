@@ -19,35 +19,56 @@ function Login({ onSwitch, onLogin }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: form.email,
-          contrasena: form.password
-        })
-      });
+  let newErrors = {};
 
-      const data = await res.json();
+  // 🔥 VALIDACIONES
+  if (!form.email) {
+    newErrors.email = "El correo es obligatorio";
+  } else if (!form.email.includes("@")) {
+    newErrors.email = "Correo inválido";
+  }
 
-      if (!res.ok) {
-        setErrors({ general: data.msg });
-        return;
-      }
+  if (!form.password) {
+    newErrors.password = "La contraseña es obligatoria";
+  } else if (form.password.length < 4) {
+    newErrors.password = "Mínimo 4 caracteres";
+  }
 
-      localStorage.setItem("token", data.token);
+  // ❌ si hay errores, no hace fetch
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
 
-      const user = decodeToken(data.token);
+  try {
+    const res = await fetch("http://localhost:3000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: form.email,
+        contrasena: form.password
+      })
+    });
 
-      onLogin(user);
+    const data = await res.json();
 
-    } catch {
-      setErrors({ general: "Error servidor" });
+    if (!res.ok) {
+      setErrors({ general: data.msg });
+      return;
     }
-  };
+
+    localStorage.setItem("token", data.token);
+
+    const user = decodeToken(data.token);
+
+    onLogin(user);
+
+  } catch {
+    setErrors({ general: "Error servidor" });
+  }
+};
 
   return (
     <div className="login-container">
@@ -70,7 +91,7 @@ function Login({ onSwitch, onLogin }) {
       <div className="login-right">
         <form className="login-form" onSubmit={handleSubmit}>
           <h2>Iniciar sesión</h2>
-
+          <p>Inicia sesión para poder ver lo que tenemos para ti!</p>
           {errors.general && <p className="error">{errors.general}</p>}
 
           <label>Correo electrónico</label>
@@ -81,8 +102,11 @@ function Login({ onSwitch, onLogin }) {
               placeholder="ejemplo@correo.com"
               value={form.email}
               onChange={handleChange}
+              
             />
+         
           </div>
+             {errors.email && <p className="error">{errors.email}</p>}
 
           <label>Contraseña</label>
           <div className="input-box password-box">
@@ -93,9 +117,10 @@ function Login({ onSwitch, onLogin }) {
               value={form.password}
               onChange={handleChange}
             />
+            
             <span onClick={() => setShowPassword(!showPassword)}>👁️</span>
           </div>
-
+          {errors.password && <p className="error">{errors.password}</p>}
           <button type="submit">Ingresar</button>
 
           <p className="switch-text">

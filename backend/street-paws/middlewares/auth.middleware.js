@@ -16,7 +16,7 @@ export const verificarToken = (req, res, next) => {
     }
 
     // 2. Verificar token
-const decoded = jwt.decode(token);
+const decoded = jwt.verify(token, process.env.JWT_SECRET);
 console.log("DECODED:", decoded);
 
     // 3. Guardar datos del usuario en req

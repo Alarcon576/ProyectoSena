@@ -48,7 +48,10 @@ export const login = async (req, res) => {
     if (!valid) return res.status(401).json({ msg: "Credenciales incorrectas" });
 
     const token = jwt.sign(
-      { id: user.id_usuario },
+  { 
+    id: user.id_usuario,
+    rol: user.id_rol
+  },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );

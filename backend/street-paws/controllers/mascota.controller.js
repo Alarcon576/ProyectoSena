@@ -9,7 +9,12 @@ import {
 // Crear
 export const crear = async (req, res) => {
   try {
-    const nuevaMascota = await crearMascota(req.body);
+    const data = {
+      ...req.body,
+      id_admin_registro: req.user.id
+    };
+
+    const nuevaMascota = await crearMascota(data);
     res.status(201).json(nuevaMascota);
   } catch (error) {
     res.status(500).json({ error: error.message });

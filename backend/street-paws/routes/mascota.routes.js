@@ -7,12 +7,20 @@ import {
   eliminar
 } from '../controllers/mascota.controller.js';
 
+import { verificarToken } from '../middlewares/auth.middleware.js';
+import { soloAdmin } from '../middlewares/role.middleware.js';
+
 const router = express.Router();
 
-router.post('/', crear);
+// 🔓 Públicas
 router.get('/', listar);
 router.get('/:id', obtener);
-router.put('/:id', actualizar);
-router.delete('/:id', eliminar);
+
+// 🔐 Solo usuarios autenticados
+router.post('/', verificarToken, soloAdmin, crear);
+
+// 🔐 Solo admin
+router.put('/:id', verificarToken, soloAdmin, actualizar);
+router.delete('/:id', verificarToken, soloAdmin, eliminar);
 
 export default router;

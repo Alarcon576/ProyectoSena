@@ -36,11 +36,16 @@ const handleSubmit = async (e) => {
 
     const data = await res.json();
 
-    if (res.ok) {
-      setSuccessMsg("¡Cuenta creada con éxito!");
-      setForm({ nombre: "", email: "", password: "", direccion: "", telefono: "" }); // Limpia todo
-      setErrors({});
-    } else {
+   if (res.ok) {
+  setSuccessMsg("¡Cuenta creada con éxito!");
+  setForm({ nombre: "", email: "", password: "", direccion: "", telefono: "" });
+  setErrors({});
+
+  // 🔥 REDIRECCIÓN AL LOGIN
+  setTimeout(() => {
+    onSwitch("login");
+  }, 1500);
+}else {
       setErrors({ general: data.msg });
     }
   } catch (error) {

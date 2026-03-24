@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import "./Mascotas.css";
+import { useState, useEffect } from "react";
+import "../mascotas/Mascotas.css";
 
 const URL = "http://localhost:3000/api/mascotas";
 
@@ -14,8 +14,9 @@ function Mascotas({ onSwitch, user }) {
     estado_salud: "",
     fecha_ingreso: "",
     estado_adopcion: "",
-    foto: null // 🔥 NUEVO
+    foto: null
   });
+
   const [editando, setEditando] = useState(null);
   const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
 
@@ -32,7 +33,9 @@ function Mascotas({ onSwitch, user }) {
     }
   };
 
-  useEffect(() => { cargarMascotas(); }, []);
+  useEffect(() => {
+    cargarMascotas();
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -56,7 +59,6 @@ function Mascotas({ onSwitch, user }) {
     });
   };
 
-  // 🔥 SUBMIT CON FORM DATA
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -66,18 +68,9 @@ function Mascotas({ onSwitch, user }) {
 
       const formData = new FormData();
 
-      formData.append("nombre", form.nombre);
-      formData.append("especie", form.especie);
-      formData.append("raza", form.raza);
-      formData.append("edad", form.edad);
-      formData.append("sexo", form.sexo);
-      formData.append("estado_salud", form.estado_salud);
-      formData.append("fecha_ingreso", form.fecha_ingreso);
-      formData.append("estado_adopcion", form.estado_adopcion);
-
-      if (form.foto) {
-        formData.append("foto", form.foto);
-      }
+      Object.keys(form).forEach((key) => {
+        if (form[key]) formData.append(key, form[key]);
+      });
 
       const res = await fetch(endpoint, {
         method,
@@ -90,8 +83,8 @@ function Mascotas({ onSwitch, user }) {
       if (res.ok) {
         setMensaje({
           texto: editando
-            ? "Actualizado correctamente ✅"
-            : "¡Mascota creada con imagen! 🐶",
+            ? "Actualizado correctamente"
+            : "Mascota creada",
           tipo: "success"
         });
 
@@ -99,11 +92,10 @@ function Mascotas({ onSwitch, user }) {
         limpiarForm();
         cargarMascotas();
       } else {
-        setMensaje({ texto: "Error al guardar datos", tipo: "error" });
+        setMensaje({ texto: "Error al guardar", tipo: "error" });
       }
-
     } catch {
-      setMensaje({ texto: "Error de servidor", tipo: "error" });
+      setMensaje({ texto: "Error servidor", tipo: "error" });
     }
   };
 
@@ -128,16 +120,12 @@ function Mascotas({ onSwitch, user }) {
 
   return (
     <div className="mascotas-container">
-
-      {/* HEADER */}
       <div className="mascotas-header">
         <h2>🐾 Street Paws</h2>
-
         <div>
           <span className="rol">
-            {esAdmin ? "Admin 👑" : "Usuario 👤"}
+            {esAdmin ? "Admin" : "Usuario"}
           </span>
-
           <button onClick={handleLogout} className="logout-btn">
             Cerrar sesión
           </button>
@@ -145,12 +133,9 @@ function Mascotas({ onSwitch, user }) {
       </div>
 
       <div className="mascotas-content">
-
-        {/* FORM */}
         {esAdmin && (
           <div className="form-card">
             <h3>{editando ? "Editar mascota" : "Nueva mascota"}</h3>
-
             <form onSubmit={handleSubmit}>
               <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={handleChange} />
               <input name="especie" placeholder="Especie" value={form.especie} onChange={handleChange} />
@@ -161,7 +146,6 @@ function Mascotas({ onSwitch, user }) {
               <input name="fecha_ingreso" type="date" value={form.fecha_ingreso} onChange={handleChange} />
               <input name="estado_adopcion" placeholder="Adopción" value={form.estado_adopcion} onChange={handleChange} />
 
-              {/* 📸 INPUT FILE */}
               <input type="file" onChange={handleFileChange} />
 
               <button className="btn-save">
@@ -171,20 +155,17 @@ function Mascotas({ onSwitch, user }) {
           </div>
         )}
 
-        {/* TABLA */}
         <div className="table-card">
           <h3>Lista de mascotas</h3>
 
           {mensaje.texto && (
-            <p className={mensaje.tipo === "success" ? "success" : "error"}>
-              {mensaje.texto}
-            </p>
+            <p className={mensaje.tipo}>{mensaje.texto}</p>
           )}
 
           <table>
             <thead>
               <tr>
-                <th>Foto</th> {/* 🔥 NUEVO */}
+                <th>Foto</th>
                 <th>Nombre</th>
                 <th>Especie</th>
                 <th>Edad</th>
@@ -195,18 +176,15 @@ function Mascotas({ onSwitch, user }) {
             <tbody>
               {mascotas.map((m) => (
                 <tr key={m.id_mascota}>
-                  
-                  {/* 📸 MOSTRAR IMAGEN */}
                   <td>
                     {m.fotos?.[0] && (
-                      <img 
-                        src={m.fotos[0].url_foto} 
-                        width="60" 
+                      <img
+                        src={m.fotos[0].url_foto}
+                        width="60"
                         style={{ borderRadius: "8px" }}
                       />
                     )}
                   </td>
-
                   <td>{m.nombre}</td>
                   <td>{m.especie}</td>
                   <td>{m.edad}</td>
@@ -215,17 +193,10 @@ function Mascotas({ onSwitch, user }) {
                     <td>
                       <button onClick={() => {
                         setForm({
-                          nombre: m.nombre,
-                          especie: m.especie,
-                          raza: m.raza,
-                          edad: m.edad,
-                          sexo: m.sexo,
-                          estado_salud: m.estado_salud,
+                          ...m,
                           fecha_ingreso: m.fecha_ingreso?.split("T")[0] || "",
-                          estado_adopcion: m.estado_adopcion,
                           foto: null
                         });
-
                         setEditando(m.id_mascota);
                       }}>
                         ✏️
@@ -236,13 +207,11 @@ function Mascotas({ onSwitch, user }) {
                       </button>
                     </td>
                   )}
-
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
   );

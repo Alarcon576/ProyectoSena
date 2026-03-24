@@ -128,3 +128,9 @@
 h2{
   color:black;
 }
+.success {
+  color: green;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-align: center;
+}

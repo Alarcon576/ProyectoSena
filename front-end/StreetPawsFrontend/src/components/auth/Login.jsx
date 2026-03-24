@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "./Login.css";
 
-
 function Login({ onSwitch, onLogin }) {
   const [form, setForm] = useState({
     email: "",
@@ -39,13 +38,10 @@ function Login({ onSwitch, onLogin }) {
         return;
       }
 
-     
       localStorage.setItem("token", data.token);
 
-   
       const user = decodeToken(data.token);
 
-    
       onLogin(user);
 
     } catch {
@@ -54,43 +50,59 @@ function Login({ onSwitch, onLogin }) {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-left">
-        <h1>Ayudando a encontrar hogares felices</h1>
+    <div className="login-container">
+
+      {/* IZQUIERDA */}
+      <div className="login-left">
+        <h2 className="logo">🐾 Street Paws</h2>
+
+        <div className="login-text">
+          <h1>
+            Únete a nuestra <span>comunidad.</span>
+          </h1>
+          <p>
+            Cada registro es una oportunidad más para darles el hogar que merecen.
+          </p>
+        </div>
       </div>
 
-      <div className="auth-right">
-        <form className="auth-form" onSubmit={handleSubmit}>
+      {/* DERECHA */}
+      <div className="login-right">
+        <form className="login-form" onSubmit={handleSubmit}>
           <h2>Iniciar sesión</h2>
-
-          <input
-            type="email"
-            name="email"
-            placeholder="Correo"
-            value={form.email}
-            onChange={handleChange}
-          />
-
-          <div style={{ position: "relative" }}>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Contraseña"
-              value={form.password}
-              onChange={handleChange}
-            />
-
-            <span onClick={() => setShowPassword(!showPassword)}>
-              mostrar
-            </span>
-          </div>
 
           {errors.general && <p className="error">{errors.general}</p>}
 
-          <button>Ingresar</button>
+          <label>Correo electrónico</label>
+          <div className="input-box">
+            <input
+              type="email"
+              name="email"
+              placeholder="ejemplo@correo.com"
+              value={form.email}
+              onChange={handleChange}
+            />
+          </div>
 
-          <p onClick={() => onSwitch("register")} style={{ cursor: "pointer" }}>
-            ¿No tienes cuenta? Regístrate
+          <label>Contraseña</label>
+          <div className="input-box password-box">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="********"
+              value={form.password}
+              onChange={handleChange}
+            />
+            <span onClick={() => setShowPassword(!showPassword)}>👁️</span>
+          </div>
+
+          <button type="submit">Ingresar</button>
+
+          <p className="switch-text">
+            ¿No tienes cuenta?{" "}
+            <span onClick={() => onSwitch("register")}>
+              Regístrate
+            </span>
           </p>
         </form>
       </div>

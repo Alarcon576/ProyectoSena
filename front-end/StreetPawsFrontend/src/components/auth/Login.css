@@ -1,0 +1,57 @@
+.log-page { background: #fdfdfd; min-height: 100vh; display: flex; flex-direction: column; font-family: 'Inter', sans-serif; }
+.log-header { display: flex; justify-content: space-between; padding: 20px 80px; background: white; align-items: center; }
+.log-header-right { font-size: 14px; color: #666; }
+.log-brand { font-weight: bold; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+
+.log-nav-btn { background: #fff5eb; color: #f29933; border: none; padding: 10px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-left: 10px; }
+
+.log-card-area { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; }
+.log-card { display: flex; background: white; width: 100%; max-width: 1000px; border-radius: 40px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
+
+.log-card-left { flex: 1.1; background: #fff9f2; padding: 80px; display: flex; align-items: center; }
+.log-left-content h1 { font-size: 48px; color: #1a1a1a; line-height: 1.1; margin-bottom: 20px; }
+.log-left-content h1 span { color: #f29933; }
+.log-left-content p { color: #555; line-height: 1.6; font-size: 16px; margin-bottom: 30px; }
+
+.log-card-right { flex: 1; padding: 60px 80px; }
+.log-card-right h2 { font-size: 32px; font-weight: 800; margin-bottom: 8px; color: #000; }
+.log-subtitle { color: #888; margin-bottom: 35px; font-size: 15px; }
+
+.log-field { margin-bottom: 25px; }
+.log-label-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; }
+.log-label { font-size: 14px; font-weight: 600; color: #333; }
+.log-forgot { font-size: 12px; color: #f29933; font-weight: bold; cursor: pointer; }
+
+.log-input-box { position: relative; display: flex; align-items: center; }
+.log-input-box input { 
+  width: 100%; padding: 15px 45px; border: 1px solid #e2e8f0; 
+  border-radius: 15px; background: #f8fafd; color: #000; outline: none; font-size: 14px;
+}
+.log-input-box input:focus { border-color: #f29933; }
+.log-icon { position: absolute; left: 18px; color: #94a3b8; }
+.log-eye { position: absolute; right: 18px; background: none; border: none; cursor: pointer; outline: none; font-size: 18px; color: #94a3b8; }
+
+.log-remember { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; font-size: 14px; color: #666; }
+.log-remember input { cursor: pointer; accent-color: #f29933; }
+
+.log-btn { 
+  width: 100%; padding: 18px; background: #f29933; color: white; border: none; 
+  border-radius: 18px; font-weight: bold; font-size: 16px; cursor: pointer; 
+  box-shadow: 0 10px 20px rgba(242, 153, 51, 0.2); transition: transform 0.2s;
+}
+.log-btn:active { transform: scale(0.98); }
+
+.log-footer-text { text-align: center; margin-top: 35px; font-size: 14px; color: #666; }
+.log-footer-text span { color: #f29933; font-weight: bold; cursor: pointer; }
+.error-text { color: #ff0000; font-size: 12px; font-weight: bold; margin-top: 5px; }
+.success-text {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 1px solid #c3e6cb;
+}

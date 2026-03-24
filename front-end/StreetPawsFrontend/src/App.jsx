@@ -1,23 +1,19 @@
 import { useState } from "react";
-import Login from "./components/Login";
-import Register from "./components/Register";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import Mascotas from "./components/mascotas/Mascotas";
 
 function App() {
   const [view, setView] = useState("login");
 
   return (
     <div>
-      <h1>StreetPaws</h1>
-
-      {view === "login" ? <Login /> : <Register />}
-
-      <button onClick={() => setView("login")}>
-        Ir a Login
-      </button>
-
-      <button onClick={() => setView("register")}>
-        Ir a Registro
-      </button>
+      {/* Pasamos setView como una prop llamada 'onSwitch' 
+         para que los componentes internos puedan cambiar la vista 
+      */}
+      {view === "login" && <Login onSwitch={setView} />}
+      {view === "register" && <Register onSwitch={setView} />}
+      {view === "mascotas" && <Mascotas onSwitch={setView} />}
     </div>
   );
 }

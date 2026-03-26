@@ -1,0 +1,82 @@
+.reg-page { display: flex; height: 100vh; font-family: 'Inter', sans-serif; background: white; }
+
+.reg-left-side { 
+  flex: 1; 
+  background: #1a1a1a; /* O tu imagen: url("../assets/dog.jpg") center/cover */
+  padding: 60px; 
+  color: white; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  position: relative;
+}
+
+.reg-brand { position: absolute; top: 40px; font-weight: bold; font-size: 22px; cursor: pointer; }
+
+.reg-hero-content h1 { font-size: 48px; line-height: 1.1; margin-bottom: 20px; }
+.reg-hero-content h1 span { color: #f29933; }
+.reg-hero-content p { font-size: 18px; color: #ccc; max-width: 400px; }
+
+.reg-right-side { flex: 1; display: flex; justify-content: center; align-items: center; background: white; }
+
+.reg-form-container { width: 100%; max-width: 400px; padding: 20px; }
+.reg-form-container h2 { font-size: 32px; font-weight: 800; margin-bottom: 8px; color: #000; }
+.reg-subtitle { color: #888; margin-bottom: 30px; font-size: 15px; }
+
+.reg-field { margin-bottom: 20px; }
+.reg-field label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #333; }
+
+.reg-input-box { position: relative; display: flex; align-items: center; }
+.reg-input-box input { 
+  width: 100%; 
+  padding: 15px 45px; 
+  border: 1px solid #e2e8f0; 
+  border-radius: 15px; 
+  background: #f8fafd; 
+  color: #000; 
+  outline: none; 
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.reg-icon { position: absolute; left: 18px; color: #94a3b8; }
+
+.reg-eye { 
+  position: absolute; 
+  right: 18px; 
+  background: transparent; 
+  border: none; 
+  cursor: pointer; 
+  outline: none; 
+  font-size: 18px; 
+}
+
+.reg-btn { 
+  width: 100%; 
+  padding: 18px; 
+  background: #f29933; 
+  color: white; 
+  border: none; 
+  border-radius: 18px; 
+  font-weight: bold; 
+  font-size: 16px; 
+  cursor: pointer; 
+  margin-top: 20px;
+  box-shadow: 0 10px 20px rgba(242, 153, 51, 0.2);
+}
+
+.reg-footer { text-align: center; margin-top: 25px; font-size: 14px; color: #666; }
+.reg-footer span { color: #f29933; font-weight: bold; cursor: pointer; }
+
+.error-text { color: #ff0000; font-size: 12px; font-weight: bold; margin-top: 5px; }
+.success-text {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 1px solid #c3e6cb;
+}

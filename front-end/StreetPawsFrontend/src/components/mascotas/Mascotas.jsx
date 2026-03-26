@@ -14,7 +14,7 @@ function Mascotas({ onSwitch, user }) {
     estado_salud: "",
     fecha_ingreso: "",
     estado_adopcion: "",
-    foto: null // 🔥 NUEVO
+    foto: null //  NUEVO
   });
   const [editando, setEditando] = useState(null);
   const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
@@ -56,7 +56,7 @@ function Mascotas({ onSwitch, user }) {
     });
   };
 
-  // 🔥 SUBMIT CON FORM DATA
+  //  SUBMIT CON FORM DATA
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -90,8 +90,8 @@ function Mascotas({ onSwitch, user }) {
       if (res.ok) {
         setMensaje({
           texto: editando
-            ? "Actualizado correctamente ✅"
-            : "¡Mascota creada con imagen! 🐶",
+            ? "Actualizado correctamente "
+            : "¡Mascota creada con imagen! ",
           tipo: "success"
         });
 
@@ -135,7 +135,7 @@ function Mascotas({ onSwitch, user }) {
 
         <div>
           <span className="rol">
-            {esAdmin ? "Admin 👑" : "Usuario 👤"}
+            {esAdmin ? "Admin" : "Usuario"}
           </span>
 
           <button onClick={handleLogout} className="logout-btn">
@@ -161,7 +161,7 @@ function Mascotas({ onSwitch, user }) {
               <input name="fecha_ingreso" type="date" value={form.fecha_ingreso} onChange={handleChange} />
               <input name="estado_adopcion" placeholder="Adopción" value={form.estado_adopcion} onChange={handleChange} />
 
-              {/* 📸 INPUT FILE */}
+              {/* INPUT FILE */}
               <input type="file" onChange={handleFileChange} />
 
               <button className="btn-save">
@@ -184,7 +184,7 @@ function Mascotas({ onSwitch, user }) {
           <table>
             <thead>
               <tr>
-                <th>Foto</th> {/* 🔥 NUEVO */}
+                <th>Foto</th> {/*  NUEVO */}
                 <th>Nombre</th>
                 <th>Especie</th>
                 <th>Edad</th>
@@ -196,7 +196,7 @@ function Mascotas({ onSwitch, user }) {
               {mascotas.map((m) => (
                 <tr key={m.id_mascota}>
                   
-                  {/* 📸 MOSTRAR IMAGEN */}
+                  {/*  MOSTRAR IMAGEN */}
                   <td>
                     {m.fotos?.[0] && (
                       <img 

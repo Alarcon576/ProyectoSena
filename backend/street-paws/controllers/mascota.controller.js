@@ -24,17 +24,14 @@ export const crear = async (req, res) => {
       id_admin_registro: req.user.id
     };
 
-    console.log("BODY:", req.body);
-  console.log("FILE:", req.file);
-
     const nuevaMascota = await crearMascota(data);
 
-  
+    
     if (req.file) {
       await prisma.foto_Mascota.create({
         data: {
           id_mascota: nuevaMascota.id_mascota,
-          url_foto: req.file.path, 
+          url_foto: req.file.path,
           es_principal: true
         }
       });
@@ -92,15 +89,33 @@ export const actualizar = async (req, res) => {
 
     const mascotaActualizada = await actualizarMascota(id, data);
 
- 
+    
     if (req.file) {
-      await prisma.foto_Mascota.create({
-        data: {
+
+      
+      const fotoPrincipal = await prisma.foto_Mascota.findFirst({
+        where: {
           id_mascota: id,
-          url_foto: req.file.path,
           es_principal: true
         }
       });
+
+      if (fotoPrincipal) {
+        
+        await prisma.foto_Mascota.update({
+          where: { id_foto: fotoPrincipal.id_foto },
+          data: { url_foto: req.file.path }
+        });
+      } else {
+       
+        await prisma.foto_Mascota.create({
+          data: {
+            id_mascota: id,
+            url_foto: req.file.path,
+            es_principal: true
+          }
+        });
+      }
     }
 
     res.json(mascotaActualizada);
@@ -111,11 +126,20 @@ export const actualizar = async (req, res) => {
   }
 };
 
+
 export const eliminar = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+
+    
+    await prisma.foto_Mascota.deleteMany({
+      where: { id_mascota: id }
+    });
+
     await eliminarMascota(id);
+
     res.json({ mensaje: "Mascota eliminada correctamente" });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

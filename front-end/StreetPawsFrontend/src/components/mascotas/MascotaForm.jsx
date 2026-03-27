@@ -28,15 +28,62 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
     });
   };
 
+  const handleFileChange = (e) => {
+    setForm({ ...form, foto: e.target.files[0] });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // VALIDACIONES
+    if (!form.nombre.trim()) {
+      alert("El nombre es obligatorio");
+      return;
+    }
+
+    if (!form.especie) {
+      alert("Debe seleccionar una especie");
+      return;
+    }
+
+    if (!form.raza.trim()) {
+      alert("La raza es obligatoria");
+      return;
+    }
+
+    if (!form.edad || isNaN(form.edad) || form.edad <= 0) {
+      alert("Ingrese una edad válida");
+      return;
+    }
+
+    if (!form.sexo) {
+      alert("Debe seleccionar el sexo");
+      return;
+    }
+
+    if (!form.estado_salud.trim()) {
+      alert("El estado de salud es obligatorio");
+      return;
+    }
+
+    if (!form.fecha_ingreso) {
+      alert("Debe seleccionar la fecha de ingreso");
+      return;
+    }
+
+    if (!form.estado_adopcion) {
+      alert("Debe seleccionar el estado de adopción");
+      return;
+    }
+
+    // SI TODO ESTÁ BIEN
     onSubmit({
       ...form,
       edad: parseInt(form.edad),
       fecha_ingreso: new Date(form.fecha_ingreso)
     });
 
+    // LIMPIAR FORMULARIO
     setForm({
       nombre: "",
       especie: "",
@@ -53,14 +100,71 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
     <form onSubmit={handleSubmit}>
       <h3>{mascotaEdit ? "Editar" : "Crear"} Mascota</h3>
 
-      <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={handleChange} />
-      <input name="especie" placeholder="Especie" value={form.especie} onChange={handleChange} />
-      <input name="raza" placeholder="Raza" value={form.raza} onChange={handleChange} />
-      <input name="edad" type="number" placeholder="Edad" value={form.edad} onChange={handleChange} />
-      <input name="sexo" placeholder="Sexo" value={form.sexo} onChange={handleChange} />
-      <input name="estado_salud" placeholder="Estado de salud" value={form.estado_salud} onChange={handleChange} />
-      <input name="fecha_ingreso" type="date" value={form.fecha_ingreso} onChange={handleChange} />
-      <input name="estado_adopcion" placeholder="Estado adopción" value={form.estado_adopcion} onChange={handleChange} />
+      <input 
+        name="nombre" 
+        placeholder="Nombre" 
+        value={form.nombre} 
+        onChange={handleChange} 
+      />
+
+      <select 
+        name="especie" 
+        value={form.especie} 
+        onChange={handleChange}
+      >
+        <option value="">Seleccione especie</option>
+        <option value="Perro">Perro</option>
+        <option value="Gato">Gato</option>
+      </select>
+
+      <input 
+        name="raza" 
+        placeholder="Raza" 
+        value={form.raza} 
+        onChange={handleChange} 
+      />
+
+      <input 
+        name="edad" 
+        type="number" 
+        placeholder="Edad" 
+        value={form.edad} 
+        onChange={handleChange} 
+      />
+
+      <select 
+        name="sexo" 
+        value={form.sexo} 
+        onChange={handleChange}
+      >
+        <option value="">Seleccione sexo</option>
+        <option value="Macho">Macho</option>
+        <option value="Hembra">Hembra</option>
+      </select>
+
+      <textarea 
+        name="estado_salud" 
+        placeholder="Estado de salud" 
+        value={form.estado_salud} 
+        onChange={handleChange} 
+      />
+
+      <input 
+        name="fecha_ingreso" 
+        type="date" 
+        value={form.fecha_ingreso} 
+        onChange={handleChange} 
+      />
+
+      <select 
+        name="estado_adopcion" 
+        value={form.estado_adopcion} 
+        onChange={handleChange}
+      >
+        <option value="">Seleccione estado</option>
+        <option value="Disponible">Disponible</option>
+        <option value="No disponible">No disponible</option>
+      </select>
 
       <button type="submit">
         {mascotaEdit ? "Actualizar" : "Crear"}

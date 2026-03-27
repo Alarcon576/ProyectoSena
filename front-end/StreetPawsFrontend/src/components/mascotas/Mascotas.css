@@ -40,12 +40,21 @@
   width: 300px;
 }
 
-.form-card input {
+.form-card input,
+.form-card select,
+.form-card textarea {
   width: 100%;
   margin-bottom: 10px;
   padding: 8px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-card textarea {
+  resize: none;
 }
 
 .btn-save {

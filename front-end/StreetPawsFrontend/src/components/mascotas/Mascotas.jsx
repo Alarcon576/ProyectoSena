@@ -14,7 +14,7 @@ function Mascotas({ onSwitch, user }) {
     estado_salud: "",
     fecha_ingreso: "",
     estado_adopcion: "",
-    foto: null //  NUEVO
+    foto: null
   });
   const [editando, setEditando] = useState(null);
   const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
@@ -56,9 +56,49 @@ function Mascotas({ onSwitch, user }) {
     });
   };
 
-  //  SUBMIT CON FORM DATA
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // VALIDACIONES
+    if (!form.nombre.trim()) {
+      setMensaje({ texto: "El nombre es obligatorio", tipo: "error" });
+      return;
+    }
+
+    if (!form.especie) {
+      setMensaje({ texto: "Debe seleccionar una especie", tipo: "error" });
+      return;
+    }
+
+    if (!form.raza.trim()) {
+      setMensaje({ texto: "La raza es obligatoria", tipo: "error" });
+      return;
+    }
+
+    if (!form.edad || isNaN(form.edad) || form.edad <= 0) {
+      setMensaje({ texto: "Ingrese una edad válida", tipo: "error" });
+      return;
+    }
+
+    if (!form.sexo) {
+      setMensaje({ texto: "Debe seleccionar el sexo", tipo: "error" });
+      return;
+    }
+
+    if (!form.estado_salud.trim()) {
+      setMensaje({ texto: "El estado de salud es obligatorio", tipo: "error" });
+      return;
+    }
+
+    if (!form.fecha_ingreso) {
+      setMensaje({ texto: "Debe seleccionar la fecha de ingreso", tipo: "error" });
+      return;
+    }
+
+    if (!form.estado_adopcion) {
+      setMensaje({ texto: "Debe seleccionar el estado de adopción", tipo: "error" });
+      return;
+    }
 
     try {
       const method = editando ? "PUT" : "POST";
@@ -90,8 +130,8 @@ function Mascotas({ onSwitch, user }) {
       if (res.ok) {
         setMensaje({
           texto: editando
-            ? "Actualizado correctamente "
-            : "¡Mascota creada con imagen! ",
+            ? "Actualizado correctamente"
+            : "¡Mascota creada con imagen!",
           tipo: "success"
         });
 
@@ -129,7 +169,6 @@ function Mascotas({ onSwitch, user }) {
   return (
     <div className="mascotas-container">
 
-      {/* HEADER */}
       <div className="mascotas-header">
         <h2>🐾 Street Paws</h2>
 
@@ -146,22 +185,32 @@ function Mascotas({ onSwitch, user }) {
 
       <div className="mascotas-content">
 
-        {/* FORM */}
         {esAdmin && (
           <div className="form-card">
             <h3>{editando ? "Editar mascota" : "Nueva mascota"}</h3>
 
             <form onSubmit={handleSubmit}>
               <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={handleChange} />
-              <input name="especie" placeholder="Especie" value={form.especie} onChange={handleChange} />
+              <select name="especie" value={form.especie} onChange={handleChange}>
+                <option value="">Seleccione especie</option>
+                <option value="Perro">Perro</option>
+                <option value="Gato">Gato</option>
+              </select>
               <input name="raza" placeholder="Raza" value={form.raza} onChange={handleChange} />
               <input name="edad" type="number" placeholder="Edad" value={form.edad} onChange={handleChange} />
-              <input name="sexo" placeholder="Sexo" value={form.sexo} onChange={handleChange} />
-              <input name="estado_salud" placeholder="Salud" value={form.estado_salud} onChange={handleChange} />
+              <select name="sexo" value={form.sexo} onChange={handleChange}>
+                <option value="">Seleccione sexo</option>
+                <option value="Macho">Macho</option>
+                <option value="Hembra">Hembra</option>
+              </select>
+              <textarea name="estado_salud" placeholder="Estado de salud" value={form.estado_salud} onChange={handleChange} />
               <input name="fecha_ingreso" type="date" value={form.fecha_ingreso} onChange={handleChange} />
-              <input name="estado_adopcion" placeholder="Adopción" value={form.estado_adopcion} onChange={handleChange} />
+              <select name="estado_adopcion" value={form.estado_adopcion} onChange={handleChange}>
+                <option value="">Seleccione estado</option>
+                <option value="Disponible">Disponible</option>
+                <option value="No disponible">No disponible</option>
+              </select>
 
-              {/* INPUT FILE */}
               <input type="file" onChange={handleFileChange} />
 
               <button className="btn-save">
@@ -171,7 +220,6 @@ function Mascotas({ onSwitch, user }) {
           </div>
         )}
 
-        {/* TABLA */}
         <div className="table-card">
           <h3>Lista de mascotas</h3>
 
@@ -184,7 +232,7 @@ function Mascotas({ onSwitch, user }) {
           <table>
             <thead>
               <tr>
-                <th>Foto</th> {/*  NUEVO */}
+                <th>Foto</th>
                 <th>Nombre</th>
                 <th>Especie</th>
                 <th>Edad</th>
@@ -195,13 +243,11 @@ function Mascotas({ onSwitch, user }) {
             <tbody>
               {mascotas.map((m) => (
                 <tr key={m.id_mascota}>
-                  
-                  {/*  MOSTRAR IMAGEN */}
                   <td>
                     {m.fotos?.[0] && (
-                      <img 
-                        src={m.fotos[0].url_foto} 
-                        width="60" 
+                      <img
+                        src={m.fotos[0].url_foto}
+                        width="60"
                         style={{ borderRadius: "8px" }}
                       />
                     )}
@@ -236,7 +282,6 @@ function Mascotas({ onSwitch, user }) {
                       </button>
                     </td>
                   )}
-
                 </tr>
               ))}
             </tbody>
@@ -248,4 +293,4 @@ function Mascotas({ onSwitch, user }) {
   );
 }
 
-export default Mascotas;
+export default Mascotas;    

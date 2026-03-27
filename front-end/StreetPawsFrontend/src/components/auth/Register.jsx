@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import "./Register.css";
 
@@ -9,13 +10,20 @@ function Register({ onSwitch }) {
     direccion: "",
     telefono: ""
   });
+
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [successMsg, setSuccessMsg] = "";
+
+  
+  const [successMsg, setSuccessMsg] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: "" });
+
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: "" });
+    }
+
     setSuccessMsg("");
   };
 
@@ -59,7 +67,7 @@ function Register({ onSwitch }) {
         });
         setErrors({});
       } else {
-        setErrors({ general: data.msg });
+        setErrors({ general: data.msg || "Error al registrar usuario" });
       }
     } catch (error) {
       setErrors({ general: "Error al conectar con el servidor" });
@@ -69,10 +77,14 @@ function Register({ onSwitch }) {
   return (
     <div className="reg-page">
       <div className="reg-left-side">
-        <div className="reg-brand" onClick={() => onSwitch("login")}>🐾 Street Paws</div>
+        <div className="reg-brand" onClick={() => onSwitch("login")}>
+          🐾 Street Paws
+        </div>
         <div className="reg-hero-content">
           <h1>Únete a nuestra <span>comunidad.</span></h1>
-          <p>Cada registro es una oportunidad más para darles el hogar que merecen.</p>
+          <p>
+            Cada registro es una oportunidad más para darles el hogar que merecen.
+          </p>
         </div>
       </div>
 
@@ -88,7 +100,13 @@ function Register({ onSwitch }) {
               <label>Nombre completo</label>
               <div className="reg-input-box">
                 <span className="reg-icon">👤</span>
-                <input name="nombre" type="text" placeholder="Tu nombre" value={form.nombre} onChange={handleChange} />
+                <input
+                  name="nombre"
+                  type="text"
+                  placeholder="Tu nombre"
+                  value={form.nombre}
+                  onChange={handleChange}
+                />
               </div>
               {errors.nombre && <p className="error-text">{errors.nombre}</p>}
             </div>
@@ -97,17 +115,28 @@ function Register({ onSwitch }) {
               <label>Correo electrónico</label>
               <div className="reg-input-box">
                 <span className="reg-icon">✉️</span>
-                <input name="email" type="email" placeholder="ejemplo@correo.com" value={form.email} onChange={handleChange} />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="ejemplo@correo.com"
+                  value={form.email}
+                  onChange={handleChange}
+                />
               </div>
               {errors.email && <p className="error-text">{errors.email}</p>}
             </div>
 
-          
             <div className="reg-field">
               <label>Dirección</label>
               <div className="reg-input-box">
                 <span className="reg-icon">🏠</span>
-                <input name="direccion" type="text" placeholder="dirección " value={form.direccion} onChange={handleChange} />
+                <input
+                  name="direccion"
+                  type="text"
+                  placeholder="Dirección"
+                  value={form.direccion}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
@@ -115,7 +144,13 @@ function Register({ onSwitch }) {
               <label>Teléfono</label>
               <div className="reg-input-box">
                 <span className="reg-icon">📞</span>
-                <input name="telefono" type="number" placeholder="número de teléfono" value={form.telefono} onChange={handleChange} />
+                <input
+                  name="telefono"
+                  type="number"
+                  placeholder="Número de teléfono"
+                  value={form.telefono}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
@@ -123,24 +158,33 @@ function Register({ onSwitch }) {
               <label>Contraseña</label>
               <div className="reg-input-box">
                 <span className="reg-icon">🔒</span>
-                <input 
-                  name="password" 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder=" Mínimo 6 caracteres"
-                  value={form.password} 
-                  onChange={handleChange} 
+                <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Mínimo 6 caracteres"
+                  value={form.password}
+                  onChange={handleChange}
                 />
-                <button type="button" className="reg-eye" onClick={() => setShowPassword(!showPassword)}>👁️</button>
+                <button
+                  type="button"
+                  className="reg-eye"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  👁️
+                </button>
               </div>
               {errors.password && <p className="error-text">{errors.password}</p>}
               {errors.general && <p className="error-text">{errors.general}</p>}
             </div>
 
-            <button type="submit" className="reg-btn">Crear cuenta</button>
+            <button type="submit" className="reg-btn">
+              Crear cuenta
+            </button>
           </form>
-          
+
           <p className="reg-footer">
-            ¿Ya tienes cuenta? <span onClick={() => onSwitch("login")}>Inicia sesión</span>
+            ¿Ya tienes cuenta?{" "}
+            <span onClick={() => onSwitch("login")}>Inicia sesión</span>
           </p>
         </div>
       </div>
@@ -149,3 +193,4 @@ function Register({ onSwitch }) {
 }
 
 export default Register;
+

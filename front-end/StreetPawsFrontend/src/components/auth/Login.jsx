@@ -32,8 +32,8 @@ function Login({ onSwitch, onLogin }) {
 
   if (!form.password) {
     newErrors.password = "La contraseña es obligatoria";
-  } else if (form.password.length < 4) {
-    newErrors.password = "Mínimo 4 caracteres";
+  } else if (form.password.length < 6) {
+    newErrors.password = "Mínimo 6 caracteres";
   }
 
   // ❌ si hay errores, no hace fetch

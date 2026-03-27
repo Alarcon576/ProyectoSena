@@ -2,10 +2,16 @@ import { useState } from "react";
 import "./Register.css";
 
 function Register({ onSwitch }) {
-  const [form, setForm] = useState({ nombre: "", email: "", password: "" });
+  const [form, setForm] = useState({ 
+    nombre: "", 
+    email: "", 
+    password: "",
+    direccion: "",
+    telefono: ""
+  });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
+  const [successMsg, setSuccessMsg] = "";
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,40 +19,52 @@ function Register({ onSwitch }) {
     setSuccessMsg("");
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  if (!form.nombre || !form.email || !form.password) {
-    setErrors({ general: "Completa los campos obligatorios" });
-    return;
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await fetch("http://localhost:3000/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nombre: form.nombre,
-        email: form.email,
-        contrasena: form.password,
-        direccion: form.direccion || "", // Campos de tu controlador
-        telefono: form.telefono || ""
-      })
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      setSuccessMsg("¡Cuenta creada con éxito!");
-      setForm({ nombre: "", email: "", password: "", direccion: "", telefono: "" }); // Limpia todo
-      setErrors({});
-    } else {
-      setErrors({ general: data.msg });
+    // Validaciones
+    if (!form.nombre || !form.email || !form.password) {
+      setErrors({ general: "Completa los campos obligatorios" });
+      return;
     }
-  } catch (error) {
-    setErrors({ general: "Error al conectar con el servidor" });
-  }
-};
+
+    if (form.password.length < 6) {
+      setErrors({ password: "La contraseña debe tener mínimo 6 caracteres" });
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: form.nombre,
+          email: form.email,
+          contrasena: form.password,
+          direccion: form.direccion || "",
+          telefono: form.telefono || ""
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSuccessMsg("¡Cuenta creada con éxito!");
+        setForm({ 
+          nombre: "", 
+          email: "", 
+          password: "", 
+          direccion: "", 
+          telefono: "" 
+        });
+        setErrors({});
+      } else {
+        setErrors({ general: data.msg });
+      }
+    } catch (error) {
+      setErrors({ general: "Error al conectar con el servidor" });
+    }
+  };
 
   return (
     <div className="reg-page">
@@ -84,11 +102,34 @@ const handleSubmit = async (e) => {
               {errors.email && <p className="error-text">{errors.email}</p>}
             </div>
 
+          
+            <div className="reg-field">
+              <label>Dirección</label>
+              <div className="reg-input-box">
+                <span className="reg-icon">🏠</span>
+                <input name="direccion" type="text" placeholder="dirección " value={form.direccion} onChange={handleChange} />
+              </div>
+            </div>
+
+            <div className="reg-field">
+              <label>Teléfono</label>
+              <div className="reg-input-box">
+                <span className="reg-icon">📞</span>
+                <input name="telefono" type="number" placeholder="número de teléfono" value={form.telefono} onChange={handleChange} />
+              </div>
+            </div>
+
             <div className="reg-field">
               <label>Contraseña</label>
               <div className="reg-input-box">
                 <span className="reg-icon">🔒</span>
-                <input name="password" type={showPassword ? "text" : "password"} placeholder="********" value={form.password} onChange={handleChange} />
+                <input 
+                  name="password" 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder=" Mínimo 6 caracteres"
+                  value={form.password} 
+                  onChange={handleChange} 
+                />
                 <button type="button" className="reg-eye" onClick={() => setShowPassword(!showPassword)}>👁️</button>
               </div>
               {errors.password && <p className="error-text">{errors.password}</p>}

@@ -2,8 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
-// Rutas
+import publicacionRoutes from "./routes/publicacion.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import mascotaRoutes from "./routes/mascota.routes.js";
 
@@ -27,6 +26,7 @@ app.get("/", (req, res) => {
 // 🔹 Rutas principales
 app.use("/api/auth", authRoutes);
 app.use("/api/mascotas", mascotaRoutes);
+app.use("/api/publicaciones", publicacionRoutes);
 
 // 🔹 Puerto (mejor usar variable de entorno)
 const PORT = process.env.PORT || 3000;

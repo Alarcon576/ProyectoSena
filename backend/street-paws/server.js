@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import publicacionRoutes from "./routes/publicacion.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import mascotaRoutes from "./routes/mascota.routes.js";
-
+import interaccionRoutes from "./routes/interaccion.routes.js";
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
 const app = express();
@@ -27,6 +27,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/mascotas", mascotaRoutes);
 app.use("/api/publicaciones", publicacionRoutes);
+app.use("/api/interacciones", interaccionRoutes);
 
 // 🔹 Puerto (mejor usar variable de entorno)
 const PORT = process.env.PORT || 3000;

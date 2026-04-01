@@ -1,0 +1,56 @@
+.perfil-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.perfil-card {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.avatar {
+  width: 90px;
+  height: 90px;
+  background: #ff7a00;
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 15px;
+}
+
+.perfil-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.perfil-stats div {
+  display: flex;
+  flex-direction: column;
+}
+
+.perfil-posts {
+  margin-top: 30px;
+}
+
+.perfil-post-card {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.perfil-post-card img {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+}

@@ -4,10 +4,17 @@ import Register from "./components/auth/Register";
 import Mascotas from "./components/mascotas/Mascotas";
 import Feed from "./components/social/Feed";
 import Perfil from "./components/profile/perfil";
+import PerfilPublico from "./components/profile/PerfilPublico";
 
 function App() {
   const [view, setView] = useState("login");
   const [user, setUser] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+
+  const handleSwitch = (viewName, userId = null) => {
+    setSelectedUserId(userId); 
+    setView(viewName);
+  };
 
   const decodeToken = (token) => {
     try {
@@ -26,19 +33,15 @@ function App() {
       if (userData) {
         setUser(userData);
 
-       
         if (userData.rol === 2) {
           setView("mascotas");
-        } 
-      
-        else {
+        } else {
           setView("feed");
         }
       }
     }
   }, []);
 
-  // 🚀 Login exitoso
   const handleLogin = (userData) => {
     setUser(userData);
 
@@ -51,29 +54,43 @@ function App() {
 
   return (
     <div>
-      {/* 🔐 LOGIN */}
+      {/*  LOGIN */}
       {view === "login" && (
-        <Login onSwitch={setView} onLogin={handleLogin} />
+        <Login
+          onSwitch={handleSwitch}
+          onLogin={handleLogin}
+        />
       )}
 
-      {/* 📝 REGISTER */}
+      {/*  REGISTER */}
       {view === "register" && (
-        <Register onSwitch={setView} />
+        <Register onSwitch={handleSwitch} />
       )}
 
-      {/* 👑 ADMIN */}
+      {/*  ADMIN */}
       {view === "mascotas" && (
-        <Mascotas onSwitch={setView} user={user} />
+        <Mascotas
+          onSwitch={handleSwitch}
+          user={user}
+        />
       )}
 
-      {/* 👤 FEED */}
+      {/*  FEED */}
       {view === "feed" && (
-        <Feed onSwitch={setView} />
+        <Feed onSwitch={handleSwitch} />
       )}
 
-      {/* 👤 PERFIL */}
+      {/*  MI PERFIL */}
       {view === "perfil" && (
-        <Perfil onSwitch={setView} />
+        <Perfil onSwitch={handleSwitch} />
+      )}
+
+      {/*  PERFIL PUBLICO */}
+      {view === "perfilPublico" && selectedUserId && (
+        <PerfilPublico
+          onSwitch={handleSwitch}
+          userId={selectedUserId}
+        />
       )}
     </div>
   );

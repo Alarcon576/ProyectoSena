@@ -24,6 +24,7 @@ model Usuario {
   fecha_registro  DateTime
   resetToken    String?
   resetTokenExp DateTime?
+  foto_perfil   String?
 
   id_rol          Int
   rol             Roles     @relation(fields: [id_rol], references: [id_rol])

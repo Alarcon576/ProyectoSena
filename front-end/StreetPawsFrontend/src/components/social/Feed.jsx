@@ -6,31 +6,22 @@ const URL_INTERACCIONES = "http://localhost:3000/api/interacciones";
 const URL_PROFILE = "http://localhost:3000/api/profile";
 
 function Feed({ onSwitch }) {
-  // Estado de publicaciones
   const [posts, setPosts] = useState([]);
-
-  // Estado del formulario de publicación
   const [contenido, setContenido] = useState("");
   const [imagen, setImagen] = useState(null);
-
-  // Estado de comentarios por publicación
   const [comentarios, setComentarios] = useState({});
   const [mostrarComentarios, setMostrarComentarios] = useState({});
-
-  // Usuario autenticado actual
   const [usuarioActual, setUsuarioActual] = useState(null);
-
-  // Campo de búsqueda de usuarios
   const [busqueda, setBusqueda] = useState("");
-
-  // Estado de carga mientras se crea un post
   const [loadingPost, setLoadingPost] = useState(false);
+
+  // Estados para edición
+  const [editandoPost, setEditandoPost] = useState(null);
+  const [textoEditado, setTextoEditado] = useState("");
+  const [imagenEditada, setImagenEditada] = useState(null);
 
   const token = localStorage.getItem("token");
 
-  /*
-    Carga todas las publicaciones del feed
-  */
   const cargarPosts = async () => {
     try {
       const res = await fetch(URL_POSTS);
@@ -41,9 +32,6 @@ function Feed({ onSwitch }) {
     }
   };
 
-  /*
-    Obtiene la información del usuario autenticado
-  */
   const cargarUsuarioActual = async () => {
     try {
       const res = await fetch(`${URL_PROFILE}/me`, {
@@ -55,59 +43,59 @@ function Feed({ onSwitch }) {
       const data = await res.json();
       setUsuarioActual(data);
     } catch (error) {
-      console.error("Error cargando usuario actual:", error);
+      console.error("Error cargando usuario:", error);
     }
   };
 
-  /*
-    Carga inicial del feed y del usuario
-  */
   useEffect(() => {
     cargarPosts();
     cargarUsuarioActual();
   }, []);
 
-  /*
-    Crea una nueva publicación con texto e imagen opcional
-  */
   const crearPost = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!contenido.trim() && !imagen) return;
+  if (!contenido.trim() && !imagen) return;
 
-    setLoadingPost(true);
+  setLoadingPost(true);
 
-    try {
-      const formData = new FormData();
-      formData.append("contenido_texto", contenido);
+  try {
+    const formData = new FormData();
+    formData.append("contenido_texto", contenido);
 
-      if (imagen) {
-        formData.append("imagen", imagen);
-      }
-
-      const res = await fetch(URL_POSTS, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        body: formData
-      });
-
-      if (res.ok) {
-        setContenido("");
-        setImagen(null);
-        cargarPosts();
-      }
-    } catch (error) {
-      console.error("Error creando publicación:", error);
-    } finally {
-      setLoadingPost(false);
+    if (imagen) {
+      formData.append("imagen", imagen);
     }
-  };
 
-  /*
-    Gestiona likes de una publicación
-  */
+    const res = await fetch(URL_POSTS, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(
+        data.error ||
+          "La publicación no cumple las normas de la comunidad"
+      );
+      return;
+    }
+
+    setContenido("");
+    setImagen(null);
+    cargarPosts();
+  } catch (error) {
+    console.error("Error creando publicación:", error);
+    alert("Ocurrió un error al crear la publicación");
+  } finally {
+    setLoadingPost(false);
+  }
+};
+
   const toggleLike = async (id) => {
     try {
       await fetch(`${URL_INTERACCIONES}/like/${id}`, {
@@ -123,9 +111,6 @@ function Feed({ onSwitch }) {
     }
   };
 
-  /*
-    Crea comentario sobre una publicación
-  */
   const crearComentario = async (id) => {
     const texto = comentarios[id];
     if (!texto?.trim()) return;
@@ -147,13 +132,10 @@ function Feed({ onSwitch }) {
 
       cargarPosts();
     } catch (error) {
-      console.error("Error creando comentario:", error);
+      console.error("Error comentando:", error);
     }
   };
 
-  /*
-    Muestra u oculta comentarios por publicación
-  */
   const toggleComentarios = (id) => {
     setMostrarComentarios({
       ...mostrarComentarios,
@@ -161,9 +143,59 @@ function Feed({ onSwitch }) {
     });
   };
 
-  /*
-    Filtrado dinámico por nombre de usuario
-  */
+  const iniciarEdicion = (post) => {
+    setEditandoPost(post.id_publicacion);
+    setTextoEditado(post.contenido_texto);
+    setImagenEditada(null);
+  };
+
+  const guardarEdicion = async (id) => {
+    try {
+      const formData = new FormData();
+      formData.append("contenido_texto", textoEditado);
+
+      if (imagenEditada) {
+        formData.append("imagen", imagenEditada);
+      }
+
+      await fetch(`${URL_POSTS}/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      setEditandoPost(null);
+      setTextoEditado("");
+      setImagenEditada(null);
+      cargarPosts();
+    } catch (error) {
+      console.error("Error editando:", error);
+    }
+  };
+
+  const eliminarPost = async (id) => {
+    const confirmar = window.confirm(
+      "¿Seguro que deseas eliminar esta publicación?"
+    );
+
+    if (!confirmar) return;
+
+    try {
+      await fetch(`${URL_POSTS}/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      cargarPosts();
+    } catch (error) {
+      console.error("Error eliminando:", error);
+    }
+  };
+
   const postsFiltrados = posts.filter((post) =>
     post.usuario.nombre
       .toLowerCase()
@@ -172,7 +204,6 @@ function Feed({ onSwitch }) {
 
   return (
     <div className="feed-layout">
-      {/* Sidebar izquierdo */}
       <aside className="sidebar-left">
         <h2 className="brand">Street Paws</h2>
 
@@ -180,18 +211,9 @@ function Feed({ onSwitch }) {
           <li onClick={() => onSwitch("feed")}>Noticias</li>
           <li onClick={() => onSwitch("perfil")}>Mi perfil</li>
         </ul>
-
-        <div className="tip-box">
-          <h4>Tip del día</h4>
-          <p>
-            Compartir historias de rescate inspira a más personas a adoptar.
-          </p>
-        </div>
       </aside>
 
-      {/* Contenido principal */}
       <main className="feed-main">
-        {/* Buscador */}
         <div className="search-users-box">
           <input
             type="text"
@@ -201,7 +223,7 @@ function Feed({ onSwitch }) {
           />
         </div>
 
-        {/* Formulario de creación */}
+        {/* Crear post */}
         <form className="crear-post-card" onSubmit={crearPost}>
           <div className="crear-post-header">
             <div className="avatar-mini">
@@ -254,109 +276,181 @@ function Feed({ onSwitch }) {
           )}
         </form>
 
-        {/* Publicaciones */}
-        {postsFiltrados.map((post) => (
-          <div className="post-card" key={post.id_publicacion}>
-            <div className="post-header">
-              <div className="post-user">
-                <div className="avatar-mini">
-                  {post.usuario?.foto_perfil ? (
-                    <img
-                      src={post.usuario.foto_perfil}
-                      alt={post.usuario.nombre}
-                      className="avatar-feed-img"
-                    />
-                  ) : (
-                    post.usuario.nombre?.charAt(0)
-                  )}
+        {/* Posts */}
+        {postsFiltrados.map((post) => {
+          const esMio =
+            usuarioActual?.id_usuario === post.usuario.id_usuario;
+
+          return (
+            <div className="post-card" key={post.id_publicacion}>
+              <div className="post-header">
+                <div className="post-user">
+                  <div className="avatar-mini">
+                    {post.usuario?.foto_perfil ? (
+                      <img
+                        src={post.usuario.foto_perfil}
+                        alt={post.usuario.nombre}
+                        className="avatar-feed-img"
+                      />
+                    ) : (
+                      post.usuario.nombre?.charAt(0)
+                    )}
+                  </div>
+
+                  <div className="post-user-info">
+                    <h4
+                      className="clickable-user"
+                      onClick={() =>
+                        onSwitch(
+                          "perfilPublico",
+                          post.usuario.id_usuario
+                        )
+                      }
+                    >
+                      {post.usuario.nombre}
+                    </h4>
+
+                    <span>
+                      {new Date(
+                        post.fecha_publicacion
+                      ).toLocaleString()}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="post-user-info">
-                  <h4
-                    className="clickable-user"
-                    onClick={() =>
-                      onSwitch(
-                        "perfilPublico",
-                        post.usuario.id_usuario
-                      )
-                    }
-                  >
-                    {post.usuario.nombre}
-                  </h4>
-
-                  <span>
-                    {new Date(
-                      post.fecha_publicacion
-                    ).toLocaleString()}
-                  </span>
-                </div>
+                {esMio && (
+                  <div className="post-owner-actions">
+                    <button onClick={() => iniciarEdicion(post)}>
+                      Editar
+                    </button>
+                    <button
+                      onClick={() =>
+                        eliminarPost(post.id_publicacion)
+                      }
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
 
-            <p className="post-text">{post.contenido_texto}</p>
-
-            {post.imagenes?.[0] && (
-              <img
-                src={post.imagenes[0].url_imagen}
-                alt="post"
-                className="post-image"
-              />
-            )}
-
-            <div className="post-actions">
-              <button onClick={() => toggleLike(post.id_publicacion)}>
-                ❤️ {post.likes.length}
-              </button>
-
-              <button
-                onClick={() =>
-                  toggleComentarios(post.id_publicacion)
-                }
-              >
-                💬 {post.comentarios.length}
-              </button>
-            </div>
-
-            {mostrarComentarios[post.id_publicacion] && (
-              <div className="comentarios-dropdown">
-                <h4>Comentarios</h4>
-
-                {post.comentarios.map((c) => (
-                  <p key={c.id_comentario}>
-                    <strong>{c.usuario.nombre}: </strong>
-                    {c.contenido}
-                  </p>
-                ))}
-
-                <div className="comentario-box-modern">
-                  <input
-                    type="text"
-                    placeholder="Escribe un comentario..."
-                    value={comentarios[post.id_publicacion] || ""}
+              {editandoPost === post.id_publicacion ? (
+                <div className="edit-box">
+                  <textarea
+                    value={textoEditado}
                     onChange={(e) =>
-                      setComentarios({
-                        ...comentarios,
-                        [post.id_publicacion]:
-                          e.target.value
-                      })
+                      setTextoEditado(e.target.value)
                     }
                   />
 
+                  <label className="upload-btn">
+                    Cambiar foto
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) =>
+                        setImagenEditada(e.target.files[0])
+                      }
+                    />
+                  </label>
+
+                  {imagenEditada && (
+                    <img
+                      src={URL.createObjectURL(imagenEditada)}
+                      alt="preview"
+                      className="preview-image"
+                    />
+                  )}
+
                   <button
                     onClick={() =>
-                      crearComentario(post.id_publicacion)
+                      guardarEdicion(post.id_publicacion)
                     }
                   >
-                    Enviar
+                    Guardar
+                  </button>
+
+                  <button
+                    onClick={() => setEditandoPost(null)}
+                  >
+                    Cancelar
                   </button>
                 </div>
+              ) : (
+                <>
+                  <p className="post-text">
+                    {post.contenido_texto}
+                  </p>
+
+                  {post.imagenes?.[0] && (
+                    <img
+                      src={post.imagenes[0].url_imagen}
+                      alt="post"
+                      className="post-image"
+                    />
+                  )}
+                </>
+              )}
+
+              <div className="post-actions">
+                <button
+                  onClick={() =>
+                    toggleLike(post.id_publicacion)
+                  }
+                >
+                  ❤️ {post.likes.length}
+                </button>
+
+                <button
+                  onClick={() =>
+                    toggleComentarios(post.id_publicacion)
+                  }
+                >
+                  💬 {post.comentarios.length}
+                </button>
               </div>
-            )}
-          </div>
-        ))}
+
+              {mostrarComentarios[post.id_publicacion] && (
+                <div className="comentarios-dropdown">
+                  {post.comentarios.map((c) => (
+                    <p key={c.id_comentario}>
+                      <strong>{c.usuario.nombre}: </strong>
+                      {c.contenido}
+                    </p>
+                  ))}
+
+                  <div className="comentario-box-modern">
+                    <input
+                      type="text"
+                      placeholder="Escribe un comentario..."
+                      value={
+                        comentarios[post.id_publicacion] || ""
+                      }
+                      onChange={(e) =>
+                        setComentarios({
+                          ...comentarios,
+                          [post.id_publicacion]:
+                            e.target.value
+                        })
+                      }
+                    />
+
+                    <button
+                      onClick={() =>
+                        crearComentario(post.id_publicacion)
+                      }
+                    >
+                      Enviar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </main>
 
-      {/* Sidebar derecho */}
       <aside className="sidebar-right">
         <div className="widget-card">
           <h3>Tendencias</h3>

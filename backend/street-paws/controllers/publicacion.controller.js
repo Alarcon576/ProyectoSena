@@ -6,21 +6,52 @@ import {
   actualizarPublicacion,
   eliminarPublicacion
 } from "../services/publicacion.service.js";
-
+import {
+  moderarTexto,
+  validarTematicaMascotas,
+  validarRelevanciaConIA
+} from "../services/moderation.service.js";
 const prisma = new PrismaClient();
 
 // 🟢 CREAR
+// CREAR
 export const crear = async (req, res) => {
   try {
+    const contenido = req.body.contenido_texto;
+
+    // CAPA 1 → seguridad
+    const revisionIA = await moderarTexto(contenido);
+
+    if (revisionIA.flagged) {
+      return res.status(400).json({
+        error:
+          "La publicación contiene contenido no permitido"
+      });
+    }
+
+    // CAPA 2A → palabras clave
+    const tematicaValida =
+      validarTematicaMascotas(contenido);
+
+    // CAPA 2B → IA semántica
+    const relevanciaIA =
+      await validarRelevanciaConIA(contenido);
+
+    if (!tematicaValida && !relevanciaIA) {
+      return res.status(400).json({
+        error:
+          "La publicación debe estar relacionada con mascotas o rescate animal"
+      });
+    }
+
     const data = {
       id_usuario: req.user.id,
-      contenido_texto: req.body.contenido_texto,
+      contenido_texto: contenido,
       fecha_publicacion: new Date()
     };
 
     const nuevaPublicacion = await crearPublicacion(data);
 
-    // 📸 imagen opcional
     if (req.file) {
       await prisma.imagen_Post.create({
         data: {
@@ -31,13 +62,11 @@ export const crear = async (req, res) => {
     }
 
     res.status(201).json(nuevaPublicacion);
-
   } catch (error) {
     console.error("ERROR CREAR POST:", error);
     res.status(500).json({ error: error.message });
   }
 };
-
 // 📋 LISTAR FEED
 export const listar = async (req, res) => {
   try {
@@ -69,23 +98,51 @@ export const obtener = async (req, res) => {
 export const actualizar = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    const contenido = req.body.contenido_texto;
+
+    const revisionIA = await moderarTexto(contenido);
+
+    if (revisionIA.flagged) {
+      return res.status(400).json({
+        error:
+          "El contenido editado no cumple las normas"
+      });
+    }
+
+    const tematicaValida =
+      validarTematicaMascotas(contenido);
+
+    const relevanciaIA =
+      await validarRelevanciaConIA(contenido);
+
+    if (!tematicaValida && !relevanciaIA) {
+      return res.status(400).json({
+        error:
+          "La publicación debe seguir relacionada con mascotas"
+      });
+    }
 
     const data = {
-      contenido_texto: req.body.contenido_texto
+      contenido_texto: contenido
     };
 
-    const postActualizado = await actualizarPublicacion(id, data);
+    const postActualizado =
+      await actualizarPublicacion(id, data);
 
-    // 📸 actualizar imagen principal
     if (req.file) {
-      const imagenExistente = await prisma.imagen_Post.findFirst({
-        where: { id_publicacion: id }
-      });
+      const imagenExistente =
+        await prisma.imagen_Post.findFirst({
+          where: { id_publicacion: id }
+        });
 
       if (imagenExistente) {
         await prisma.imagen_Post.update({
-          where: { id_imagen: imagenExistente.id_imagen },
-          data: { url_imagen: req.file.path }
+          where: {
+            id_imagen: imagenExistente.id_imagen
+          },
+          data: {
+            url_imagen: req.file.path
+          }
         });
       } else {
         await prisma.imagen_Post.create({
@@ -98,7 +155,6 @@ export const actualizar = async (req, res) => {
     }
 
     res.json(postActualizado);
-
   } catch (error) {
     console.error("ERROR UPDATE POST:", error);
     res.status(500).json({ error: error.message });
@@ -130,3 +186,5 @@ export const eliminar = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+

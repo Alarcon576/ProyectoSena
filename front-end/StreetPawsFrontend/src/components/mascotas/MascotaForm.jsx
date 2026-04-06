@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 
 function MascotaForm({ onSubmit, mascotaEdit }) {
@@ -9,14 +10,16 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
     sexo: "",
     estado_salud: "",
     fecha_ingreso: "",
-    estado_adopcion: ""
+    estado_adopcion: "",
+    foto: null
   });
 
   useEffect(() => {
     if (mascotaEdit) {
       setForm({
         ...mascotaEdit,
-        fecha_ingreso: mascotaEdit.fecha_ingreso?.split("T")[0] || ""
+        fecha_ingreso: mascotaEdit.fecha_ingreso?.split("T")[0] || "",
+        foto: null // 🔥 importante (no forzar imagen al editar)
       });
     }
   }, [mascotaEdit]);
@@ -76,12 +79,29 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
       return;
     }
 
-    // SI TODO ESTÁ BIEN
-    onSubmit({
-      ...form,
-      edad: parseInt(form.edad),
-      fecha_ingreso: new Date(form.fecha_ingreso)
-    });
+    // 🔥 VALIDACIÓN IMAGEN
+    if (!form.foto && !mascotaEdit) {
+      alert("La imagen es obligatoria");
+      return;
+    }
+
+    // 🔥 FORM DATA (para enviar imagen)
+    const formData = new FormData();
+
+    formData.append("nombre", form.nombre);
+    formData.append("especie", form.especie);
+    formData.append("raza", form.raza);
+    formData.append("edad", parseInt(form.edad));
+    formData.append("sexo", form.sexo);
+    formData.append("estado_salud", form.estado_salud);
+    formData.append("fecha_ingreso", form.fecha_ingreso);
+    formData.append("estado_adopcion", form.estado_adopcion);
+
+    if (form.foto) {
+      formData.append("foto", form.foto);
+    }
+
+    onSubmit(formData);
 
     // LIMPIAR FORMULARIO
     setForm({
@@ -92,7 +112,8 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
       sexo: "",
       estado_salud: "",
       fecha_ingreso: "",
-      estado_adopcion: ""
+      estado_adopcion: "",
+      foto: null
     });
   };
 
@@ -165,6 +186,13 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
         <option value="Disponible">Disponible</option>
         <option value="No disponible">No disponible</option>
       </select>
+
+      {/* 🔥 INPUT DE IMAGEN */}
+      <input 
+        type="file" 
+        accept="image/*"
+        onChange={handleFileChange}
+      />
 
       <button type="submit">
         {mascotaEdit ? "Actualizar" : "Crear"}

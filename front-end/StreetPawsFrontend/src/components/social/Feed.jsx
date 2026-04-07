@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./Feed.css";
- 
+const URL_MASCOTAS = "http://localhost:3000/api/mascotas";
 const URL_POSTS         = "http://localhost:3000/api/publicaciones";
 const URL_INTERACCIONES = "http://localhost:3000/api/interacciones";
 const URL_PROFILE       = "http://localhost:3000/api/profile";
@@ -35,6 +35,9 @@ function Feed({ onSwitch }) {
  
   const token = localStorage.getItem("token");
  
+  const [mascotas, setMascotas] = useState([]);
+
+  const [mascotasRandom, setMascotasRandom] = useState([]);
   /* ── Cerrar menús al click fuera ── */
   useEffect(() => {
     const cerrar = () => { setMenuAvatarAbierto(false); setMenuPostAbierto(null); };
@@ -245,7 +248,134 @@ function Feed({ onSwitch }) {
   const postsFiltrados = posts.filter((p) =>
     p.usuario.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
- 
+
+  const lideresComunidad = Object.values(
+  posts.reduce((acc, post) => {
+    const usuario = post.usuario;
+
+    if (!acc[usuario.id_usuario]) {
+      acc[usuario.id_usuario] = {
+        id: usuario.id_usuario,
+        nombre: usuario.nombre,
+        foto_perfil: usuario.foto_perfil,
+        totalPosts: 0,
+        totalLikes: 0,
+        totalComentarios: 0,
+        score: 0
+      };
+    }
+
+    acc[usuario.id_usuario].totalPosts += 1;
+    acc[usuario.id_usuario].totalLikes +=
+      post.likes?.length || 0;
+    acc[usuario.id_usuario].totalComentarios +=
+      post.comentarios?.length || 0;
+
+    return acc;
+  }, {})
+)
+  .map((usuario) => ({
+    ...usuario,
+    score:
+      usuario.totalPosts * 3 +
+      usuario.totalLikes +
+      usuario.totalComentarios * 2
+  }))
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 5);
+
+
+  const obtenerMascotasAleatorias = (
+  lista,
+  cantidad = 2
+) => {
+  if (!lista || lista.length === 0) return [];
+
+  const disponibles = lista.filter(
+    (m) =>
+      m.estado_adopcion?.toLowerCase() ===
+      "disponible"
+  );
+
+  const base =
+    disponibles.length > 0 ? disponibles : lista;
+
+  const mezcladas = [...base].sort(
+    () => Math.random() - 0.5
+  );
+
+  return mezcladas.slice(0, cantidad);
+};
+
+const cargarMascotas = async () => {
+  
+  try {
+    const res = await fetch(URL_MASCOTAS, {
+      headers: {
+        Authorization: `Bearer ${token}`
+        
+      }
+    });
+
+    const data = await res.json();
+
+    if (!Array.isArray(data)) {
+      setMascotas([]);
+      console.log("MASCOTAS:", data);
+      return;
+    }
+
+    setMascotas(data);
+  } catch (error) {
+    console.error("Error cargando mascotas:", error);
+    setMascotas([]);
+  }
+
+  
+};
+
+useEffect(() => {
+  cargarMascotas();
+}, []);
+
+useEffect(() => {
+  if (mascotas.length === 0) return;
+
+  const rotarMascotas = () => {
+    setMascotasRandom(
+      obtenerMascotasAleatorias(mascotas, 2)
+    );
+  };
+
+  rotarMascotas();
+
+  const intervalo = setInterval(
+    rotarMascotas,
+    15000
+  );
+
+  return () => clearInterval(intervalo);
+}, [mascotas]);
+
+
+const hashtagsDinamicos = Object.entries(
+  posts.reduce((acc, post) => {
+    const texto = post.contenido_texto || "";
+
+    const hashtags =
+      texto.match(/#\w+/g) || [];
+
+    hashtags.forEach((tag) => {
+      const limpio = tag.toLowerCase();
+
+      acc[limpio] = (acc[limpio] || 0) + 1;
+    });
+
+    return acc;
+  }, {})
+)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 3);
 
   return (
     <>
@@ -620,52 +750,96 @@ function Feed({ onSwitch }) {
         <aside className="sidebar-right">
           <div className="widget-card">
             <h3>Tendencias</h3>
-            <div className="tendencia-item">
-              <span className="tendencia-tag">#AdoptaNoCompres</span>
-              <span className="tendencia-count">25 publicaciones hoy</span>
-            </div>
-            <div className="tendencia-item">
-              <span className="tendencia-tag">#HistoriasDeRescate</span>
-              <span className="tendencia-count">5 publicaciones hoy</span>
-            </div>
-            <div className="tendencia-item">
-              <span className="tendencia-tag">#Perroo</span>
-              <span className="tendencia-count">15 publicaciones hoy</span>
-            </div>
+           <div className="widget-card">
+  <h3>Tendencias</h3>
+
+  {hashtagsDinamicos.length === 0 ? (
+    <p>No hay tendencias aún</p>
+  ) : (
+    hashtagsDinamicos.map(([tag, total]) => (
+      <div className="tendencia-item" key={tag}>
+        <span className="tendencia-tag">
+          {tag}
+        </span>
+        <span className="tendencia-count">
+          {total} publicaciones
+        </span>
+      </div>
+    ))
+  )}
+</div>
           </div>
  
           <div className="widget-card adoptame">
-            <h3>Adóptame</h3>
-            <div className="adopt-item">
-              <div className="adopt-avatar">🐕</div>
-              <div className="adopt-info"><strong>Toby</strong><span>Pug · 1 año</span></div>
-              <span className="adopt-badge disponible">Disponible</span>
-            </div>
-            <div className="adopt-item">
-              <div className="adopt-avatar">🐶</div>
-              <div className="adopt-info"><strong>Bella</strong><span>Beagle · 4 meses</span></div>
-              <span className="adopt-badge urgente">Urgente</span>
-            </div>
-          </div>
+  <h3>Adóptame</h3>
+
+  {mascotasRandom.length === 0 ? (
+    <p>No hay mascotas disponibles</p>
+  ) : (
+    mascotasRandom.map((mascota) => (
+      <div
+        className="adopt-item"
+        key={mascota.id_mascota}
+      >
+        <div className="adopt-avatar">
+  {mascota.fotos?.[0]?.url_foto ? (
+    <img
+      src={mascota.fotos[0].url_foto}
+      alt={mascota.nombre}
+      className="avatar-feed-img"
+    />
+  ) : (
+    mascota.nombre.charAt(0)
+  )}
+</div>
+
+        <div className="adopt-info">
+          <strong>{mascota.nombre}</strong>
+          <span>
+            {mascota.raza} · {mascota.edad}
+          </span>
+        </div>
+
+        <span className="adopt-badge disponible">
+          Disponible
+        </span>
+      </div>
+    ))
+  )}
+</div>
  
           <div className="widget-card lideres">
-            <h3>Líderes de la Comunidad</h3>
-            <div className="lider-item">
-              <div className="lider-avatar">J</div>
-              <span className="lider-nombre">Juan Marin</span>
-              <span className="lider-pts">10 posts</span>
-            </div>
-            <div className="lider-item">
-              <div className="lider-avatar">D</div>
-              <span className="lider-nombre">Daniel</span>
-              <span className="lider-pts">8 posts</span>
-            </div>
-            <div className="lider-item">
-              <div className="lider-avatar">K</div>
-              <span className="lider-nombre">Katalina</span>
-              <span className="lider-pts">3 posts</span>
-            </div>
-          </div>
+  <h3>Top 5 de la Comunidad</h3>
+
+  {lideresComunidad.map((lider, index) => (
+    <div className="lider-item" key={lider.id}>
+      <div className="lider-avatar">
+        {lider.foto_perfil ? (
+          <img
+            src={lider.foto_perfil}
+            alt={lider.nombre}
+            className="avatar-feed-img"
+          />
+        ) : (
+          lider.nombre.charAt(0)
+        )}
+      </div>
+
+      <span
+        className="lider-nombre clickable-user"
+        onClick={() =>
+          onSwitch("perfilPublico", lider.id)
+        }
+      >
+        #{index + 1} {lider.nombre}
+      </span>
+
+      <span className="lider-pts">
+        {lider.score} pts
+      </span>
+    </div>
+  ))}
+</div>
         </aside>
       </div>
     </>

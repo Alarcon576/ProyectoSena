@@ -4,7 +4,7 @@ const URL_MASCOTAS = "http://localhost:3000/api/mascotas";
 const URL_POSTS         = "http://localhost:3000/api/publicaciones";
 const URL_INTERACCIONES = "http://localhost:3000/api/interacciones";
 const URL_PROFILE       = "http://localhost:3000/api/profile";
- 
+const URL_IA = "http://localhost:3000/api/ia";
 function Feed({ onSwitch }) {
   const [posts, setPosts]                           = useState([]);
   const [contenido, setContenido]                   = useState("");
@@ -36,8 +36,11 @@ function Feed({ onSwitch }) {
   const token = localStorage.getItem("token");
  
   const [mascotas, setMascotas] = useState([]);
-
   const [mascotasRandom, setMascotasRandom] = useState([]);
+
+  const [sintomasIA, setSintomasIA] = useState("");
+  const [respuestaIA, setRespuestaIA] = useState(null);
+  const [loadingIA, setLoadingIA] = useState(false);
   /* ── Cerrar menús al click fuera ── */
   useEffect(() => {
     const cerrar = () => { setMenuAvatarAbierto(false); setMenuPostAbierto(null); };
@@ -376,6 +379,55 @@ const hashtagsDinamicos = Object.entries(
 )
   .sort((a, b) => b[1] - a[1])
   .slice(0, 3);
+
+  const consultarSaludIA = async () => {
+  if (!sintomasIA.trim()) return;
+
+  setLoadingIA(true);
+
+  try {
+    const res = await fetch(`${URL_IA}/salud`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        especie: "Mascota",
+        edad: 1,
+        sintomas: sintomasIA
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "No se pudo consultar la IA");
+      return;
+    }
+
+    let texto = data.resultado;
+
+
+texto = texto.replace(/```json|```/g, "").trim();
+
+try {
+  const resultado = JSON.parse(texto);
+  setRespuestaIA(resultado);
+} catch (error) {
+  console.error("Error parseando IA:", error);
+  setRespuestaIA({
+    nivel: "desconocido",
+    orientacion: texto
+  });
+}
+  } catch (error) {
+    console.error("Error salud IA:", error);
+    alert("Error consultando la IA");
+  } finally {
+    setLoadingIA(false);
+  }
+};
 
   return (
     <>
@@ -748,6 +800,36 @@ const hashtagsDinamicos = Object.entries(
  
         {/* SIDEBAR DERECHO */}
         <aside className="sidebar-right">
+          <div className="widget-card salud-ia">
+          <div className="widget-card salud-ia">
+  <h3>Orientación básica de salud
+  </h3>
+
+  <textarea
+    className="salud-ia-input"
+    placeholder="Ej: mi perro no quiere comer y está vomitando"
+    value={sintomasIA}
+    onChange={(e) => setSintomasIA(e.target.value)}
+  />
+
+  <button
+    className="btn-salud-ia"
+    onClick={consultarSaludIA}
+    disabled={loadingIA}
+  >
+    {loadingIA ? "Consultando..." : "Consultar IA"}
+  </button>
+
+ {respuestaIA && (
+  <div
+    className={`salud-ia-respuesta nivel-${respuestaIA.nivel}`}
+  >
+    <h4>Nivel: {respuestaIA.nivel}</h4>
+    <p>{respuestaIA.orientacion}</p>
+  </div>
+)}
+</div>
+          </div>
           <div className="widget-card">
             <h3>Tendencias</h3>
            <div className="widget-card">

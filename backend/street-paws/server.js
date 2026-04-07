@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.routes.js";
 import mascotaRoutes from "./routes/mascota.routes.js";
 import interaccionRoutes from "./routes/interaccion.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
+import iaRoutes from "./routes/ia.routes.js";
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
 const app = express();
@@ -30,6 +31,7 @@ app.use("/api/mascotas", mascotaRoutes);
 app.use("/api/publicaciones", publicacionRoutes);
 app.use("/api/interacciones", interaccionRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/ia", iaRoutes);
 // 🔹 Puerto (mejor usar variable de entorno)
 const PORT = process.env.PORT || 3000;
 

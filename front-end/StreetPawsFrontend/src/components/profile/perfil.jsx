@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import "./Perfil.css";
 
@@ -81,137 +82,143 @@ function Perfil({ onSwitch, userId }) {
     }
   };
 
-  if (!user) return <p>Cargando perfil...</p>;
+  if (!user) return <p className="loading">Cargando perfil...</p>;
 
   return (
-    <div className="perfil-container">
-      {/* 🚪 SOLO MI PERFIL */}
-      {esMiPerfil && (
-        <button className="btn-logout" onClick={handleLogout}>
-          🚪 Cerrar sesión
-        </button>
-      )}
-
-      <div className="perfil-card">
-        <div className="avatar-wrapper">
-          <div className="avatar">
-            {user?.foto_perfil ? (
-              <img
-                src={user.foto_perfil}
-                alt="perfil"
-                className="avatar-preview"
-              />
-            ) : (
-              user.nombre?.charAt(0).toUpperCase()
-            )}
-          </div>
+    <>
+      <nav className="perfil-navbar">
+        <div className="perfil-logo" onClick={() => onSwitch("feed")}>
+          Street Paws
         </div>
 
-        <h2 className="perfil-nombre">{user.nombre}</h2>
-        <p className="perfil-email">{user.email}</p>
+        <div className="perfil-nav-links">
+          <span onClick={() => onSwitch("feed")}>Inicio</span>
+          <span onClick={() => onSwitch("explorar")}>Explorar</span>
+          <span onClick={() => onSwitch("adopciones")}>Adopciones</span>
+        </div>
 
-        {/* ✏️ SOLO MI PERFIL */}
-        {esMiPerfil && (
-          <button
-            className="btn-edit-profile"
-            onClick={() => setMostrarModal(true)}
-          >
-            ✏️ Editar perfil
-          </button>
-        )}
+        <div className="perfil-nav-actions">
+          <button onClick={() => onSwitch("feed")}>Feed</button>
+          {esMiPerfil && (
+            <button className="logout-btn" onClick={handleLogout}>
+              Salir
+            </button>
+          )}
+        </div>
+      </nav>
 
-        {/* 🚀 FUTURO BOTÓN SEGUIR */}
-        {!esMiPerfil && (
-          <button className="btn-follow">
-            ➕ Seguir
-          </button>
-        )}
-
-        <div className="perfil-stats">
-          <div className="stat-card">
-            <strong>{misPosts.length}</strong>
-            <span>Posts</span>
-          </div>
-
-          <div className="stat-card">
-            <strong>
-              {misPosts.reduce(
-                (acc, post) => acc + post.likes.length,
-                0
+      <div className="perfil-container">
+        <div className="perfil-card">
+          <div className="avatar-wrapper">
+            <div className="avatar">
+              {user?.foto_perfil ? (
+                <img
+                  src={user.foto_perfil}
+                  alt="perfil"
+                  className="avatar-preview"
+                />
+              ) : (
+                user.nombre?.charAt(0).toUpperCase()
               )}
-            </strong>
-            <span>Likes</span>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className="perfil-posts">
-        <h3>
-          {esMiPerfil
-            ? "Mis publicaciones"
-            : `Publicaciones de ${user.nombre}`}
-        </h3>
+          <h2 className="perfil-nombre">{user.nombre}</h2>
+          <p className="perfil-email">{user.email}</p>
 
-        {misPosts.map((post) => (
-          <div className="perfil-post-card" key={post.id_publicacion}>
-            <p>{post.contenido_texto}</p>
+          {esMiPerfil ? (
+            <button
+              className="btn-edit-profile"
+              onClick={() => setMostrarModal(true)}
+            >
+              Editar perfil
+            </button>
+          ) : (
+            <button className="btn-follow">Seguir</button>
+          )}
 
-            {post.imagenes?.[0] && (
-              <img
-                src={post.imagenes[0].url_imagen}
-                alt="post"
-              />
-            )}
+          <div className="perfil-stats">
+            <div className="stat-card">
+              <strong>{misPosts.length}</strong>
+              <span>Posts</span>
+            </div>
 
-            <small>
-              ❤️ {post.likes.length} · 💬 {post.comentarios.length}
-            </small>
-          </div>
-        ))}
-      </div>
-
-      {/* 🪟 MODAL SOLO MI PERFIL */}
-      {esMiPerfil && mostrarModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => setMostrarModal(false)}
-        >
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3>Editar foto de perfil</h3>
-
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFoto(e.target.files[0])}
-            />
-
-            {foto && (
-              <img
-                src={URL.createObjectURL(foto)}
-                alt="preview"
-                className="preview-modal"
-              />
-            )}
-
-            <div className="modal-actions">
-              <button onClick={subirFotoPerfil}>
-                Guardar
-              </button>
-
-              <button
-                className="btn-close"
-                onClick={() => setMostrarModal(false)}
-              >
-                Cancelar
-              </button>
+            <div className="stat-card">
+              <strong>
+                {misPosts.reduce(
+                  (acc, post) => acc + post.likes.length,
+                  0
+                )}
+              </strong>
+              <span>Likes</span>
             </div>
           </div>
         </div>
-      )}
-    </div>
+
+        <div className="perfil-posts">
+          <h3>
+            {esMiPerfil
+              ? "Mis publicaciones"
+              : `Publicaciones de ${user.nombre}`}
+          </h3>
+
+          {misPosts.map((post) => (
+            <div className="perfil-post-card" key={post.id_publicacion}>
+              <p>{post.contenido_texto}</p>
+
+              {post.imagenes?.[0] && (
+                <img
+                  src={post.imagenes[0].url_imagen}
+                  alt="post"
+                />
+              )}
+
+              <small>
+                {post.likes.length} Likes · {post.comentarios.length} Comentarios
+              </small>
+            </div>
+          ))}
+        </div>
+
+        {esMiPerfil && mostrarModal && (
+          <div
+            className="modal-overlay"
+            onClick={() => setMostrarModal(false)}
+          >
+            <div
+              className="modal-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3>Editar foto de perfil</h3>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFoto(e.target.files[0])}
+              />
+
+              {foto && (
+                <img
+                  src={URL.createObjectURL(foto)}
+                  alt="preview"
+                  className="preview-modal"
+                />
+              )}
+
+              <div className="modal-actions">
+                <button onClick={subirFotoPerfil}>Guardar</button>
+                <button
+                  className="btn-close"
+                  onClick={() => setMostrarModal(false)}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 

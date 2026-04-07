@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import { moderarImagen } from "../services/imageModeration.js";
+import { validarTemaMascota } from "../services/temaImagen.service.js";
 import {
   crearPublicacion,
   obtenerPublicaciones,
@@ -28,6 +30,24 @@ export const crear = async (req, res) => {
           "La publicación contiene contenido no permitido"
       });
     }
+
+    if (req.file?.path) {
+  const revisionImagen = await moderarImagen(req.file.path);
+
+  if (revisionImagen.flagged) {
+    return res.status(400).json({
+      error: "La imagen contiene contenido no permitido"
+    });
+  }
+
+  const tema = await validarTemaMascota(req.file.path);
+
+  if (!tema.relacionado) {
+    return res.status(400).json({
+      error: "Solo se permiten imágenes relacionadas con mascotas"
+    });
+  }
+}
 
     // CAPA 2A → palabras clave
     const tematicaValida =

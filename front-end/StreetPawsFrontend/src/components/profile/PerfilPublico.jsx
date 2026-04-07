@@ -9,7 +9,9 @@ function PerfilPublico({ onSwitch, userId }) {
   const [postsUsuario, setPostsUsuario] = useState([]);
 
   useEffect(() => {
-    cargarPerfil();
+    if (userId) {
+      cargarPerfil();
+    }
   }, [userId]);
 
   const cargarPerfil = async () => {
@@ -22,38 +24,46 @@ function PerfilPublico({ onSwitch, userId }) {
 
       const data = await res.json();
       setUser(data);
-      cargarPosts(data.id_usuario);
+
+      const resPosts = await fetch(URL_POSTS);
+      const allPosts = await resPosts.json();
+
+      const filtrados = allPosts.filter(
+        (post) => post.id_usuario === data.id_usuario
+      );
+
+      setPostsUsuario(filtrados);
     } catch (error) {
       console.error("Error perfil público:", error);
     }
   };
 
-  const cargarPosts = async (idUsuario) => {
-    try {
-      const res = await fetch(URL_POSTS);
-      const data = await res.json();
-
-      const filtrados = data.filter(
-        (post) => post.id_usuario === idUsuario
-      );
-
-      setPostsUsuario(filtrados);
-    } catch (error) {
-      console.error("Error posts usuario", error);
-    }
-  };
+  const totalLikes = postsUsuario.reduce(
+    (acc, post) => acc + (post.likes?.length || 0),
+    0
+  );
 
   if (!user) return <p>Cargando perfil...</p>;
 
   return (
     <div className="perfil-container">
-      <button
-        className="btn-back-feed"
-        onClick={() => onSwitch("feed")}
-      >
-        ⬅️ Volver al feed
-      </button>
+      {/* NAVBAR PREMIUM */}
+      <nav className="perfil-navbar">
+        <h2
+          className="brand"
+          onClick={() => onSwitch("feed")}
+        >
+          Street Paws
+        </h2>
 
+        <div className="perfil-nav-actions">
+          <button onClick={() => onSwitch("feed")}>
+            ← Feed
+          </button>
+        </div>
+      </nav>
+
+      {/* CARD PERFIL */}
       <div className="perfil-card">
         <div className="avatar-wrapper">
           <div className="avatar">
@@ -69,11 +79,11 @@ function PerfilPublico({ onSwitch, userId }) {
           </div>
         </div>
 
-        <h2>{user.nombre}</h2>
-        <p>{user.email}</p>
+        <h2 className="perfil-nombre">{user.nombre}</h2>
+        <p className="perfil-email">{user.email}</p>
 
         <button className="btn-follow">
-          ➕ Seguir
+          Seguir
         </button>
 
         <div className="perfil-stats">
@@ -83,36 +93,42 @@ function PerfilPublico({ onSwitch, userId }) {
           </div>
 
           <div className="stat-card">
-            <strong>
-              {postsUsuario.reduce(
-                (acc, post) => acc + post.likes.length,
-                0
-              )}
-            </strong>
+            <strong>{totalLikes}</strong>
             <span>Likes</span>
           </div>
         </div>
       </div>
 
+      {/* POSTS */}
       <div className="perfil-posts">
-        <h3>Publicaciones</h3>
+        <h3>Publicaciones de {user.nombre}</h3>
 
-        {postsUsuario.map((post) => (
-          <div className="perfil-post-card" key={post.id_publicacion}>
-            <p>{post.contenido_texto}</p>
+        {postsUsuario.length === 0 ? (
+          <p className="sin-posts">
+            Este usuario no tiene publicaciones
+          </p>
+        ) : (
+          postsUsuario.map((post) => (
+            <div
+              className="perfil-post-card"
+              key={post.id_publicacion}
+            >
+              <p>{post.contenido_texto}</p>
 
-            {post.imagenes?.[0] && (
-              <img
-                src={post.imagenes[0].url_imagen}
-                alt="post"
-              />
-            )}
+              {post.imagenes?.[0] && (
+                <img
+                  src={post.imagenes[0].url_imagen}
+                  alt="post"
+                />
+              )}
 
-            <small>
-              ❤️ {post.likes.length} · 💬 {post.comentarios.length}
-            </small>
-          </div>
-        ))}
+              <small>
+                ❤️ {post.likes.length} · 💬{" "}
+                {post.comentarios.length}
+              </small>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

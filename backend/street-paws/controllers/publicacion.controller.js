@@ -8,60 +8,43 @@ import {
   actualizarPublicacion,
   eliminarPublicacion
 } from "../services/publicacion.service.js";
-import {
-  moderarTexto,
-  validarTematicaMascotas,
-  validarRelevanciaConIA
-} from "../services/moderation.service.js";
+import { validarPublicacion } from "../services/moderation.service.js";
+
 const prisma = new PrismaClient();
 
-// 🟢 CREAR
-// CREAR
+/* =========================================================
+   🟢 CREAR PUBLICACIÓN
+========================================================= */
 export const crear = async (req, res) => {
   try {
     const contenido = req.body.contenido_texto;
 
-    // CAPA 1 → seguridad
-    const revisionIA = await moderarTexto(contenido);
+    // ✅ Validación completa de texto
+    const resultado = await validarPublicacion(contenido);
 
-    if (revisionIA.flagged) {
+    if (!resultado.valido) {
       return res.status(400).json({
-        error:
-          "La publicación contiene contenido no permitido"
+        error: resultado.motivo
       });
     }
 
+    // ✅ Validación de imagen
     if (req.file?.path) {
-  const revisionImagen = await moderarImagen(req.file.path);
+      const revisionImagen = await moderarImagen(req.file.path);
 
-  if (revisionImagen.flagged) {
-    return res.status(400).json({
-      error: "La imagen contiene contenido no permitido"
-    });
-  }
+      if (revisionImagen.flagged) {
+        return res.status(400).json({
+          error: "La imagen contiene contenido no permitido"
+        });
+      }
 
-  const tema = await validarTemaMascota(req.file.path);
+      const tema = await validarTemaMascota(req.file.path);
 
-  if (!tema.relacionado) {
-    return res.status(400).json({
-      error: "Solo se permiten imágenes relacionadas con mascotas"
-    });
-  }
-}
-
-    // CAPA 2A → palabras clave
-    const tematicaValida =
-      validarTematicaMascotas(contenido);
-
-    // CAPA 2B → IA semántica
-    const relevanciaIA =
-      await validarRelevanciaConIA(contenido);
-
-    if (!tematicaValida && !relevanciaIA) {
-      return res.status(400).json({
-        error:
-          "La publicación debe estar relacionada con mascotas o rescate animal"
-      });
+      if (!tema.relacionado) {
+        return res.status(400).json({
+          error: "Solo se permiten imágenes relacionadas con mascotas"
+        });
+      }
     }
 
     const data = {
@@ -72,7 +55,7 @@ export const crear = async (req, res) => {
 
     const nuevaPublicacion = await crearPublicacion(data);
 
-    if (req.file) {
+    if (req.file?.path) {
       await prisma.imagen_Post.create({
         data: {
           id_publicacion: nuevaPublicacion.id_publicacion,
@@ -81,79 +64,96 @@ export const crear = async (req, res) => {
       });
     }
 
-    res.status(201).json(nuevaPublicacion);
+    return res.status(201).json(nuevaPublicacion);
   } catch (error) {
     console.error("ERROR CREAR POST:", error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      error: "Error interno creando la publicación"
+    });
   }
 };
-// 📋 LISTAR FEED
+
+/* =========================================================
+   📋 LISTAR FEED
+========================================================= */
 export const listar = async (req, res) => {
   try {
     const publicaciones = await obtenerPublicaciones();
-    res.json(publicaciones);
+    return res.json(publicaciones);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      error: "Error obteniendo publicaciones"
+    });
   }
 };
 
-// 🔍 OBTENER 1
+/* =========================================================
+   🔍 OBTENER UNA PUBLICACIÓN
+========================================================= */
 export const obtener = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = Number(req.params.id);
     const post = await obtenerPublicacionPorId(id);
 
     if (!post) {
-      return res.status(404).json({ error: "Publicación no encontrada" });
+      return res.status(404).json({
+        error: "Publicación no encontrada"
+      });
     }
 
-    res.json(post);
-
+    return res.json(post);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      error: "Error obteniendo publicación"
+    });
   }
 };
 
-// ✏️ ACTUALIZAR
+/* =========================================================
+   ✏️ ACTUALIZAR PUBLICACIÓN
+========================================================= */
 export const actualizar = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = Number(req.params.id);
     const contenido = req.body.contenido_texto;
 
-    const revisionIA = await moderarTexto(contenido);
+    // ✅ Validación completa
+    const resultado = await validarPublicacion(contenido);
 
-    if (revisionIA.flagged) {
+    if (!resultado.valido) {
       return res.status(400).json({
-        error:
-          "El contenido editado no cumple las normas"
+        error: resultado.motivo
       });
     }
 
-    const tematicaValida =
-      validarTematicaMascotas(contenido);
+    // ✅ Validar imagen nueva si llega
+    if (req.file?.path) {
+      const revisionImagen = await moderarImagen(req.file.path);
 
-    const relevanciaIA =
-      await validarRelevanciaConIA(contenido);
-
-    if (!tematicaValida && !relevanciaIA) {
-      return res.status(400).json({
-        error:
-          "La publicación debe seguir relacionada con mascotas"
-      });
-    }
-
-    const data = {
-      contenido_texto: contenido
-    };
-
-    const postActualizado =
-      await actualizarPublicacion(id, data);
-
-    if (req.file) {
-      const imagenExistente =
-        await prisma.imagen_Post.findFirst({
-          where: { id_publicacion: id }
+      if (revisionImagen.flagged) {
+        return res.status(400).json({
+          error: "La imagen contiene contenido no permitido"
         });
+      }
+
+      const tema = await validarTemaMascota(req.file.path);
+
+      if (!tema.relacionado) {
+        return res.status(400).json({
+          error: "Solo se permiten imágenes relacionadas con mascotas"
+        });
+      }
+    }
+
+    const postActualizado = await actualizarPublicacion(id, {
+      contenido_texto: contenido
+    });
+
+    // ✅ Actualizar o crear imagen
+    if (req.file?.path) {
+      const imagenExistente = await prisma.imagen_Post.findFirst({
+        where: { id_publicacion: id }
+      });
 
       if (imagenExistente) {
         await prisma.imagen_Post.update({
@@ -174,17 +174,21 @@ export const actualizar = async (req, res) => {
       }
     }
 
-    res.json(postActualizado);
+    return res.json(postActualizado);
   } catch (error) {
     console.error("ERROR UPDATE POST:", error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      error: "Error actualizando publicación"
+    });
   }
 };
 
-// ❌ ELIMINAR
+/* =========================================================
+   ❌ ELIMINAR PUBLICACIÓN
+========================================================= */
 export const eliminar = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = Number(req.params.id);
 
     await prisma.imagen_Post.deleteMany({
       where: { id_publicacion: id }
@@ -200,11 +204,12 @@ export const eliminar = async (req, res) => {
 
     await eliminarPublicacion(id);
 
-    res.json({ mensaje: "Publicación eliminada correctamente" });
-
+    return res.json({
+      mensaje: "Publicación eliminada correctamente"
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      error: "Error eliminando publicación"
+    });
   }
 };
-
-

@@ -5,6 +5,7 @@ import Mascotas from "./components/mascotas/Mascotas";
 import Feed from "./components/social/Feed";
 import Perfil from "./components/profile/perfil";
 import PerfilPublico from "./components/profile/PerfilPublico";
+import Adopciones from "./components/adopciones/Adopciones"; // ← NUEVO
 
 function App() {
   const [view, setView] = useState("login");
@@ -12,7 +13,7 @@ function App() {
   const [selectedUserId, setSelectedUserId] = useState(null);
 
   const handleSwitch = (viewName, userId = null) => {
-    setSelectedUserId(userId); 
+    setSelectedUserId(userId);
     setView(viewName);
   };
 
@@ -54,43 +55,39 @@ function App() {
 
   return (
     <div>
-      {/*  LOGIN */}
+      {/* LOGIN */}
       {view === "login" && (
-        <Login
-          onSwitch={handleSwitch}
-          onLogin={handleLogin}
-        />
+        <Login onSwitch={handleSwitch} onLogin={handleLogin} />
       )}
 
-      {/*  REGISTER */}
+      {/* REGISTER */}
       {view === "register" && (
         <Register onSwitch={handleSwitch} />
       )}
 
-      {/*  ADMIN */}
+      {/* ADMIN */}
       {view === "mascotas" && (
-        <Mascotas
-          onSwitch={handleSwitch}
-          user={user}
-        />
+        <Mascotas onSwitch={handleSwitch} user={user} />
       )}
 
-      {/*  FEED */}
+      {/* FEED */}
       {view === "feed" && (
         <Feed onSwitch={handleSwitch} />
       )}
 
-      {/*  MI PERFIL */}
+      {/* ADOPCIONES ← NUEVO */}
+      {view === "adopciones" && (
+        <Adopciones onSwitch={handleSwitch} />
+      )}
+
+      {/* MI PERFIL */}
       {view === "perfil" && (
         <Perfil onSwitch={handleSwitch} />
       )}
 
-      {/*  PERFIL PUBLICO */}
+      {/* PERFIL PUBLICO */}
       {view === "perfilPublico" && selectedUserId && (
-        <PerfilPublico
-          onSwitch={handleSwitch}
-          userId={selectedUserId}
-        />
+        <PerfilPublico onSwitch={handleSwitch} userId={selectedUserId} />
       )}
     </div>
   );

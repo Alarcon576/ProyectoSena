@@ -5,6 +5,7 @@ export const consultaSalud = async (req, res) => {
     const { especie, edad, sintomas } = req.body;
 
     const resultado = await orientarSaludMascota({
+      id_usuario: req.user.id,
       especie,
       edad,
       sintomas
@@ -21,4 +22,3 @@ export const consultaSalud = async (req, res) => {
     });
   }
 };
-

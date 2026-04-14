@@ -468,6 +468,8 @@ body {
   line-height: 1.6;
   color: var(--text);
   margin-bottom: 12px;
+  text-align: left;
+
 }
  
 .post-image {

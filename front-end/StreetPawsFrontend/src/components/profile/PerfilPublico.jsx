@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import "./Perfil.css";
 
-const URL_POSTS = "http://localhost:3000/api/publicaciones";
-const URL_PROFILE = "http://localhost:3000/api/profile";
+const URL_POSTS = "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";
+const URL_PROFILE = "https://proyectosena-production-4ad5.up.railway.app/api/profile";
 
 function PerfilPublico({ onSwitch, userId }) {
   const [user, setUser] = useState(null);

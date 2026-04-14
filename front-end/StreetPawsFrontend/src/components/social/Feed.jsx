@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import "./Feed.css";
-const URL_MASCOTAS = "http://localhost:3000/api/mascotas";
-const URL_POSTS         = "http://localhost:3000/api/publicaciones";
-const URL_INTERACCIONES = "http://localhost:3000/api/interacciones";
-const URL_PROFILE       = "http://localhost:3000/api/profile";
-const URL_IA = "http://localhost:3000/api/ia";
+const URL_MASCOTAS = "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
+const URL_POSTS         = "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";
+const URL_INTERACCIONES = "https://proyectosena-production-4ad5.up.railway.app/api/interacciones";
+const URL_PROFILE       = "https://proyectosena-production-4ad5.up.railway.app/api/profile";
+const URL_IA = "https://proyectosena-production-4ad5.up.railway.app/api/ia";
 function Feed({ onSwitch }) {
   const [posts, setPosts]                           = useState([]);
   const [contenido, setContenido]                   = useState("");

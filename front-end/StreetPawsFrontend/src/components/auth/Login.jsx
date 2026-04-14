@@ -43,7 +43,7 @@ function Login({ onSwitch, onLogin }) {
   }
 
   try {
-    const res = await fetch("http://localhost:3000/api/auth/login", {
+    const res = await fetch("https://proyectosena-production-4ad5.up.railway.app/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

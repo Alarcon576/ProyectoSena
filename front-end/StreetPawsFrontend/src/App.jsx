@@ -6,6 +6,7 @@ import Feed from "./components/social/Feed";
 import Perfil from "./components/profile/Perfil";
 import PerfilPublico from "./components/profile/PerfilPublico";
 import Explorar from "./components/explorar/Explorar";
+import Adopciones from "./components/adopciones/Adopciones";
 
 function App() {
   const [view, setView] = useState("login");
@@ -55,48 +56,36 @@ function App() {
 
   return (
     <div>
-      {/* LOGIN */}
       {view === "login" && (
-        <Login
-          onSwitch={handleSwitch}
-          onLogin={handleLogin}
-        />
+        <Login onSwitch={handleSwitch} onLogin={handleLogin} />
       )}
 
-      {/* REGISTER */}
       {view === "register" && (
         <Register onSwitch={handleSwitch} />
       )}
 
-      {/* ADMIN */}
       {view === "mascotas" && (
-        <Mascotas
-          onSwitch={handleSwitch}
-          user={user}
-        />
+        <Mascotas onSwitch={handleSwitch} user={user} />
       )}
 
-      {/* FEED */}
       {view === "feed" && (
         <Feed onSwitch={handleSwitch} />
       )}
 
-      {/* EXPLORAR */}
       {view === "explorar" && (
         <Explorar onSwitch={handleSwitch} />
       )}
 
-      {/* MI PERFIL */}
+      {view === "adopciones" && (
+        <Adopciones onSwitch={handleSwitch} />
+      )}
+
       {view === "perfil" && (
         <Perfil onSwitch={handleSwitch} />
       )}
 
-      {/* PERFIL PÚBLICO */}
       {view === "perfilPublico" && selectedUserId && (
-        <PerfilPublico
-          onSwitch={handleSwitch}
-          userId={selectedUserId}
-        />
+        <PerfilPublico onSwitch={handleSwitch} userId={selectedUserId} />
       )}
     </div>
   );

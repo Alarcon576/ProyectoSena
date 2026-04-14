@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import "./Explorar.css";
 
-const URL_POSTS = "http://localhost:3000/api/publicaciones";
-const URL_MASCOTAS = "http://localhost:3000/api/mascotas";
+const URL_POSTS = "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";
+const URL_MASCOTAS = "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
 
 function Explorar({ onSwitch }) {
   const [posts, setPosts] = useState([]);

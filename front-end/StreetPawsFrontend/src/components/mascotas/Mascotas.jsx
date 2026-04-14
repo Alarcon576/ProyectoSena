@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Mascotas.css";
 
-const URL = "http://localhost:3000/api/mascotas";
+const URL = "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
 
 function Mascotas({ onSwitch, user }) {
   const [mascotas, setMascotas] = useState([]);

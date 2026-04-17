@@ -15,8 +15,11 @@ const app = express();
 
 // 🔹 Middlewares
 app.use(cors({
-    origin: "http://localhost:5173",
-    credentials: true
+  origin: [
+    "http://localhost:5173",   // React
+    "http://localhost:64001",  // Flutter web 
+  ],
+  credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());

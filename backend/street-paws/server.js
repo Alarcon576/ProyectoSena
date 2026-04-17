@@ -15,10 +15,19 @@ const app = express();
 
 // 🔹 Middlewares
 app.use(cors({
-  origin: [
-    "http://localhost:5173",   // React
-    "http://localhost:64001",  // Flutter web 
-  ],
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+
+    if (
+      origin.includes("localhost") ||
+      origin.includes("railway.app") ||
+      origin.includes("vercel.app")
+    ) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("No permitido por CORS"));
+  },
   credentials: true
 }));
 app.use(express.json());

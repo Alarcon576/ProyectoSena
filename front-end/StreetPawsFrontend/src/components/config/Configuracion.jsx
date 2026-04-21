@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Configuracion.css";
 
-const API = "http://localhost:3000/api";
+const API = "https://proyectosena-production-4ad5.up.railway.app/api";
 
 function Configuracion({ onSwitch }) {
   const [user, setUser] = useState(null);

@@ -1,185 +1,121 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Explorar.css";
 
-const URL_POSTS = "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";
-const URL_MASCOTAS = "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
+const API = "https://proyectosena-production-4ad5.up.railway.app/api";;
 
 function Explorar({ onSwitch }) {
   const [posts, setPosts] = useState([]);
   const [mascotas, setMascotas] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [usuarios, setUsuarios] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
-    cargarTodo();
+    cargarDatos();
   }, []);
 
-  const cargarTodo = async () => {
+  const cargarDatos = async () => {
     try {
-      setLoading(true);
-      const [resPosts, resMascotas] = await Promise.all([
-        fetch(URL_POSTS),
-        fetch(URL_MASCOTAS, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
-        })
-      ]);
+      const resPosts = await fetch(`${API}/publicaciones`);
+      const dataPosts = await resPosts.json();
 
-      const [dataPosts, dataMascotas] = await Promise.all([
-        resPosts.json(),
-        resMascotas.json()
-      ]);
+      const resMascotas = await fetch(`${API}/mascotas`);
+      const dataMascotas = await resMascotas.json();
 
-      setPosts(Array.isArray(dataPosts) ? dataPosts : []);
-      setMascotas(Array.isArray(dataMascotas) ? dataMascotas : []);
-    } catch (error) {
-      console.error("Error cargando explorar:", error);
-    } finally {
-      setLoading(false);
+      const resUsuarios = await fetch(`${API}/usuarios`);
+      const dataUsuarios = await resUsuarios.json();
+
+      //  ordenar por likes
+      const topPosts = dataPosts
+        .sort((a, b) => b.likes.length - a.likes.length)
+        .slice(0, 6);
+
+      setPosts(topPosts);
+      setMascotas(dataMascotas.slice(0, 6));
+      setUsuarios(dataUsuarios.slice(0, 6));
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const mascotasDisponibles = useMemo(() => {
-    return mascotas
-      .filter((m) => m.estado_adopcion === "Disponible")
-      .slice(0, 6);
-  }, [mascotas]);
-
-  const postsDestacados = useMemo(() => {
-    return [...posts]
-      .sort(
-        (a, b) =>
-          (b.likes?.length || 0) + (b.comentarios?.length || 0) -
-          ((a.likes?.length || 0) + (a.comentarios?.length || 0))
-      )
-      .slice(0, 5);
-  }, [posts]);
-
-  const usuariosTop = useMemo(() => {
-    return Object.values(
-      posts.reduce((acc, post) => {
-        const usuario = post.usuario;
-        if (!usuario) return acc;
-
-        if (!acc[usuario.id_usuario]) {
-          acc[usuario.id_usuario] = {
-            id: usuario.id_usuario,
-            nombre: usuario.nombre,
-            foto_perfil: usuario.foto_perfil,
-            puntos: 0
-          };
-        }
-
-        acc[usuario.id_usuario].puntos +=
-          (post.likes?.length || 0) +
-          (post.comentarios?.length || 0) * 2 +
-          3;
-
-        return acc;
-      }, {})
-    )
-      .sort((a, b) => b.puntos - a.puntos)
-      .slice(0, 5);
-  }, [posts]);
-
-  if (loading) {
-    return <div className="explorar-loading">Cargando explorar...</div>;
-  }
+  const filtrar = (texto) => {
+    setBusqueda(texto.toLowerCase());
+  };
 
   return (
     <div className="explorar-container">
-      <div className="explorar-header">
-        <h1>🔍 Explorar</h1>
-        <p>Descubre mascotas, historias y personas increíbles</p>
+
+      {/* 🔎 BUSCADOR */}
+      <div className="explorar-search">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          onChange={(e) => filtrar(e.target.value)}
+        />
       </div>
 
-      <section className="explorar-section">
-        <div className="section-title-row">
-          <h2>🐾 Mascotas disponibles</h2>
-          <button onClick={() => onSwitch("adopciones")}>Ver todas</button>
-        </div>
-
-        <div className="mascotas-grid">
-          {mascotasDisponibles.map((mascota) => (
-            <div className="mascota-card" key={mascota.id_mascota}>
-              <div className="mascota-foto">
-                {mascota.fotos?.[0]?.url_foto ? (
-                  <img
-                    src={mascota.fotos[0].url_foto}
-                    alt={mascota.nombre}
-                  />
-                ) : (
-                  <span>{mascota.nombre.charAt(0)}</span>
+      {/*  POSTS */}
+      <section>
+        <h2> Tendencias</h2>
+        <div className="explorar-grid">
+          {posts
+            .filter(p =>
+              p.contenido_texto.toLowerCase().includes(busqueda)
+            )
+            .map((post) => (
+              <div
+                key={post.id_publicacion}
+                className="explorar-card"
+              >
+                {post.imagenes?.[0] && (
+                  <img src={post.imagenes[0].url_imagen} />
                 )}
+                <div className="explorar-overlay">
+                  ❤️ {post.likes.length}
+                </div>
               </div>
-
-              <h3>{mascota.nombre}</h3>
-              <p>
-                {mascota.raza} · {mascota.edad} años
-              </p>
-              <button onClick={() => onSwitch("adopciones")}>
-                💚 Adoptar
-              </button>
-            </div>
-          ))}
+            ))}
         </div>
       </section>
 
-      <section className="explorar-section">
-        <h2>🔥 Publicaciones destacadas</h2>
-        <div className="destacados-list">
-          {postsDestacados.map((post) => (
-            <div className="destacado-card" key={post.id_publicacion}>
-              <div className="destacado-top">
-                <strong
-                  className="clickable-user"
-                  onClick={() =>
-                    onSwitch("perfilPublico", post.usuario.id_usuario)
-                  }
-                >
-                  {post.usuario.nombre}
-                </strong>
-                <span>
-                  ❤️ {post.likes.length} · 💬 {post.comentarios.length}
-                </span>
-              </div>
-
-              <p>{post.contenido_texto}</p>
-
-              {post.imagenes?.[0] && (
-                <img
-                  src={post.imagenes[0].url_imagen}
-                  alt="post"
-                  className="destacado-img"
-                />
+      {/* 🐾 MASCOTAS */}
+      <section>
+        <h2>🐾 Mascotas destacadas</h2>
+        <div className="explorar-row">
+          {mascotas.map((m) => (
+            <div
+              key={m.id_mascota}
+              className="mascota-card"
+              onClick={() => onSwitch("adopciones")}
+            >
+              {m.fotos?.[0] && (
+                <img src={m.fotos[0].url_foto} />
               )}
+              <p>{m.nombre}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="explorar-section">
-        <h2>🏆 Top usuarios</h2>
-        <div className="usuarios-top-list">
-          {usuariosTop.map((user, index) => (
-            <div className="usuario-top-card" key={user.id}>
-              <div className="usuario-top-avatar">
-                {user.foto_perfil ? (
-                  <img src={user.foto_perfil} alt={user.nombre} />
+      {/* 👤 USUARIOS */}
+      <section>
+        <h2>👤 Usuarios</h2>
+        <div className="explorar-row">
+          {usuarios.map((u) => (
+            <div
+              key={u.id_usuario}
+              className="user-card"
+              onClick={() =>
+                onSwitch("perfilPublico", u.id_usuario)
+              }
+            >
+              <div className="avatar">
+                {u.foto_perfil ? (
+                  <img src={u.foto_perfil} />
                 ) : (
-                  user.nombre.charAt(0)
+                  u.nombre[0]
                 )}
               </div>
-
-              <div className="usuario-top-info">
-                <strong
-                  className="clickable-user"
-                  onClick={() => onSwitch("perfilPublico", user.id)}
-                >
-                  #{index + 1} {user.nombre}
-                </strong>
-                <span>{user.puntos} puntos</span>
-              </div>
+              <span>{u.nombre}</span>
             </div>
           ))}
         </div>

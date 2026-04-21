@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -68,5 +69,32 @@ export const obtenerPerfilPorId = async (req, res) => {
     res.status(500).json({
       msg: "Error servidor"
     });
+  }
+};
+
+export const actualizarPerfil = async (req, res) => {
+  try {
+    const id = req.user.id;
+    const { nombre, email, contrasena } = req.body;
+
+    const data = {};
+
+    if (nombre) data.nombre = nombre;
+    if (email) data.email = email;
+
+    
+    if (contrasena) {
+  const hash = await bcrypt.hash(contrasena, 10);
+  data.contrasena = hash;
+}
+
+    const usuario = await prisma.usuario.update({
+      where: { id_usuario: id },
+      data
+    });
+
+    res.json(usuario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

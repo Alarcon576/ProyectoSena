@@ -1,93 +1,80 @@
 .explorar-container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: auto;
-  padding: 30px;
+  padding: 20px;
 }
 
-.explorar-header {
-  margin-bottom: 30px;
-}
-
-.explorar-header h1 {
-  font-size: 2rem;
-  margin-bottom: 8px;
-}
-
-.explorar-section {
-  margin-bottom: 40px;
-}
-
-.section-title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.section-title-row button {
-  border: none;
-  background: #22c55e;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.mascotas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.mascota-card,
-.destacado-card,
-.usuario-top-card {
-  background: white;
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-}
-
-.mascota-foto img,
-.destacado-img,
-.usuario-top-avatar img {
+/* 🔎 */
+.explorar-search input {
   width: 100%;
-  border-radius: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+/* 🔥 grid */
+.explorar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.explorar-card {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.explorar-card img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.mascota-card button {
-  margin-top: 10px;
-  width: 100%;
-  border: none;
-  background: #16a34a;
+.explorar-overlay {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
   color: white;
-  padding: 10px;
+  font-weight: bold;
+}
+
+/* 🐾 fila */
+.explorar-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+/* mascota */
+.mascota-card {
+  min-width: 120px;
+  text-align: center;
+}
+
+.mascota-card img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
   border-radius: 10px;
+}
+
+/* usuario */
+.user-card {
+  text-align: center;
   cursor: pointer;
 }
 
-.destacados-list,
-.usuarios-top-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.usuario-top-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.usuario-top-avatar {
-  width: 55px;
-  height: 55px;
+.user-card .avatar {
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  overflow: hidden;
-  background: #dcfce7;
+  background: orange;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  color: white;
   font-weight: bold;
 }

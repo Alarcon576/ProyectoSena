@@ -7,6 +7,7 @@ import Perfil from "./components/profile/Perfil";
 import PerfilPublico from "./components/profile/PerfilPublico";
 import Explorar from "./components/explorar/Explorar";
 import Adopciones from "./components/adopciones/Adopciones";
+import Configuracion from "./components/config/Configuracion";
 
 function App() {
   const [view, setView] = useState("login");
@@ -87,6 +88,11 @@ function App() {
       {view === "perfilPublico" && selectedUserId && (
         <PerfilPublico onSwitch={handleSwitch} userId={selectedUserId} />
       )}
+
+      {view === "configuracion" && (
+        <Configuracion onSwitch={handleSwitch} />
+      )}
+
     </div>
   );
 }

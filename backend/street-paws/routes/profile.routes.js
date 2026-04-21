@@ -1,17 +1,31 @@
 import { Router } from "express";
-import { actualizarFotoPerfil } from "../controllers/profile.controller.js";
+import {
+  actualizarFotoPerfil,
+  obtenerMiPerfil,
+  obtenerPerfilPorId,
+  actualizarPerfil // 👈 IMPORTANTE
+} from "../controllers/profile.controller.js";
+
 import { verificarToken } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/upload.middleware.js";
-import { obtenerMiPerfil } from "../controllers/profile.controller.js";
-import { obtenerPerfilPorId } from "../controllers/profile.controller.js";
+
 const router = Router();
 
+// 📸 foto
 router.put(
   "/foto",
   verificarToken,
   upload.single("foto"),
   actualizarFotoPerfil
 );
+
+// 👤 mi perfil
 router.get("/me", verificarToken, obtenerMiPerfil);
+
+// 👤 perfil público
 router.get("/:id", verificarToken, obtenerPerfilPorId);
+
+// ✏️ ACTUALIZAR PERFIL 
+router.put("/", verificarToken, actualizarPerfil);
+
 export default router;

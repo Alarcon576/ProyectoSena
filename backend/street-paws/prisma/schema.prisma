@@ -24,6 +24,7 @@ model Usuario {
   fecha_registro  DateTime
   resetToken    String?
   resetTokenExp DateTime?
+  foto_perfil   String?
 
   id_rol          Int
   rol             Roles     @relation(fields: [id_rol], references: [id_rol])
@@ -32,6 +33,7 @@ model Usuario {
   comentarios     Comentario[]
   likes           Like[]
   solicitudes     Solicitud_Adopcion[]
+  historialSalud Historial_IA_Salud[]
 }
 model Publicacion {
   id_publicacion     Int       @id @default(autoincrement())
@@ -109,4 +111,15 @@ model Solicitud_Adopcion {
 
   usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
   mascota  Mascota  @relation(fields: [id_mascota], references: [id_mascota])
+}
+
+model Historial_IA_Salud {
+  id_historial Int      @id @default(autoincrement())
+  id_usuario   Int
+  id_mascota   Int?
+  consulta     String
+  respuesta    String
+  fecha        DateTime @default(now())
+
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
 }

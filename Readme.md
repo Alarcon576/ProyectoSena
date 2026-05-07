@@ -1,6 +1,6 @@
-
+<img width="1415" height="908" alt="image" src="https://github.com/user-attachments/assets/1dfd130a-ab7c-4441-8d0e-b3b33599fb02" />
 # 🐾 Street Paws
-
+### Proyecto elaborado por aprendices del** CBA MOSQUERA**
 ## 📖 Descripción
 Street Paws es una plataforma web y móvil enfocada en ayudar a animales en situación de calle a encontrar un hogar responsable.  
 
@@ -196,15 +196,11 @@ CLOUDINARY_API_SECRET=tu_api_secret
 
 ## 📸 Evidencias
 
-### Sistema Web
-- Feed social funcionando.
-- Publicaciones con imágenes.
-- Likes y comentarios.
-- Sistema de adopciones.
-- Explorador de usuarios y mascotas.
-- Perfil editable.
-- Configuración de usuario.
-- IA de orientación animal.
+<img width="1600" height="780" alt="image" src="https://github.com/user-attachments/assets/e5151a1e-4c4b-4ad1-97bd-8900e4eb85c6" />
+
+<img width="1410" height="910" alt="image" src="https://github.com/user-attachments/assets/ce7faf5e-7dee-4a1d-9acb-6785cdd02eff" />
+
+<img width="1415" height="908" alt="image" src="https://github.com/user-attachments/assets/1e3d3892-bf3a-4e9f-8d4b-24404b41c844" />
 
 ---
 

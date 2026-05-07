@@ -1,5 +1,5 @@
 # 🐾 Street Paws
-### Proyecto elaborado por aprendices del** CBA MOSQUERA**
+### Proyecto elaborado por aprendices del CBA MOSQUERA
 ## 📖 Descripción
 Street Paws es una plataforma web y móvil enfocada en ayudar a animales en situación de calle a encontrar un hogar responsable.  
 

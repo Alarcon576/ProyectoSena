@@ -1,4 +1,3 @@
-<img width="1415" height="908" alt="image" src="https://github.com/user-attachments/assets/1dfd130a-ab7c-4441-8d0e-b3b33599fb02" />
 # 🐾 Street Paws
 ### Proyecto elaborado por aprendices del** CBA MOSQUERA**
 ## 📖 Descripción

@@ -158,7 +158,7 @@ CLOUDINARY_API_SECRET=tu_api_secret
 
 ## 👤 Usuario de prueba
 
-**Usuario:** ``  
+**Usuario:**`recordatorioprueba@gmail.com`  
 **Contraseña:** `123456`
 
 ---

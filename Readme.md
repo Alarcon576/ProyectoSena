@@ -1,6 +1,5 @@
-
 # 🐾 Street Paws
-
+### Proyecto elaborado por aprendices del CBA MOSQUERA
 ## 📖 Descripción
 Street Paws es una plataforma web y móvil enfocada en ayudar a animales en situación de calle a encontrar un hogar responsable.  
 
@@ -72,9 +71,6 @@ Antes de ejecutar el proyecto debes tener instalado:
 git clone https://github.com/TU-USUARIO/street-paws.git
 ```
 
-## 1.1Ubicate en la rama
-adopciones-back
-
 # 📥 Instalación
 
 ## 1. Entrar al proyecto
@@ -98,14 +94,12 @@ cd street-paws
 ### Backend
 ```bash
 cd backend
-cd street-paws
 npm install
 ```
 
 ### Frontend
 ```bash
-cd ../front-end
-cd StreetPawsFrontend        
+cd ../frontend
 npm install
 ```
 
@@ -127,9 +121,32 @@ npm run dev
 ```
 Servidor: [http://localhost:5173](http://localhost:5173)
 
+### Flutter
+```bash
+flutter pub get
+flutter run
+```
 
 ---
 
+## 🗄 Base de datos
+
+### Crear base de datos PostgreSQL
+```sql
+CREATE DATABASE street_paws;
+```
+
+### Ejecutar migraciones Prisma
+```bash
+npx prisma migrate dev
+```
+
+### Generar cliente Prisma
+```bash
+npx prisma generate
+```
+
+---
 
 ## 🔐 Variables de entorno
 
@@ -158,7 +175,7 @@ CLOUDINARY_API_SECRET=tu_api_secret
 
 ## 👤 Usuario de prueba
 
-**Usuario:**`recordatorioprueba@gmail.com`  
+**Usuario:** `admin@streetpaws.com`  
 **Contraseña:** `123456`
 
 ---
@@ -178,15 +195,11 @@ CLOUDINARY_API_SECRET=tu_api_secret
 
 ## 📸 Evidencias
 
-### Sistema Web
-- Feed social funcionando.
-- Publicaciones con imágenes.
-- Likes y comentarios.
-- Sistema de adopciones.
-- Explorador de usuarios y mascotas.
-- Perfil editable.
-- Configuración de usuario.
-- IA de orientación animal.
+<img width="1600" height="780" alt="image" src="https://github.com/user-attachments/assets/e5151a1e-4c4b-4ad1-97bd-8900e4eb85c6" />
+
+<img width="1410" height="910" alt="image" src="https://github.com/user-attachments/assets/ce7faf5e-7dee-4a1d-9acb-6785cdd02eff" />
+
+<img width="1415" height="908" alt="image" src="https://github.com/user-attachments/assets/1e3d3892-bf3a-4e9f-8d4b-24404b41c844" />
 
 ---
 

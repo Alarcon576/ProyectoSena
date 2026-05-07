@@ -72,6 +72,9 @@ Antes de ejecutar el proyecto debes tener instalado:
 git clone https://github.com/TU-USUARIO/street-paws.git
 ```
 
+## 1.1Ubicate en la rama
+adopciones-back
+
 # 📥 Instalación
 
 ## 1. Entrar al proyecto
@@ -95,12 +98,14 @@ cd street-paws
 ### Backend
 ```bash
 cd backend
+cd street-paws
 npm install
 ```
 
 ### Frontend
 ```bash
-cd ../frontend
+cd ../front-end
+cd StreetPawsFrontend        
 npm install
 ```
 
@@ -122,32 +127,9 @@ npm run dev
 ```
 Servidor: [http://localhost:5173](http://localhost:5173)
 
-### Flutter
-```bash
-flutter pub get
-flutter run
-```
 
 ---
 
-## 🗄 Base de datos
-
-### Crear base de datos PostgreSQL
-```sql
-CREATE DATABASE street_paws;
-```
-
-### Ejecutar migraciones Prisma
-```bash
-npx prisma migrate dev
-```
-
-### Generar cliente Prisma
-```bash
-npx prisma generate
-```
-
----
 
 ## 🔐 Variables de entorno
 
@@ -176,7 +158,7 @@ CLOUDINARY_API_SECRET=tu_api_secret
 
 ## 👤 Usuario de prueba
 
-**Usuario:** `admin@streetpaws.com`  
+**Usuario:** ``  
 **Contraseña:** `123456`
 
 ---

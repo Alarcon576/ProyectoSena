@@ -1,10 +1,13 @@
 .login-container {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   font-family: "Segoe UI", sans-serif;
+  overflow: hidden;
 }
 
-/* IZQUIERDA */
+/* ═══════════════════════
+   IZQUIERDA
+═══════════════════════ */
 .login-left {
   flex: 1;
   background: #0d0d0d;
@@ -17,16 +20,18 @@
 }
 
 .logo {
-  color:white;
+  color: white;
   position: absolute;
   top: 20px;
   left: 30px;
   font-weight: bold;
+  font-size: 1.2rem;
 }
 
 .login-text h1 {
   font-size: 48px;
   line-height: 1.2;
+  margin-bottom: 10px;
 }
 
 .login-text span {
@@ -37,19 +42,25 @@
   margin-top: 20px;
   color: #ccc;
   max-width: 400px;
+  line-height: 1.6;
 }
 
-/* DERECHA */
+/* ═══════════════════════
+   DERECHA
+═══════════════════════ */
 .login-right {
   flex: 1;
   background: #f4f4f4;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 40px;
 }
 
+/* FORM */
 .login-form {
-  width: 350px;
+  width: 100%;
+  max-width: 380px;
   display: flex;
   flex-direction: column;
 }
@@ -57,17 +68,20 @@
 .login-form h2 {
   margin-bottom: 20px;
   font-size: 28px;
+  color: black;
 }
 
 .login-form label {
   margin-top: 15px;
   font-weight: 500;
+  color: #111;
 }
 
+/* INPUTS */
 .input-box {
   background: #eaeaea;
   border-radius: 12px;
-  padding: 10px;
+  padding: 12px;
   margin-top: 5px;
 }
 
@@ -76,35 +90,46 @@
   background: transparent;
   outline: none;
   width: 100%;
+  color: #000;
+  font-size: 15px;
 }
 
+/* PASSWORD */
 .password-box {
   position: relative;
 }
 
 .password-box span {
   position: absolute;
-  right: 10px;
-  top: 8px;
+  right: 12px;
+  top: 10px;
   cursor: pointer;
 }
 
 /* BOTÓN */
 .login-form button {
   margin-top: 25px;
-  padding: 12px;
+  padding: 14px;
   background: #f29933;
   border: none;
   color: white;
   border-radius: 12px;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.2s ease;
+  font-size: 15px;
+}
+
+.login-form button:hover {
+  opacity: 0.92;
+  transform: translateY(-2px);
 }
 
 /* TEXTO */
 .switch-text {
   margin-top: 15px;
   text-align: center;
+  color: #333;
 }
 
 .switch-text span {
@@ -118,13 +143,82 @@
   color: red;
   margin-bottom: 10px;
 }
-.input-box input {
-  border: none;
-  background: transparent;
-  outline: none;
-  width: 100%;
-  color: #000; /* 🔥 TEXTO NEGRO */
+
+/* ═══════════════════════
+   TABLET
+═══════════════════════ */
+@media (max-width: 992px) {
+  .login-left {
+    padding: 40px;
+  }
+
+  .login-text h1 {
+    font-size: 38px;
+  }
 }
-h2{
-  color:black;
+
+/* ═══════════════════════
+   MOBILE
+═══════════════════════ */
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .login-left {
+    min-height: 40vh;
+    padding: 40px 25px;
+  }
+
+  .login-right {
+    min-height: 60vh;
+    padding: 30px 20px;
+  }
+
+  .login-text h1 {
+    font-size: 32px;
+  }
+
+  .login-text p {
+    font-size: 14px;
+    max-width: 100%;
+  }
+
+  .logo {
+    position: static;
+    margin-bottom: 30px;
+  }
+
+  .login-form {
+    max-width: 100%;
+  }
+}
+
+/* ═══════════════════════
+   MOBILE PEQUEÑO
+═══════════════════════ */
+@media (max-width: 480px) {
+  .login-left {
+    padding: 30px 20px;
+  }
+
+  .login-right {
+    padding: 25px 16px;
+  }
+
+  .login-text h1 {
+    font-size: 28px;
+  }
+
+  .login-form h2 {
+    font-size: 24px;
+  }
+
+  .input-box {
+    padding: 10px;
+  }
+
+  .login-form button {
+    padding: 12px;
+  }
 }

@@ -1760,3 +1760,36 @@ input::placeholder, textarea::placeholder {
     font-size: 14px;
   }
 }
+/* ─────────────────────────────
+   ALINEACIÓN IZQUIERDA POSTS
+───────────────────────────── */
+
+.post-user-info,
+.post-user-info h4,
+.post-user-info span,
+.post-text,
+.comentario-texto,
+.comentarios-dropdown,
+.comentario-item {
+  text-align: left;
+}
+
+/* Fecha */
+.post-user-info span {
+  display: block;
+  width: 100%;
+}
+
+/* Texto publicación */
+.post-text {
+  width: 100%;
+}
+
+/* Comentarios */
+.comentario-cuerpo {
+  align-items: flex-start;
+}
+
+.comentario-texto {
+  width: 100%;
+}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo} from "react";
 import "./Feed.css";
 
 const URL_MASCOTAS = "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
@@ -47,11 +47,21 @@ function Feed({ onSwitch }) {
   const [loadingIA, setLoadingIA] = useState(false);
 
   /* ── Cerrar menús al click fuera ── */
-  useEffect(() => {
-    const cerrar = () => { setMenuAvatarAbierto(false); setMenuPostAbierto(null); };
-    document.addEventListener("click", cerrar);
-    return () => document.removeEventListener("click", cerrar);
-  }, []);
+useEffect(() => {
+  const cerrar = (e) => {
+    if (!e.target.closest(".nav-avatar-wrapper")) {
+      setMenuAvatarAbierto(false);
+    }
+
+    if (!e.target.closest(".post-menu-container")) {
+      setMenuPostAbierto(null);
+    }
+  };
+
+  document.addEventListener("click", cerrar);
+
+  return () => document.removeEventListener("click", cerrar);
+}, []);
 
   /* ── Cerrar modal con Escape ── */
   useEffect(() => {
@@ -390,7 +400,7 @@ function Feed({ onSwitch }) {
   };
 
   /* ── Contenido del sidebar (reutilizado en desktop y drawer) ── */
-  const SidebarLeftContent = () => (
+ const SidebarLeftContent = useMemo(() => (
     <>
       <ul className="menu-list">
         <li onClick={() => onSwitch("feed")}>Noticias</li>
@@ -401,9 +411,10 @@ function Feed({ onSwitch }) {
         <p>¿Sabías que el contacto visual con tu mascota libera oxitocina tanto en ti como en él?</p>
       </div>
     </>
-  );
+  ), []
+);
 
-  const SidebarRightContent = () => (
+  const SidebarRightContent = useMemo(() => (
     <>
       <div className="widget-card salud-ia">
         <h3>Orientación básica de salud</h3>
@@ -492,7 +503,14 @@ function Feed({ onSwitch }) {
         ))}
       </div>
     </>
-  );
+  ), [
+  sintomasIA,
+  respuestaIA,
+  loadingIA,
+  hashtagsDinamicos,
+  mascotasRandom,
+  lideresComunidad
+]);
 
   return (
     <>
@@ -582,8 +600,8 @@ function Feed({ onSwitch }) {
           </button>
         </div>
         <div className="sidebar-drawer-content">
-          <SidebarLeftContent />
-          <SidebarRightContent />
+         {SidebarLeftContent}
+          {SidebarRightContent}
         </div>
       </div>
 
@@ -625,7 +643,7 @@ function Feed({ onSwitch }) {
                 : usuarioActual?.nombre?.charAt(0) || "U"}
             </div>
             {menuAvatarAbierto && (
-              <div className="dropdown-avatar">
+              <div className="dropdown-avatar"  onClick={(e) => e.stopPropagation()}>
                 <div className="dropdown-avatar-header">
                   <span className="dropdown-avatar-nombre">{usuarioActual?.nombre || "Usuario"}</span>
                   <span className="dropdown-avatar-email">{usuarioActual?.email || ""}</span>
@@ -655,7 +673,7 @@ function Feed({ onSwitch }) {
 
         {/* SIDEBAR IZQUIERDO (desktop) */}
         <aside className="sidebar-left">
-          <SidebarLeftContent />
+         {SidebarLeftContent}
         </aside>
 
         {/* FEED CENTRAL */}
@@ -850,7 +868,7 @@ function Feed({ onSwitch }) {
 
         {/* SIDEBAR DERECHO (desktop) */}
         <aside className="sidebar-right">
-          <SidebarRightContent />
+          {SidebarRightContent}
         </aside>
       </div>
     </>

@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import "./Feed.css";
+
 const URL_MASCOTAS = "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
 const URL_POSTS         = "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";
 const URL_INTERACCIONES = "https://proyectosena-production-4ad5.up.railway.app/api/interacciones";
 const URL_PROFILE       = "https://proyectosena-production-4ad5.up.railway.app/api/profile";
 const URL_IA = "https://proyectosena-production-4ad5.up.railway.app/api/ia";
+
 function Feed({ onSwitch }) {
   const [posts, setPosts]                           = useState([]);
   const [contenido, setContenido]                   = useState("");
@@ -14,47 +16,65 @@ function Feed({ onSwitch }) {
   const [usuarioActual, setUsuarioActual]           = useState(null);
   const [busqueda, setBusqueda]                     = useState("");
   const [loadingPost, setLoadingPost]               = useState(false);
- 
+
   // Modal edición post
   const [modalEditPost, setModalEditPost]   = useState(null);
   const [textoEditado, setTextoEditado]     = useState("");
   const [imagenEditada, setImagenEditada]   = useState(null);
   const [loadingEdit, setLoadingEdit]       = useState(false);
- 
+
   // Edición comentarios
   const [editandoComentario, setEditandoComentario]         = useState(null);
   const [textoComentarioEditado, setTextoComentarioEditado] = useState("");
   const [loadingComentario, setLoadingComentario]           = useState(false);
- 
+
   // Menús
   const [menuAvatarAbierto, setMenuAvatarAbierto] = useState(false);
   const [menuPostAbierto, setMenuPostAbierto]     = useState(null);
- 
-  // Ref para input de imagen del crear-post
+
+  // ── DRAWER SIDEBAR MÓVIL ──
+  const [drawerAbierto, setDrawerAbierto] = useState(false);
+
   const inputImagenRef = useRef(null);
- 
+
   const token = localStorage.getItem("token");
- 
+
   const [mascotas, setMascotas] = useState([]);
   const [mascotasRandom, setMascotasRandom] = useState([]);
 
   const [sintomasIA, setSintomasIA] = useState("");
   const [respuestaIA, setRespuestaIA] = useState(null);
   const [loadingIA, setLoadingIA] = useState(false);
+
   /* ── Cerrar menús al click fuera ── */
   useEffect(() => {
     const cerrar = () => { setMenuAvatarAbierto(false); setMenuPostAbierto(null); };
     document.addEventListener("click", cerrar);
     return () => document.removeEventListener("click", cerrar);
   }, []);
- 
+
   /* ── Cerrar modal con Escape ── */
   useEffect(() => {
-    const onKey = (e) => { if (e.key === "Escape") setModalEditPost(null); };
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        setModalEditPost(null);
+        setDrawerAbierto(false);
+      }
+    };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
- 
+
+  /* ── Bloquear scroll del body cuando el drawer está abierto ── */
+  useEffect(() => {
+    if (drawerAbierto) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [drawerAbierto]);
+
   /* ════ DATA ════ */
   const cargarPosts = async () => {
     try {
@@ -63,7 +83,7 @@ function Feed({ onSwitch }) {
       setPosts(data);
     } catch (err) { console.error("Error cargando posts:", err); }
   };
- 
+
   const cargarUsuarioActual = async () => {
     try {
       const res  = await fetch(`${URL_PROFILE}/me`, {
@@ -73,9 +93,9 @@ function Feed({ onSwitch }) {
       setUsuarioActual(data);
     } catch (err) { console.error("Error cargando usuario:", err); }
   };
- 
+
   useEffect(() => { cargarPosts(); cargarUsuarioActual(); }, []);
- 
+
   /* ════ CREAR POST ════ */
   const crearPost = async (e) => {
     e.preventDefault();
@@ -85,7 +105,7 @@ function Feed({ onSwitch }) {
       const fd = new FormData();
       fd.append("contenido_texto", contenido);
       if (imagen) fd.append("imagen", imagen);
- 
+
       const res  = await fetch(URL_POSTS, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -105,12 +125,12 @@ function Feed({ onSwitch }) {
       alert("Ocurrió un error al crear la publicación");
     } finally { setLoadingPost(false); }
   };
- 
+
   const quitarImagenNueva = () => {
     setImagen(null);
     if (inputImagenRef.current) inputImagenRef.current.value = "";
   };
- 
+
   /* ════ LIKE ════ */
   const toggleLike = async (id) => {
     try {
@@ -121,10 +141,10 @@ function Feed({ onSwitch }) {
       await cargarPosts();
     } catch (err) { console.error("Error dando like:", err); }
   };
- 
+
   const yaDioLike = (post) =>
     post.likes?.some((l) => l.id_usuario === usuarioActual?.id_usuario);
- 
+
   /* ════ COMENTARIOS ════ */
   const crearComentario = async (idPost) => {
     const texto = comentarios[idPost];
@@ -147,7 +167,7 @@ function Feed({ onSwitch }) {
       await cargarPosts();
     } catch (err) { console.error("Error comentando:", err); }
   };
- 
+
   const eliminarComentario = async (idComentario) => {
     if (!window.confirm("¿Eliminar este comentario?")) return;
     try {
@@ -163,12 +183,12 @@ function Feed({ onSwitch }) {
       await cargarPosts();
     } catch (err) { console.error("Error eliminando comentario:", err); }
   };
- 
+
   const iniciarEdicionComentario = (c) => {
     setEditandoComentario(c.id_comentario);
     setTextoComentarioEditado(c.contenido);
   };
- 
+
   const guardarEdicionComentario = async (idComentario) => {
     if (!textoComentarioEditado.trim()) return;
     setLoadingComentario(true);
@@ -192,17 +212,17 @@ function Feed({ onSwitch }) {
     } catch (err) { console.error("Error editando comentario:", err); }
     finally { setLoadingComentario(false); }
   };
- 
+
   const toggleComentarios = (id) =>
     setMostrarComentarios((prev) => ({ ...prev, [id]: !prev[id] }));
- 
+
   /* ════ EDITAR POST (modal) ════ */
   const abrirModalEdicion = (post) => {
     setModalEditPost(post);
     setTextoEditado(post.contenido_texto || "");
     setImagenEditada(null);
   };
- 
+
   const guardarEdicion = async () => {
     if (!modalEditPost) return;
     if (!textoEditado.trim() && !imagenEditada && !modalEditPost.imagenes?.[0]) {
@@ -214,13 +234,13 @@ function Feed({ onSwitch }) {
       const fd = new FormData();
       fd.append("contenido_texto", textoEditado);
       if (imagenEditada) fd.append("imagen", imagenEditada);
- 
+
       const res = await fetch(`${URL_POSTS}/${modalEditPost.id_publicacion}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
         body: fd
       });
- 
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         alert(data.error || "No se pudo guardar la edición");
@@ -234,7 +254,7 @@ function Feed({ onSwitch }) {
       alert("Error de conexión al guardar");
     } finally { setLoadingEdit(false); }
   };
- 
+
   /* ════ ELIMINAR POST ════ */
   const eliminarPost = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar esta publicación?")) return;
@@ -247,187 +267,232 @@ function Feed({ onSwitch }) {
       await cargarPosts();
     } catch (err) { console.error("Error eliminando:", err); }
   };
- 
+
   const postsFiltrados = posts.filter((p) =>
     p.usuario.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   const lideresComunidad = Object.values(
-  posts.reduce((acc, post) => {
-    const usuario = post.usuario;
-
-    if (!acc[usuario.id_usuario]) {
-      acc[usuario.id_usuario] = {
-        id: usuario.id_usuario,
-        nombre: usuario.nombre,
-        foto_perfil: usuario.foto_perfil,
-        totalPosts: 0,
-        totalLikes: 0,
-        totalComentarios: 0,
-        score: 0
-      };
-    }
-
-    acc[usuario.id_usuario].totalPosts += 1;
-    acc[usuario.id_usuario].totalLikes +=
-      post.likes?.length || 0;
-    acc[usuario.id_usuario].totalComentarios +=
-      post.comentarios?.length || 0;
-
-    return acc;
-  }, {})
-)
-  .map((usuario) => ({
-    ...usuario,
-    score:
-      usuario.totalPosts * 3 +
-      usuario.totalLikes +
-      usuario.totalComentarios * 2
-  }))
-  .sort((a, b) => b.score - a.score)
-  .slice(0, 5);
-
-
-  const obtenerMascotasAleatorias = (
-  lista,
-  cantidad = 2
-) => {
-  if (!lista || lista.length === 0) return [];
-
-  const disponibles = lista.filter(
-    (m) =>
-      m.estado_adopcion?.toLowerCase() ===
-      "disponible"
-  );
-
-  const base =
-    disponibles.length > 0 ? disponibles : lista;
-
-  const mezcladas = [...base].sort(
-    () => Math.random() - 0.5
-  );
-
-  return mezcladas.slice(0, cantidad);
-};
-
-const cargarMascotas = async () => {
-  
-  try {
-    const res = await fetch(URL_MASCOTAS, {
-      headers: {
-        Authorization: `Bearer ${token}`
-        
+    posts.reduce((acc, post) => {
+      const usuario = post.usuario;
+      if (!acc[usuario.id_usuario]) {
+        acc[usuario.id_usuario] = {
+          id: usuario.id_usuario,
+          nombre: usuario.nombre,
+          foto_perfil: usuario.foto_perfil,
+          totalPosts: 0,
+          totalLikes: 0,
+          totalComentarios: 0,
+          score: 0
+        };
       }
-    });
+      acc[usuario.id_usuario].totalPosts += 1;
+      acc[usuario.id_usuario].totalLikes += post.likes?.length || 0;
+      acc[usuario.id_usuario].totalComentarios += post.comentarios?.length || 0;
+      return acc;
+    }, {})
+  )
+    .map((usuario) => ({
+      ...usuario,
+      score:
+        usuario.totalPosts * 3 +
+        usuario.totalLikes +
+        usuario.totalComentarios * 2
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
 
-    const data = await res.json();
-
-    if (!Array.isArray(data)) {
-      setMascotas([]);
-      console.log("MASCOTAS:", data);
-      return;
-    }
-
-    setMascotas(data);
-  } catch (error) {
-    console.error("Error cargando mascotas:", error);
-    setMascotas([]);
-  }
-
-  
-};
-
-useEffect(() => {
-  cargarMascotas();
-}, []);
-
-useEffect(() => {
-  if (mascotas.length === 0) return;
-
-  const rotarMascotas = () => {
-    setMascotasRandom(
-      obtenerMascotasAleatorias(mascotas, 2)
+  const obtenerMascotasAleatorias = (lista, cantidad = 2) => {
+    if (!lista || lista.length === 0) return [];
+    const disponibles = lista.filter(
+      (m) => m.estado_adopcion?.toLowerCase() === "disponible"
     );
+    const base = disponibles.length > 0 ? disponibles : lista;
+    const mezcladas = [...base].sort(() => Math.random() - 0.5);
+    return mezcladas.slice(0, cantidad);
   };
 
-  rotarMascotas();
+  const cargarMascotas = async () => {
+    try {
+      const res = await fetch(URL_MASCOTAS, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!Array.isArray(data)) { setMascotas([]); return; }
+      setMascotas(data);
+    } catch (error) {
+      console.error("Error cargando mascotas:", error);
+      setMascotas([]);
+    }
+  };
 
-  const intervalo = setInterval(
-    rotarMascotas,
-    15000
-  );
+  useEffect(() => { cargarMascotas(); }, []);
 
-  return () => clearInterval(intervalo);
-}, [mascotas]);
+  useEffect(() => {
+    if (mascotas.length === 0) return;
+    const rotarMascotas = () => {
+      setMascotasRandom(obtenerMascotasAleatorias(mascotas, 2));
+    };
+    rotarMascotas();
+    const intervalo = setInterval(rotarMascotas, 15000);
+    return () => clearInterval(intervalo);
+  }, [mascotas]);
 
-
-const hashtagsDinamicos = Object.entries(
-  posts.reduce((acc, post) => {
-    const texto = post.contenido_texto || "";
-
-    const hashtags =
-      texto.match(/#\w+/g) || [];
-
-    hashtags.forEach((tag) => {
-      const limpio = tag.toLowerCase();
-
-      acc[limpio] = (acc[limpio] || 0) + 1;
-    });
-
-    return acc;
-  }, {})
-)
-  .sort((a, b) => b[1] - a[1])
-  .slice(0, 3);
+  const hashtagsDinamicos = Object.entries(
+    posts.reduce((acc, post) => {
+      const texto = post.contenido_texto || "";
+      const hashtags = texto.match(/#\w+/g) || [];
+      hashtags.forEach((tag) => {
+        const limpio = tag.toLowerCase();
+        acc[limpio] = (acc[limpio] || 0) + 1;
+      });
+      return acc;
+    }, {})
+  )
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
 
   const consultarSaludIA = async () => {
-  if (!sintomasIA.trim()) return;
-
-  setLoadingIA(true);
-
-  try {
-    const res = await fetch(`${URL_IA}/salud`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        especie: "Mascota",
-        edad: 1,
-        sintomas: sintomasIA
-      })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.error || "No se pudo consultar la IA");
-      return;
+    if (!sintomasIA.trim()) return;
+    setLoadingIA(true);
+    try {
+      const res = await fetch(`${URL_IA}/salud`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          especie: "Mascota",
+          edad: 1,
+          sintomas: sintomasIA
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "No se pudo consultar la IA");
+        return;
+      }
+      let texto = data.resultado;
+      texto = texto.replace(/```json|```/g, "").trim();
+      try {
+        const resultado = JSON.parse(texto);
+        setRespuestaIA(resultado);
+      } catch (error) {
+        setRespuestaIA({ nivel: "desconocido", orientacion: texto });
+      }
+    } catch (error) {
+      console.error("Error salud IA:", error);
+      alert("Error consultando la IA");
+    } finally {
+      setLoadingIA(false);
     }
+  };
 
-    let texto = data.resultado;
+  /* ── Contenido del sidebar (reutilizado en desktop y drawer) ── */
+  const SidebarLeftContent = () => (
+    <>
+      <ul className="menu-list">
+        <li onClick={() => onSwitch("feed")}>Noticias</li>
+        <li>Mis Adopciones</li>
+      </ul>
+      <div className="tip-box">
+        <h4>💡 Tip del día</h4>
+        <p>¿Sabías que el contacto visual con tu mascota libera oxitocina tanto en ti como en él?</p>
+      </div>
+    </>
+  );
 
+  const SidebarRightContent = () => (
+    <>
+      <div className="widget-card salud-ia">
+        <h3>Orientación básica de salud</h3>
+        <textarea
+          className="salud-ia-input"
+          placeholder="Ej: mi perro no quiere comer y está vomitando"
+          value={sintomasIA}
+          onChange={(e) => setSintomasIA(e.target.value)}
+        />
+        <button
+          className="btn-salud-ia"
+          onClick={consultarSaludIA}
+          disabled={loadingIA}
+        >
+          {loadingIA ? "Consultando..." : "Consultar IA"}
+        </button>
+        {respuestaIA && (
+          <div className={`salud-ia-respuesta nivel-${respuestaIA.nivel}`}>
+            <h4>Nivel: {respuestaIA.nivel}</h4>
+            <p>{respuestaIA.orientacion}</p>
+          </div>
+        )}
+      </div>
 
-texto = texto.replace(/```json|```/g, "").trim();
+      <div className="widget-card">
+        <h3>Tendencias</h3>
+        {hashtagsDinamicos.length === 0 ? (
+          <p>No hay tendencias aún</p>
+        ) : (
+          hashtagsDinamicos.map(([tag, total]) => (
+            <div className="tendencia-item" key={tag}>
+              <span className="tendencia-tag">{tag}</span>
+              <span className="tendencia-count">{total} publicaciones</span>
+            </div>
+          ))
+        )}
+      </div>
 
-try {
-  const resultado = JSON.parse(texto);
-  setRespuestaIA(resultado);
-} catch (error) {
-  console.error("Error parseando IA:", error);
-  setRespuestaIA({
-    nivel: "desconocido",
-    orientacion: texto
-  });
-}
-  } catch (error) {
-    console.error("Error salud IA:", error);
-    alert("Error consultando la IA");
-  } finally {
-    setLoadingIA(false);
-  }
-};
+      <div className="widget-card adoptame">
+        <h3>Adóptame</h3>
+        {mascotasRandom.length === 0 ? (
+          <p>No hay mascotas disponibles</p>
+        ) : (
+          mascotasRandom.map((mascota) => (
+            <div className="adopt-item" key={mascota.id_mascota}>
+              <div className="adopt-avatar">
+                {mascota.fotos?.[0]?.url_foto ? (
+                  <img
+                    src={mascota.fotos[0].url_foto}
+                    alt={mascota.nombre}
+                    className="avatar-feed-img"
+                  />
+                ) : (
+                  mascota.nombre.charAt(0)
+                )}
+              </div>
+              <div className="adopt-info">
+                <strong>{mascota.nombre}</strong>
+                <span>{mascota.raza} · {mascota.edad}</span>
+              </div>
+              <span className="adopt-badge disponible">Disponible</span>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="widget-card lideres">
+        <h3>Top 5 de la Comunidad</h3>
+        {lideresComunidad.map((lider, index) => (
+          <div className="lider-item" key={lider.id}>
+            <div className="lider-avatar">
+              {lider.foto_perfil ? (
+                <img src={lider.foto_perfil} alt={lider.nombre} className="avatar-feed-img" />
+              ) : (
+                lider.nombre.charAt(0)
+              )}
+            </div>
+            <span
+              className="lider-nombre clickable-user"
+              onClick={() => onSwitch("perfilPublico", lider.id)}
+            >
+              #{index + 1} {lider.nombre}
+            </span>
+            <span className="lider-pts">{lider.score} pts</span>
+          </div>
+        ))}
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -435,12 +500,10 @@ try {
       {modalEditPost && (
         <div className="modal-overlay" onClick={() => setModalEditPost(null)}>
           <div className="modal-edit-post" onClick={(e) => e.stopPropagation()}>
- 
             <div className="modal-edit-header">
               <h2>Editar publicación</h2>
               <button className="modal-close-btn" onClick={() => setModalEditPost(null)}>✕</button>
             </div>
- 
             <div className="modal-edit-user">
               <div className="avatar-mini">
                 {usuarioActual?.foto_perfil
@@ -452,7 +515,6 @@ try {
                 <span className="modal-edit-hint">Editando tu publicación</span>
               </div>
             </div>
- 
             <textarea
               className="modal-edit-textarea"
               value={textoEditado}
@@ -460,28 +522,20 @@ try {
               placeholder="¿Qué quieres compartir?"
               rows={5}
             />
- 
-            {/* Preview imagen actual (si no hay nueva seleccionada) */}
             {!imagenEditada && modalEditPost.imagenes?.[0] && (
               <div className="modal-edit-img-preview">
                 <img src={modalEditPost.imagenes[0].url_imagen} alt="actual" />
                 <span className="modal-edit-img-label">Imagen actual</span>
               </div>
             )}
- 
-            {/* Preview nueva imagen */}
             {imagenEditada && (
               <div className="modal-edit-img-preview">
                 <img src={URL.createObjectURL(imagenEditada)} alt="nueva" />
-                <button
-                  className="modal-edit-remove-img"
-                  onClick={() => setImagenEditada(null)}
-                >
+                <button className="modal-edit-remove-img" onClick={() => setImagenEditada(null)}>
                   ✕ Quitar
                 </button>
               </div>
             )}
- 
             <div className="modal-edit-footer">
               <label className="upload-btn">
                 📷 Cambiar foto
@@ -503,21 +557,46 @@ try {
                 </button>
               </div>
             </div>
- 
           </div>
         </div>
       )}
- 
+
+      {/* ══ DRAWER OVERLAY (solo móvil) ══ */}
+      {drawerAbierto && (
+        <div
+          className="sidebar-drawer-overlay"
+          onClick={() => setDrawerAbierto(false)}
+        />
+      )}
+
+      {/* ══ DRAWER PANEL (solo móvil) ══ */}
+      <div className={`sidebar-drawer ${drawerAbierto ? "open" : ""}`}>
+        <div className="sidebar-drawer-header">
+          <h3>Street Paws</h3>
+          <button
+            className="btn-drawer-close"
+            onClick={() => setDrawerAbierto(false)}
+            aria-label="Cerrar panel"
+          >
+            ✕
+          </button>
+        </div>
+        <div className="sidebar-drawer-content">
+          <SidebarLeftContent />
+          <SidebarRightContent />
+        </div>
+      </div>
+
       {/* ══ TOP NAVBAR ══ */}
       <nav className="top-navbar">
-        <div className="nav-brand">Street Paws</div>
- 
+        <div className="nav-brand" onClick={() => onSwitch("feed")}>Street Paws</div>
+
         <div className="nav-links">
           <span className="active" onClick={() => onSwitch("feed")}>Inicio</span>
           <span onClick={() => onSwitch("explorar")}>Explorar</span>
           <span onClick={() => onSwitch("adopciones")}>Adopciones</span>
         </div>
- 
+
         <div className="nav-search">
           <input
             type="text"
@@ -525,6 +604,17 @@ try {
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
+
+          {/* Botón para abrir el drawer en móvil */}
+          <button
+            className="btn-sidebar-toggle"
+            onClick={(e) => { e.stopPropagation(); setDrawerAbierto((v) => !v); }}
+            aria-label="Abrir panel lateral"
+            title="IA, Tendencias y más"
+          >
+            ✦
+          </button>
+
           <div
             className="nav-avatar-wrapper"
             onClick={(e) => { e.stopPropagation(); setMenuAvatarAbierto((v) => !v); }}
@@ -559,25 +649,17 @@ try {
           </div>
         </div>
       </nav>
- 
+
       {/* ══ LAYOUT ══ */}
       <div className="feed-layout">
- 
-        {/* SIDEBAR IZQUIERDO */}
+
+        {/* SIDEBAR IZQUIERDO (desktop) */}
         <aside className="sidebar-left">
-          <ul className="menu-list">
-            <li onClick={() => onSwitch("feed")}>Noticias</li>
-            <li>Mis Adopciones</li>
-          </ul>
-          <div className="tip-box">
-            <h4>💡 Tip del día</h4>
-            <p>¿Sabías que el contacto visual con tu mascota libera oxitocina tanto en ti como en él?</p>
-          </div>
+          <SidebarLeftContent />
         </aside>
- 
+
         {/* FEED CENTRAL */}
         <main className="feed-main">
- 
           {/* ── Crear post ── */}
           <form className="crear-post-card" onSubmit={crearPost}>
             <div className="crear-post-header">
@@ -592,25 +674,17 @@ try {
                 onChange={(e) => setContenido(e.target.value)}
               />
             </div>
- 
-            {/* Preview imagen con botón eliminar */}
             {imagen && (
               <div className="crear-post-img-preview">
                 <img src={URL.createObjectURL(imagen)} alt="preview" className="preview-image" />
-                <button
-                  type="button"
-                  className="btn-quitar-imagen"
-                  onClick={quitarImagenNueva}
-                  title="Quitar imagen"
-                >
+                <button type="button" className="btn-quitar-imagen" onClick={quitarImagenNueva} title="Quitar imagen">
                   ✕
                 </button>
               </div>
             )}
- 
             <div className="crear-post-footer">
               <label className="upload-btn">
-                 Foto
+                Foto
                 <input
                   ref={inputImagenRef}
                   type="file"
@@ -624,16 +698,14 @@ try {
               </button>
             </div>
           </form>
- 
+
           {/* ── Posts ── */}
           {postsFiltrados.map((post) => {
             const esMio   = usuarioActual?.id_usuario === post.usuario.id_usuario;
             const likeado = yaDioLike(post);
- 
+
             return (
               <div className="post-card" key={post.id_publicacion}>
- 
-                {/* Header */}
                 <div className="post-header">
                   <div className="post-user">
                     <div className="avatar-mini">
@@ -649,13 +721,11 @@ try {
                         >
                           {post.usuario.nombre}
                         </span>
-                    
                       </h4>
                       <span>{new Date(post.fecha_publicacion).toLocaleString()}</span>
                     </div>
                   </div>
- 
-                  {/* Menú 3 puntos */}
+
                   {esMio && (
                     <div className="post-menu-container" onClick={(e) => e.stopPropagation()}>
                       <button
@@ -682,14 +752,12 @@ try {
                     </div>
                   )}
                 </div>
- 
-                {/* Contenido */}
+
                 <p className="post-text">{post.contenido_texto}</p>
                 {post.imagenes?.[0] && (
                   <img src={post.imagenes[0].url_imagen} alt="post" className="post-image" />
                 )}
- 
-                {/* Acciones */}
+
                 <div className="post-actions">
                   <button
                     className={`btn-like ${likeado ? "liked" : ""}`}
@@ -701,18 +769,15 @@ try {
                     💬 {post.comentarios.length}
                   </button>
                 </div>
- 
-                {/* Comentarios */}
+
                 {mostrarComentarios[post.id_publicacion] && (
                   <div className="comentarios-dropdown">
                     {post.comentarios.length === 0 && (
                       <p className="sin-comentarios">Sé el primero en comentar 🐾</p>
                     )}
- 
                     {post.comentarios.map((c) => {
                       const esMiComentario = usuarioActual?.id_usuario === c.usuario.id_usuario;
                       const puedeBorrar    = esMiComentario || esMio;
- 
                       return (
                         <div className="comentario-item" key={c.id_comentario}>
                           {editandoComentario === c.id_comentario ? (
@@ -728,15 +793,10 @@ try {
                                 autoFocus
                               />
                               <div className="comentario-edit-btns">
-                                <button
-                                  onClick={() => guardarEdicionComentario(c.id_comentario)}
-                                  disabled={loadingComentario}
-                                >
+                                <button onClick={() => guardarEdicionComentario(c.id_comentario)} disabled={loadingComentario}>
                                   {loadingComentario ? "..." : "Guardar"}
                                 </button>
-                                <button onClick={() => setEditandoComentario(null)}>
-                                  Cancelar
-                                </button>
+                                <button onClick={() => setEditandoComentario(null)}>Cancelar</button>
                               </div>
                             </div>
                           ) : (
@@ -752,20 +812,12 @@ try {
                               </div>
                               <div className="comentario-acciones">
                                 {esMiComentario && (
-                                  <button
-                                    className="btn-comentario-accion"
-                                    onClick={() => iniciarEdicionComentario(c)}
-                                    title="Editar comentario"
-                                  >
+                                  <button className="btn-comentario-accion" onClick={() => iniciarEdicionComentario(c)} title="Editar comentario">
                                     ✏️
                                   </button>
                                 )}
                                 {puedeBorrar && (
-                                  <button
-                                    className="btn-comentario-accion eliminar"
-                                    onClick={() => eliminarComentario(c.id_comentario)}
-                                    title="Eliminar comentario"
-                                  >
+                                  <button className="btn-comentario-accion eliminar" onClick={() => eliminarComentario(c.id_comentario)} title="Eliminar comentario">
                                     🗑️
                                   </button>
                                 )}
@@ -775,8 +827,6 @@ try {
                         </div>
                       );
                     })}
- 
-                    {/* Input nuevo comentario */}
                     <div className="comentario-box-modern">
                       <input
                         type="text"
@@ -797,135 +847,14 @@ try {
             );
           })}
         </main>
- 
-        {/* SIDEBAR DERECHO */}
+
+        {/* SIDEBAR DERECHO (desktop) */}
         <aside className="sidebar-right">
-          <div className="widget-card salud-ia">
-          <div className="widget-card salud-ia">
-  <h3>Orientación básica de salud
-  </h3>
-
-  <textarea
-    className="salud-ia-input"
-    placeholder="Ej: mi perro no quiere comer y está vomitando"
-    value={sintomasIA}
-    onChange={(e) => setSintomasIA(e.target.value)}
-  />
-
-  <button
-    className="btn-salud-ia"
-    onClick={consultarSaludIA}
-    disabled={loadingIA}
-  >
-    {loadingIA ? "Consultando..." : "Consultar IA"}
-  </button>
-
- {respuestaIA && (
-  <div
-    className={`salud-ia-respuesta nivel-${respuestaIA.nivel}`}
-  >
-    <h4>Nivel: {respuestaIA.nivel}</h4>
-    <p>{respuestaIA.orientacion}</p>
-  </div>
-)}
-</div>
-          </div>
-          <div className="widget-card">
-            <h3>Tendencias</h3>
-           <div className="widget-card">
-  <h3>Tendencias</h3>
-
-  {hashtagsDinamicos.length === 0 ? (
-    <p>No hay tendencias aún</p>
-  ) : (
-    hashtagsDinamicos.map(([tag, total]) => (
-      <div className="tendencia-item" key={tag}>
-        <span className="tendencia-tag">
-          {tag}
-        </span>
-        <span className="tendencia-count">
-          {total} publicaciones
-        </span>
-      </div>
-    ))
-  )}
-</div>
-          </div>
- 
-          <div className="widget-card adoptame">
-  <h3>Adóptame</h3>
-
-  {mascotasRandom.length === 0 ? (
-    <p>No hay mascotas disponibles</p>
-  ) : (
-    mascotasRandom.map((mascota) => (
-      <div
-        className="adopt-item"
-        key={mascota.id_mascota}
-      >
-        <div className="adopt-avatar">
-  {mascota.fotos?.[0]?.url_foto ? (
-    <img
-      src={mascota.fotos[0].url_foto}
-      alt={mascota.nombre}
-      className="avatar-feed-img"
-    />
-  ) : (
-    mascota.nombre.charAt(0)
-  )}
-</div>
-
-        <div className="adopt-info">
-          <strong>{mascota.nombre}</strong>
-          <span>
-            {mascota.raza} · {mascota.edad}
-          </span>
-        </div>
-
-        <span className="adopt-badge disponible">
-          Disponible
-        </span>
-      </div>
-    ))
-  )}
-</div>
- 
-          <div className="widget-card lideres">
-  <h3>Top 5 de la Comunidad</h3>
-
-  {lideresComunidad.map((lider, index) => (
-    <div className="lider-item" key={lider.id}>
-      <div className="lider-avatar">
-        {lider.foto_perfil ? (
-          <img
-            src={lider.foto_perfil}
-            alt={lider.nombre}
-            className="avatar-feed-img"
-          />
-        ) : (
-          lider.nombre.charAt(0)
-        )}
-      </div>
-
-      <span
-        className="lider-nombre clickable-user"
-        onClick={() =>
-          onSwitch("perfilPublico", lider.id)
-        }
-      >
-        #{index + 1} {lider.nombre}
-      </span>
-
-      <span className="lider-pts">
-        {lider.score} pts
-      </span>
-    </div>
-  ))}
-</div>
+          <SidebarRightContent />
         </aside>
       </div>
     </>
   );
 }
- 
+
 export default Feed;

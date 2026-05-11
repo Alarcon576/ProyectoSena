@@ -80,3 +80,140 @@
   text-align: center;
   border: 1px solid #c3e6cb;
 }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE REGISTER
+═══════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  .reg-page {
+    flex-direction: column;
+    min-height: 100vh;
+    height: auto;
+  }
+
+  /* HERO */
+  .reg-left-side {
+    min-height: 260px;
+    padding: 30px 20px;
+    justify-content: flex-end;
+  }
+
+  .reg-brand {
+    top: 20px;
+    left: 20px;
+    font-size: 18px;
+  }
+
+  .reg-hero-content h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+
+  .reg-hero-content p {
+    font-size: 14px;
+    max-width: 100%;
+    line-height: 1.5;
+  }
+
+  /* FORM */
+  .reg-right-side {
+    width: 100%;
+    padding: 20px 16px 40px;
+    align-items: flex-start;
+  }
+
+  .reg-form-container {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .reg-form-container h2 {
+    font-size: 28px;
+    margin-top: 10px;
+  }
+
+  .reg-subtitle {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .reg-field {
+    margin-bottom: 16px;
+  }
+
+  .reg-field label {
+    font-size: 13px;
+  }
+
+  .reg-input-box input {
+    padding: 14px 42px;
+    font-size: 14px;
+    border-radius: 14px;
+  }
+
+  .reg-icon {
+    left: 14px;
+    font-size: 14px;
+  }
+
+  .reg-eye {
+    right: 14px;
+    font-size: 16px;
+  }
+
+  .reg-btn {
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 15px;
+    margin-top: 16px;
+  }
+
+  .reg-footer {
+    margin-top: 20px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .success-text,
+  .error-text {
+    font-size: 13px;
+  }
+}
+
+/* ═══════════════════════════════════════
+   MÓVILES PEQUEÑOS
+═══════════════════════════════════════ */
+
+@media (max-width: 480px) {
+
+  .reg-left-side {
+    min-height: 220px;
+    padding: 24px 16px;
+  }
+
+  .reg-hero-content h1 {
+    font-size: 26px;
+  }
+
+  .reg-hero-content p {
+    font-size: 13px;
+  }
+
+  .reg-form-container h2 {
+    font-size: 24px;
+  }
+
+  .reg-input-box input {
+    padding: 13px 40px;
+    font-size: 13px;
+  }
+
+  .reg-btn {
+    font-size: 14px;
+    padding: 14px;
+  }
+
+}

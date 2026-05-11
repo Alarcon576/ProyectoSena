@@ -1543,8 +1543,11 @@ input::placeholder, textarea::placeholder {
 
   /* NAVBAR */
   .top-navbar {
-    padding: 0 12px;
-    height: 60px;
+    padding: 0 10px;
+    height: auto;
+    min-height: 60px;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   .top-navbar .nav-brand {
@@ -1552,7 +1555,10 @@ input::placeholder, textarea::placeholder {
   }
 
   .top-navbar .nav-links {
-    gap: 2px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
   }
 
   .top-navbar .nav-links span {
@@ -1571,19 +1577,52 @@ input::placeholder, textarea::placeholder {
 
   /* LAYOUT */
   .feed-layout {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     padding: 10px;
     margin-top: 10px;
     gap: 14px;
   }
 
+  /* MOSTRAR SIDEBARS EN MOBILE */
   .sidebar-left,
   .sidebar-right {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    position: static;
   }
 
+  /* ORDEN MOBILE */
   .feed-main {
+    order: 1;
     width: 100%;
+  }
+
+  .sidebar-left {
+    order: 2;
+  }
+
+  .sidebar-right {
+    order: 3;
+  }
+
+  /* WIDGETS */
+  .widget-card,
+  .tip-box {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .widget-card h3 {
+    font-size: 15px;
+  }
+
+  .lider-item,
+  .adopt-item,
+  .tendencia-item {
+    gap: 10px;
   }
 
   /* CREAR POST */
@@ -1625,14 +1664,18 @@ input::placeholder, textarea::placeholder {
 
   .post-header {
     gap: 10px;
+    align-items: flex-start;
   }
 
   .post-user {
     gap: 10px;
+    flex: 1;
+    min-width: 0;
   }
 
   .post-user-info h4 {
     font-size: 14px;
+    word-break: break-word;
   }
 
   .post-user-info span {
@@ -1642,6 +1685,7 @@ input::placeholder, textarea::placeholder {
   .post-text {
     font-size: 14px;
     line-height: 1.5;
+    word-break: break-word;
   }
 
   .post-image {
@@ -1653,10 +1697,12 @@ input::placeholder, textarea::placeholder {
   .post-actions {
     justify-content: space-between;
     gap: 6px;
+    flex-wrap: wrap;
   }
 
   .post-actions button {
     flex: 1;
+    min-width: 90px;
     justify-content: center;
     padding: 10px 6px;
     font-size: 12px;
@@ -1710,7 +1756,7 @@ input::placeholder, textarea::placeholder {
     flex: 1;
   }
 
-  /* DROPDOWN AVATAR */
+  /* DROPDOWN */
   .dropdown-avatar {
     right: -10px;
     min-width: 180px;
@@ -1731,36 +1777,6 @@ input::placeholder, textarea::placeholder {
 
   .btn-salud-ia {
     font-size: 14px;
-  }
-
-}
-
-/* ═══════════════════════════════════════
-   MOBILE PEQUEÑO
-═══════════════════════════════════════ */
-
-@media (max-width: 480px) {
-
-  .top-navbar .nav-links span {
-    padding: 5px 8px;
-    font-size: 11px;
-  }
-
-  .top-navbar .nav-brand {
-    font-size: 14px;
-  }
-
-  .post-actions button {
-    font-size: 11px;
-    padding: 8px 4px;
-  }
-
-  .crear-post-header textarea {
-    font-size: 13px;
-  }
-
-  .post-text {
-    font-size: 13px;
   }
 
 }

@@ -3,7 +3,7 @@ import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Mascotas from "./components/mascotas/Mascotas";
 import Feed from "./components/social/Feed";
-import Perfil from "./components/profile/Perfil";
+import Perfil from "./components/profile/perfil";
 import PerfilPublico from "./components/profile/PerfilPublico";
 import Explorar from "./components/explorar/Explorar";
 import Adopciones from "./components/adopciones/Adopciones";

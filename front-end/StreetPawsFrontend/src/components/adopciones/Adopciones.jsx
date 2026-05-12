@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./Adopciones.css";
 import Mascotas from "../mascotas/Mascotas";
+import TablaSolicitudes from "./TablaSolicitudes"; // ← nuevo componente
 
 const URL_MASCOTAS =
   "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
@@ -24,9 +25,9 @@ const GENEROS = ["Todos", "Macho", "Hembra"];
 
 const ESTADO_BADGE = {
   disponible: { label: "Disponible", cls: "badge--disponible" },
-  adoptado: { label: "Adoptado", cls: "badge--adoptado" },
-  en_proceso: { label: "En proceso", cls: "badge--proceso" },
-  "en proceso": { label: "En proceso", cls: "badge--proceso" },
+  adoptado:   { label: "Adoptado",   cls: "badge--adoptado"   },
+  en_proceso: { label: "En proceso", cls: "badge--proceso"    },
+  "en proceso":{ label: "En proceso",cls: "badge--proceso"    },
 };
 
 function Adopciones({ onSwitch, user }) {
@@ -46,8 +47,6 @@ function Adopciones({ onSwitch, user }) {
   const [exito, setExito] = useState(false);
   const [menuAvatarAbierto, setMenuAvatarAbierto] = useState(false);
   const [usuarioActual, setUsuarioActual] = useState(null);
-  const [solicitudes, setSolicitudes] = useState([]);
-  const [loadingSolicitudes, setLoadingSolicitudes] = useState(false);
 
   // Tab por defecto: "mascotas" para admin
   const [tabAdmin, setTabAdmin] = useState("mascotas");
@@ -62,10 +61,6 @@ function Adopciones({ onSwitch, user }) {
       cargarUsuarioActual();
     }
   }, []);
-
-  useEffect(() => {
-    if (esAdmin) cargarSolicitudes();
-  }, [user]);
 
   useEffect(() => {
     const cerrar = () => setMenuAvatarAbierto(false);
@@ -111,40 +106,6 @@ function Adopciones({ onSwitch, user }) {
     }
   };
 
-  const cargarSolicitudes = async () => {
-    setLoadingSolicitudes(true);
-    try {
-      const res = await fetch(URL_SOLICITUDES, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      setSolicitudes(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Error cargando solicitudes:", err);
-    } finally {
-      setLoadingSolicitudes(false);
-    }
-  };
-
-  const gestionarSolicitud = async (id, estado) => {
-    try {
-      const res = await fetch(`${URL_SOLICITUDES}/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ estado }),
-      });
-      if (!res.ok) throw new Error("Error al actualizar");
-      cargarSolicitudes();
-      if (estado === "Aceptada") cargarMascotas();
-    } catch (err) {
-      console.error(err);
-      alert("Error al actualizar la solicitud");
-    }
-  };
-
   const toggleFavorito = async (id_mascota) => {
     if (!token) {
       alert("Debes iniciar sesión para guardar favoritos");
@@ -185,10 +146,7 @@ function Adopciones({ onSwitch, user }) {
   const getBadge = (estado) => {
     const key = estado?.toLowerCase() || "";
     return (
-      ESTADO_BADGE[key] || {
-        label: estado || "Desconocido",
-        cls: "badge--otro",
-      }
+      ESTADO_BADGE[key] || { label: estado || "Desconocido", cls: "badge--otro" }
     );
   };
 
@@ -320,10 +278,7 @@ function Adopciones({ onSwitch, user }) {
           </button>
           <button
             className={`admin-tab ${tabAdmin === "solicitudes" ? "admin-tab--active" : ""}`}
-            onClick={() => {
-              setTabAdmin("solicitudes");
-              cargarSolicitudes();
-            }}
+            onClick={() => setTabAdmin("solicitudes")}
           >
             📋 Solicitudes de adopción
           </button>
@@ -473,11 +428,7 @@ function Adopciones({ onSwitch, user }) {
                     onClick={enviarSolicitud}
                     disabled={enviando}
                   >
-                    {enviando ? (
-                      <span className="spinner" />
-                    ) : (
-                      "Enviar solicitud"
-                    )}
+                    {enviando ? <span className="spinner" /> : "Enviar solicitud"}
                   </button>
                 </div>
               </>
@@ -495,88 +446,11 @@ function Adopciones({ onSwitch, user }) {
         <Mascotas onSwitch={onSwitch} user={user} embebido={true} />
       )}
 
-      {/* Tab admin: Solicitudes */}
+      {/* Tab admin: Solicitudes → componente separado */}
       {esAdmin && tabAdmin === "solicitudes" && (
         <div className="admin-solicitudes">
           <h2>Solicitudes de Adopción</h2>
-
-          {loadingSolicitudes ? (
-            <div className="adopt-loading">
-              <div className="adopt-spinner" />
-              <p>Cargando solicitudes...</p>
-            </div>
-          ) : solicitudes.length === 0 ? (
-            <p className="adopt-empty-text">No hay solicitudes registradas.</p>
-          ) : (
-            <div className="tabla-container">
-              <table className="tabla-solicitudes">
-                <thead>
-                  <tr>
-                    <th>Mascota</th>
-                    <th>Usuario</th>
-                    <th>Fecha</th>
-                    <th>Detalles</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {solicitudes.map((sol) => (
-                    <tr key={sol.id_solicitud}>
-                      <td>{sol.mascota?.nombre || `#${sol.id_mascota}`}</td>
-                      <td>{sol.usuario?.nombre || `#${sol.id_usuario}`}</td>
-                      <td>
-                        {new Date(sol.fecha_solicitud).toLocaleDateString()}
-                      </td>
-                      <td>{sol.notas || "-"}</td>
-
-                      <td>
-                        <span
-                          className={`badge-estado badge-${sol.estado?.toLowerCase()}`}
-                        >
-                          {sol.estado}
-                        </span>
-                      </td>
-
-                      <td>
-                        {sol.estado === "Pendiente" ? (
-                          <>
-                            <button
-                              className="btn-aceptar"
-                              onClick={() =>
-                                gestionarSolicitud(sol.id_solicitud, "Aceptada")
-                              }
-                            >
-                              Aceptar
-                            </button>
-
-                            <button
-                              className="btn-rechazar"
-                              onClick={() =>
-                                gestionarSolicitud(
-                                  sol.id_solicitud,
-                                  "Rechazada",
-                                )
-                              }
-                            >
-                              Rechazar
-                            </button>
-                          </>
-                        ) : (
-                          <span className="estado-final">
-                            {sol.estado === "Aceptada"
-                              ? "Aceptado"
-                              : "Rechazado"}
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <TablaSolicitudes token={token} />
         </div>
       )}
 
@@ -696,9 +570,7 @@ function Adopciones({ onSwitch, user }) {
                         >
                           {esFavorito ? "❤️" : "🤍"}
                         </button>
-                        <span
-                          className={`adopt-card-status-badge ${badge.cls}`}
-                        >
+                        <span className={`adopt-card-status-badge ${badge.cls}`}>
                           {badge.label}
                         </span>
                       </div>
@@ -711,9 +583,7 @@ function Adopciones({ onSwitch, user }) {
                           <button
                             className="btn-adoptar"
                             disabled={!disponible}
-                            onClick={() =>
-                              disponible && setModalSolicitud(mascota)
-                            }
+                            onClick={() => disponible && setModalSolicitud(mascota)}
                           >
                             Adoptar
                           </button>
@@ -803,9 +673,7 @@ function FilterDropdown({ label, options, value, onChange }) {
   const [open, setOpen] = useState(false);
   const isActive = value !== "Todos";
   return (
-    <div
-      className={`filter-dropdown ${isActive ? "filter-dropdown--active" : ""}`}
-    >
+    <div className={`filter-dropdown ${isActive ? "filter-dropdown--active" : ""}`}>
       <button
         className="filter-dropdown-btn"
         onClick={(e) => {

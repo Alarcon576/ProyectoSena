@@ -4,7 +4,7 @@ import "./Login.css";
 function Login({ onSwitch, onLogin }) {
   const [form, setForm] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -19,60 +19,61 @@ function Login({ onSwitch, onLogin }) {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  let newErrors = {};
+    let newErrors = {};
 
-  // 🔥 VALIDACIONES
-  if (!form.email) {
-    newErrors.email = "El correo es obligatorio";
-  } else if (!form.email.includes("@")) {
-    newErrors.email = "Correo inválido";
-  }
+    // 🔥 VALIDACIONES
+    if (!form.email) {
+      newErrors.email = "El correo es obligatorio";
+    } else if (!form.email.includes("@")) {
+      newErrors.email = "Correo inválido";
+    }
 
-  if (!form.password) {
-    newErrors.password = "La contraseña es obligatoria";
-  } else if (form.password.length < 6) {
-    newErrors.password = "Mínimo 6 caracteres";
-  }
+    if (!form.password) {
+      newErrors.password = "La contraseña es obligatoria";
+    } else if (form.password.length < 6) {
+      newErrors.password = "Mínimo 6 caracteres";
+    }
 
-  // ❌ si hay errores, no hace fetch
-  if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-    return;
-  }
-
-  try {
-    const res = await fetch("https://proyectosena-production-4ad5.up.railway.app/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: form.email,
-        contrasena: form.password
-      })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      setErrors({ general: data.msg });
+    // ❌ si hay errores, no hace fetch
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
-    localStorage.setItem("token", data.token);
+    try {
+      const res = await fetch(
+        "https://proyectosena-production-4ad5.up.railway.app/api/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: form.email,
+            contrasena: form.password,
+          }),
+        },
+      );
 
-    const user = decodeToken(data.token);
+      const data = await res.json();
 
-    onLogin(user);
+      if (!res.ok) {
+        setErrors({ general: data.msg });
+        return;
+      }
 
-  } catch {
-    setErrors({ general: "Error servidor" });
-  }
-};
+      localStorage.setItem("token", data.token);
+
+      const user = decodeToken(data.token);
+
+      onLogin(user);
+    } catch {
+      setErrors({ general: "Error servidor" });
+    }
+  };
 
   return (
     <div className="login-container">
-
       {/* IZQUIERDA */}
       <div className="login-left">
         <h2 className="logo">🐾 Street Paws</h2>
@@ -82,7 +83,8 @@ function Login({ onSwitch, onLogin }) {
             Únete a nuestra <span>comunidad.</span>
           </h1>
           <p>
-            Cada registro es una oportunidad más para darles el hogar que merecen.
+            Cada registro es una oportunidad más para darles el hogar que
+            merecen.
           </p>
         </div>
       </div>
@@ -102,11 +104,9 @@ function Login({ onSwitch, onLogin }) {
               placeholder="ejemplo@correo.com"
               value={form.email}
               onChange={handleChange}
-              
             />
-         
           </div>
-             {errors.email && <p className="error">{errors.email}</p>}
+          {errors.email && <p className="error">{errors.email}</p>}
 
           <label>Contraseña</label>
           <div className="input-box password-box">
@@ -117,7 +117,7 @@ function Login({ onSwitch, onLogin }) {
               value={form.password}
               onChange={handleChange}
             />
-            
+
             <span onClick={() => setShowPassword(!showPassword)}>👁️</span>
           </div>
           {errors.password && <p className="error">{errors.password}</p>}
@@ -125,9 +125,7 @@ function Login({ onSwitch, onLogin }) {
 
           <p className="switch-text">
             ¿No tienes cuenta?{" "}
-            <span onClick={() => onSwitch("register")}>
-              Regístrate
-            </span>
+            <span onClick={() => onSwitch("register")}>Regístrate</span>
           </p>
         </form>
       </div>

@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import "./Explorar.css";
 
-const URL_POSTS = "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";
-const URL_MASCOTAS = "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
+const URL_POSTS =
+  "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";
+const URL_MASCOTAS =
+  "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
 
 function Explorar({ onSwitch }) {
   const [posts, setPosts] = useState([]);
@@ -20,14 +22,14 @@ function Explorar({ onSwitch }) {
         fetch(URL_POSTS),
         fetch(URL_MASCOTAS, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
-        })
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }),
       ]);
 
       const [dataPosts, dataMascotas] = await Promise.all([
         resPosts.json(),
-        resMascotas.json()
+        resMascotas.json(),
       ]);
 
       setPosts(Array.isArray(dataPosts) ? dataPosts : []);
@@ -49,8 +51,9 @@ function Explorar({ onSwitch }) {
     return [...posts]
       .sort(
         (a, b) =>
-          (b.likes?.length || 0) + (b.comentarios?.length || 0) -
-          ((a.likes?.length || 0) + (a.comentarios?.length || 0))
+          (b.likes?.length || 0) +
+          (b.comentarios?.length || 0) -
+          ((a.likes?.length || 0) + (a.comentarios?.length || 0)),
       )
       .slice(0, 5);
   }, [posts]);
@@ -66,17 +69,15 @@ function Explorar({ onSwitch }) {
             id: usuario.id_usuario,
             nombre: usuario.nombre,
             foto_perfil: usuario.foto_perfil,
-            puntos: 0
+            puntos: 0,
           };
         }
 
         acc[usuario.id_usuario].puntos +=
-          (post.likes?.length || 0) +
-          (post.comentarios?.length || 0) * 2 +
-          3;
+          (post.likes?.length || 0) + (post.comentarios?.length || 0) * 2 + 3;
 
         return acc;
-      }, {})
+      }, {}),
     )
       .sort((a, b) => b.puntos - a.puntos)
       .slice(0, 5);
@@ -104,10 +105,7 @@ function Explorar({ onSwitch }) {
             <div className="mascota-card" key={mascota.id_mascota}>
               <div className="mascota-foto">
                 {mascota.fotos?.[0]?.url_foto ? (
-                  <img
-                    src={mascota.fotos[0].url_foto}
-                    alt={mascota.nombre}
-                  />
+                  <img src={mascota.fotos[0].url_foto} alt={mascota.nombre} />
                 ) : (
                   <span>{mascota.nombre.charAt(0)}</span>
                 )}
@@ -117,9 +115,7 @@ function Explorar({ onSwitch }) {
               <p>
                 {mascota.raza} · {mascota.edad} años
               </p>
-              <button onClick={() => onSwitch("adopciones")}>
-                💚 Adoptar
-              </button>
+              <button onClick={() => onSwitch("adopciones")}>💚 Adoptar</button>
             </div>
           ))}
         </div>

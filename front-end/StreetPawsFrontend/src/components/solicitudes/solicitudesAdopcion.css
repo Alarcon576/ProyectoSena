@@ -1,0 +1,292 @@
+/* ════════════════════════════════════════
+   SOLICITUDES — Street Paws
+   ════════════════════════════════════════ */
+
+/* ── Loading / Empty ── */
+.ts-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 14px;
+    color: #888;
+}
+
+.ts-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f5ede0;
+    border-top-color: #f28c28;
+    border-radius: 50%;
+    animation: ts-spin 0.75s linear infinite;
+}
+
+@keyframes ts-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ts-empty-text {
+    text-align: center;
+    color: #1a1a1a;
+    padding: 40px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ── Wrapper ── */
+.ts-container {
+    width: 100%;
+}
+
+/* ── Tabla escritorio ── */
+.ts-table-wrapper {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.ts-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.ts-table thead tr {
+    background: linear-gradient(135deg, #fff7ed, #fef3c7);
+}
+
+.ts-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.ts-table tbody tr {
+    border-bottom: 1px solid #f5f5f5;
+    transition: background 0.15s;
+}
+
+.ts-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.ts-table tbody tr:hover {
+    background: #fffbf5;
+}
+
+.ts-table td {
+    padding: 14px 16px;
+    color: #1a1a1a;
+    vertical-align: middle;
+}
+
+/* ── Badges de estado ── */
+.ts-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.ts-badge--pendiente {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1.5px solid #fcd9aa;
+}
+
+.ts-badge--aceptada {
+    background: #dcfce7;
+    color: #166534;
+    border: 1.5px solid #86efac;
+}
+
+.ts-badge--rechazada {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1.5px solid #fca5a5;
+}
+
+/* ── Botones de acción ── */
+.ts-btn {
+    border: none;
+    padding: 7px 14px;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.2s,
+        transform 0.1s;
+    white-space: nowrap;
+    margin-right: 6px;
+}
+
+.ts-btn:last-child {
+    margin-right: 0;
+}
+
+.ts-btn--aceptar {
+    background: #16a34a;
+    color: #fff;
+}
+
+.ts-btn--aceptar:hover {
+    background: #15803d;
+    transform: translateY(-1px);
+}
+
+.ts-btn--rechazar {
+    background: #dc2626;
+    color: #fff;
+}
+
+.ts-btn--rechazar:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+}
+
+.ts-estado-final {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #555;
+    font-style: italic;
+}
+
+/* ── Cards móvil (ocultas en desktop) ── */
+.ts-cards-mobile {
+    display: none;
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE — Tablet (≤ 900px)
+════════════════════════════════════════ */
+@media (max-width: 900px) {
+    .ts-table .col-notas {
+        display: none;
+    }
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE — Mobile (≤ 640px)
+════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+    /* Ocultar tabla, mostrar cards */
+    .ts-table-wrapper {
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .ts-table {
+        display: none;
+    }
+
+    .ts-cards-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .ts-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .ts-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .ts-card-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: #f5ede0;
+        overflow: hidden;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .ts-card-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .ts-card-title {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .ts-card-title strong {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    .ts-card-title span {
+        font-size: 0.78rem;
+        color: #555;
+    }
+
+    .ts-card-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 0.8rem;
+        color: #444;
+        background: #f9f9f9;
+        border-radius: 8px;
+        padding: 8px 10px;
+    }
+
+    .ts-card-meta-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 4px;
+        color: #333;
+    }
+
+    .ts-card-meta-label {
+        font-weight: 700;
+        color: #1a1a1a;
+        flex-shrink: 0;
+    }
+
+    .ts-card-footer {
+        display: flex;
+        gap: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #f0f0f0;
+        flex-wrap: wrap;
+    }
+
+    .ts-card-footer .ts-btn {
+        flex: 1;
+        text-align: center;
+        margin-right: 0;
+    }
+}

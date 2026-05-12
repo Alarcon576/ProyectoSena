@@ -15,7 +15,7 @@ function Mascotas({ onSwitch, user, embebido = false }) {
     estado_salud: "",
     fecha_ingreso: "",
     estado_adopcion: "",
-    foto: null
+    foto: null,
   });
 
   const [editando, setEditando] = useState(null);
@@ -60,7 +60,7 @@ function Mascotas({ onSwitch, user, embebido = false }) {
       estado_salud: "",
       fecha_ingreso: "",
       estado_adopcion: "",
-      foto: null
+      foto: null,
     });
   };
 
@@ -93,17 +93,26 @@ function Mascotas({ onSwitch, user, embebido = false }) {
     }
 
     if (!form.estado_salud.trim()) {
-      setMensajeForm({ texto: "El estado de salud es obligatorio", tipo: "error" });
+      setMensajeForm({
+        texto: "El estado de salud es obligatorio",
+        tipo: "error",
+      });
       return;
     }
 
     if (!form.fecha_ingreso) {
-      setMensajeForm({ texto: "Debe seleccionar la fecha de ingreso", tipo: "error" });
+      setMensajeForm({
+        texto: "Debe seleccionar la fecha de ingreso",
+        tipo: "error",
+      });
       return;
     }
 
     if (!form.estado_adopcion) {
-      setMensajeForm({ texto: "Debe seleccionar el estado de adopción", tipo: "error" });
+      setMensajeForm({
+        texto: "Debe seleccionar el estado de adopción",
+        tipo: "error",
+      });
       return;
     }
 
@@ -122,9 +131,9 @@ function Mascotas({ onSwitch, user, embebido = false }) {
       const res = await fetch(endpoint, {
         method,
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: formData
+        body: formData,
       });
 
       if (res.ok) {
@@ -132,7 +141,7 @@ function Mascotas({ onSwitch, user, embebido = false }) {
           texto: editando
             ? "Actualizado correctamente"
             : "¡Mascota creada correctamente!",
-          tipo: "success"
+          tipo: "success",
         });
 
         setEditando(null);
@@ -143,7 +152,6 @@ function Mascotas({ onSwitch, user, embebido = false }) {
       } else {
         setMensajeGlobal({ texto: "Error al guardar datos", tipo: "error" });
       }
-
     } catch {
       setMensajeGlobal({ texto: "Error de servidor", tipo: "error" });
     }
@@ -155,8 +163,8 @@ function Mascotas({ onSwitch, user, embebido = false }) {
     await fetch(`${URL}/${id}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     setMensajeGlobal({ texto: "Eliminado correctamente", tipo: "success" });
@@ -170,15 +178,12 @@ function Mascotas({ onSwitch, user, embebido = false }) {
 
   return (
     <div className="mascotas-container">
-
       {/* Header solo se muestra cuando NO está embebido dentro de Adopciones */}
       {!embebido && (
         <div className="mascotas-header">
           <h2>🐾 Street Paws</h2>
           <div>
-            <span className="rol">
-              {esAdmin ? "Admin" : "Usuario"}
-            </span>
+            <span className="rol">{esAdmin ? "Admin" : "Usuario"}</span>
             <button onClick={handleLogout} className="logout-btn">
               Cerrar sesión
             </button>
@@ -187,7 +192,6 @@ function Mascotas({ onSwitch, user, embebido = false }) {
       )}
 
       <div className="mascotas-content">
-
         {/* Modal formulario */}
         {esAdmin && mostrarForm && (
           <div className="modal-overlay">
@@ -206,7 +210,11 @@ function Mascotas({ onSwitch, user, embebido = false }) {
                   onChange={handleChange}
                 />
 
-                <select name="especie" value={form.especie} onChange={handleChange}>
+                <select
+                  name="especie"
+                  value={form.especie}
+                  onChange={handleChange}
+                >
                   <option value="">Seleccione especie</option>
                   <option value="Perro">Perro</option>
                   <option value="Gato">Gato</option>
@@ -247,7 +255,11 @@ function Mascotas({ onSwitch, user, embebido = false }) {
                   onChange={handleChange}
                 />
 
-                <select name="estado_adopcion" value={form.estado_adopcion} onChange={handleChange}>
+                <select
+                  name="estado_adopcion"
+                  value={form.estado_adopcion}
+                  onChange={handleChange}
+                >
                   <option value="">Seleccione estado</option>
                   <option value="Disponible">Disponible</option>
                   <option value="No disponible">No disponible</option>
@@ -272,7 +284,6 @@ function Mascotas({ onSwitch, user, embebido = false }) {
         )}
 
         <div className="table-card">
-
           {esAdmin && (
             <button
               className="btn-nueva"
@@ -290,7 +301,9 @@ function Mascotas({ onSwitch, user, embebido = false }) {
           <h3>Lista de mascotas</h3>
 
           {mensajeGlobal.texto && (
-            <p className={mensajeGlobal.tipo === "success" ? "success" : "error"}>
+            <p
+              className={mensajeGlobal.tipo === "success" ? "success" : "error"}
+            >
               {mensajeGlobal.texto}
             </p>
           )}
@@ -298,7 +311,6 @@ function Mascotas({ onSwitch, user, embebido = false }) {
           <div className="cards-container">
             {mascotas.map((m) => (
               <div key={m.id_mascota} className="card-mascota">
-
                 <span
                   className={
                     m.estado_adopcion === "Disponible"
@@ -310,37 +322,55 @@ function Mascotas({ onSwitch, user, embebido = false }) {
                 </span>
 
                 {m.fotos?.[0] && (
-                  <img src={m.fotos[0].url_foto} className="card-img" alt={m.nombre} />
+                  <img
+                    src={m.fotos[0].url_foto}
+                    className="card-img"
+                    alt={m.nombre}
+                  />
                 )}
 
                 <div className="card-body">
                   <h4>{m.nombre}</h4>
-                  <p><strong>Especie:</strong> {m.especie}</p>
-                  <p><strong>Raza:</strong> {m.raza}</p>
-                  <p><strong>Edad:</strong> {m.edad}</p>
-                  <p><strong>Sexo:</strong> {m.sexo}</p>
-                  <p><strong>Estado de Salud:</strong> {m.estado_salud}</p>
-                  <p><strong>Fecha:</strong> {m.fecha_ingreso?.split("T")[0]}</p>
+                  <p>
+                    <strong>Especie:</strong> {m.especie}
+                  </p>
+                  <p>
+                    <strong>Raza:</strong> {m.raza}
+                  </p>
+                  <p>
+                    <strong>Edad:</strong> {m.edad}
+                  </p>
+                  <p>
+                    <strong>Sexo:</strong> {m.sexo}
+                  </p>
+                  <p>
+                    <strong>Estado de Salud:</strong> {m.estado_salud}
+                  </p>
+                  <p>
+                    <strong>Fecha:</strong> {m.fecha_ingreso?.split("T")[0]}
+                  </p>
                 </div>
 
                 {esAdmin && (
                   <div className="card-actions">
-                    <button onClick={() => {
-                      setForm({
-                        nombre: m.nombre,
-                        especie: m.especie,
-                        raza: m.raza,
-                        edad: m.edad,
-                        sexo: m.sexo,
-                        estado_salud: m.estado_salud,
-                        fecha_ingreso: m.fecha_ingreso?.split("T")[0] || "",
-                        estado_adopcion: m.estado_adopcion,
-                        foto: null
-                      });
-                      setEditando(m.id_mascota);
-                      setMensajeForm({ texto: "", tipo: "" });
-                      setMostrarForm(true);
-                    }}>
+                    <button
+                      onClick={() => {
+                        setForm({
+                          nombre: m.nombre,
+                          especie: m.especie,
+                          raza: m.raza,
+                          edad: m.edad,
+                          sexo: m.sexo,
+                          estado_salud: m.estado_salud,
+                          fecha_ingreso: m.fecha_ingreso?.split("T")[0] || "",
+                          estado_adopcion: m.estado_adopcion,
+                          foto: null,
+                        });
+                        setEditando(m.id_mascota);
+                        setMensajeForm({ texto: "", tipo: "" });
+                        setMostrarForm(true);
+                      }}
+                    >
                       ✏️
                     </button>
 
@@ -349,13 +379,10 @@ function Mascotas({ onSwitch, user, embebido = false }) {
                     </button>
                   </div>
                 )}
-
               </div>
             ))}
           </div>
-
         </div>
-
       </div>
     </div>
   );

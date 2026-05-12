@@ -48,29 +48,21 @@ function App() {
         <Login onSwitch={handleSwitch} onLogin={handleLogin} />
       )}
 
-      {view === "register" && (
-        <Register onSwitch={handleSwitch} />
-      )}
+      {view === "register" && <Register onSwitch={handleSwitch} />}
 
       {view === "mascotas" && user?.rol === 2 && (
         <Mascotas onSwitch={handleSwitch} user={user} />
       )}
 
-      {view === "feed" && (
-        <Feed onSwitch={handleSwitch} user={user} />
-      )}
+      {view === "feed" && <Feed onSwitch={handleSwitch} user={user} />}
 
-      {view === "explorar" && (
-        <Explorar onSwitch={handleSwitch} />
-      )}
+      {view === "explorar" && <Explorar onSwitch={handleSwitch} />}
 
       {view === "adopciones" && (
         <Adopciones onSwitch={handleSwitch} user={user} />
       )}
 
-      {view === "perfil" && (
-        <Perfil onSwitch={handleSwitch} />
-      )}
+      {view === "perfil" && <Perfil onSwitch={handleSwitch} />}
 
       {view === "perfilPublico" && selectedUserId && (
         <PerfilPublico onSwitch={handleSwitch} userId={selectedUserId} />

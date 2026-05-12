@@ -1,20 +1,18 @@
-
 import { useState } from "react";
 import "./Register.css";
 
 function Register({ onSwitch }) {
-  const [form, setForm] = useState({ 
-    nombre: "", 
-    email: "", 
+  const [form, setForm] = useState({
+    nombre: "",
+    email: "",
     password: "",
     direccion: "",
-    telefono: ""
+    telefono: "",
   });
 
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
 
-  
   const [successMsg, setSuccessMsg] = useState("");
 
   const handleChange = (e) => {
@@ -42,28 +40,31 @@ function Register({ onSwitch }) {
     }
 
     try {
-      const res = await fetch("https://proyectosena-production-4ad5.up.railway.app/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: form.nombre,
-          email: form.email,
-          contrasena: form.password,
-          direccion: form.direccion || "",
-          telefono: form.telefono || ""
-        })
-      });
+      const res = await fetch(
+        "https://proyectosena-production-4ad5.up.railway.app/api/auth/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nombre: form.nombre,
+            email: form.email,
+            contrasena: form.password,
+            direccion: form.direccion || "",
+            telefono: form.telefono || "",
+          }),
+        },
+      );
 
       const data = await res.json();
 
       if (res.ok) {
         setSuccessMsg("¡Cuenta creada con éxito!");
-        setForm({ 
-          nombre: "", 
-          email: "", 
-          password: "", 
-          direccion: "", 
-          telefono: "" 
+        setForm({
+          nombre: "",
+          email: "",
+          password: "",
+          direccion: "",
+          telefono: "",
         });
         setErrors({});
       } else {
@@ -81,9 +82,12 @@ function Register({ onSwitch }) {
           🐾 Street Paws
         </div>
         <div className="reg-hero-content">
-          <h1>Únete a nuestra <span>comunidad.</span></h1>
+          <h1>
+            Únete a nuestra <span>comunidad.</span>
+          </h1>
           <p>
-            Cada registro es una oportunidad más para darles el hogar que merecen.
+            Cada registro es una oportunidad más para darles el hogar que
+            merecen.
           </p>
         </div>
       </div>
@@ -173,7 +177,9 @@ function Register({ onSwitch }) {
                   👁️
                 </button>
               </div>
-              {errors.password && <p className="error-text">{errors.password}</p>}
+              {errors.password && (
+                <p className="error-text">{errors.password}</p>
+              )}
               {errors.general && <p className="error-text">{errors.general}</p>}
             </div>
 
@@ -193,4 +199,3 @@ function Register({ onSwitch }) {
 }
 
 export default Register;
-

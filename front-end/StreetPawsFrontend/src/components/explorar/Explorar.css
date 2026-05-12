@@ -2,8 +2,17 @@
    EXPLORAR.CSS — Street Paws (Responsive)
    ════════════════════════════════════════ */
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { overflow-x: hidden; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  overflow-x: hidden;
+}
 
 /* ════════════════════════════════════════
    CONTENEDOR PRINCIPAL
@@ -51,7 +60,7 @@ html { overflow-x: hidden; }
   margin-bottom: 36px;
 }
 
-.explorar-section > h2 {
+.explorar-section>h2 {
   font-size: 1.1rem;
   font-weight: 800;
   color: #1a1a1a;
@@ -91,7 +100,10 @@ html { overflow-x: hidden; }
   white-space: nowrap;
   flex-shrink: 0;
 }
-.section-title-row button:hover { background: #e07a18; }
+
+.section-title-row button:hover {
+  background: #e07a18;
+}
 
 /* ════════════════════════════════════════
    GRID MASCOTAS
@@ -106,16 +118,17 @@ html { overflow-x: hidden; }
   background: #fff;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   transition: transform .2s, box-shadow .2s;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 0 0 14px;
 }
+
 .mascota-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.11);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.11);
 }
 
 .mascota-foto {
@@ -128,14 +141,22 @@ html { overflow-x: hidden; }
   justify-content: center;
   margin-bottom: 10px;
 }
+
 .mascota-foto img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform .3s;
 }
-.mascota-card:hover .mascota-foto img { transform: scale(1.05); }
-.mascota-foto span { font-size: 2.4rem; color: #c88040; }
+
+.mascota-card:hover .mascota-foto img {
+  transform: scale(1.05);
+}
+
+.mascota-foto span {
+  font-size: 2.4rem;
+  color: #c88040;
+}
 
 .mascota-card h3 {
   font-size: .9rem;
@@ -146,7 +167,7 @@ html { overflow-x: hidden; }
   padding: 0 10px;
 }
 
-.mascota-card > p {
+.mascota-card>p {
   font-size: .74rem;
   color: #888;
   margin-bottom: 10px;
@@ -154,7 +175,7 @@ html { overflow-x: hidden; }
   padding: 0 10px;
 }
 
-.mascota-card > button {
+.mascota-card>button {
   margin: 0 14px;
   width: calc(100% - 28px);
   border: none;
@@ -167,7 +188,10 @@ html { overflow-x: hidden; }
   cursor: pointer;
   transition: opacity .2s;
 }
-.mascota-card > button:hover { opacity: .88; }
+
+.mascota-card>button:hover {
+  opacity: .88;
+}
 
 /* ════════════════════════════════════════
    PUBLICACIONES DESTACADAS
@@ -182,10 +206,13 @@ html { overflow-x: hidden; }
   background: #fff;
   border-radius: 16px;
   padding: 16px 18px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   transition: box-shadow .2s;
 }
-.destacado-card:hover { box-shadow: 0 6px 22px rgba(0,0,0,0.11); }
+
+.destacado-card:hover {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.11);
+}
 
 .destacado-top {
   display: flex;
@@ -203,7 +230,11 @@ html { overflow-x: hidden; }
   cursor: pointer;
   transition: color .15s;
 }
-.destacado-top strong:hover { color: #e07a18; text-decoration: underline; }
+
+.destacado-top strong:hover {
+  color: #e07a18;
+  text-decoration: underline;
+}
 
 .destacado-top span {
   font-size: .78rem;
@@ -212,7 +243,7 @@ html { overflow-x: hidden; }
   flex-shrink: 0;
 }
 
-.destacado-card > p {
+.destacado-card>p {
   font-size: .88rem;
   color: #333;
   line-height: 1.5;
@@ -237,7 +268,10 @@ html { overflow-x: hidden; }
   cursor: pointer;
   transition: color .15s;
 }
-.clickable-user:hover { color: #f28c28; }
+
+.clickable-user:hover {
+  color: #f28c28;
+}
 
 /* ════════════════════════════════════════
    TOP USUARIOS
@@ -252,29 +286,38 @@ html { overflow-x: hidden; }
   background: #fff;
   border-radius: 14px;
   padding: 14px 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   display: flex;
   align-items: center;
   gap: 14px;
   transition: transform .2s, box-shadow .2s;
 }
+
 .usuario-top-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.11);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.11);
 }
 
 .usuario-top-avatar {
-  width: 48px; height: 48px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   overflow: hidden;
   background: linear-gradient(135deg, #f28c28, #ff9f43);
-  display: flex; justify-content: center; align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-weight: 800;
   font-size: 1.2rem;
   color: #fff;
   flex-shrink: 0;
 }
-.usuario-top-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.usuario-top-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 .usuario-top-info {
   display: flex;
@@ -282,6 +325,7 @@ html { overflow-x: hidden; }
   gap: 2px;
   min-width: 0;
 }
+
 .usuario-top-info strong {
   font-size: .9rem;
   font-weight: 700;
@@ -292,23 +336,42 @@ html { overflow-x: hidden; }
   text-overflow: ellipsis;
   transition: color .15s;
 }
-.usuario-top-info strong:hover { color: #f28c28; }
-.usuario-top-info span { font-size: .76rem; color: #f28c28; font-weight: 700; }
+
+.usuario-top-info strong:hover {
+  color: #f28c28;
+}
+
+.usuario-top-info span {
+  font-size: .76rem;
+  color: #f28c28;
+  font-weight: 700;
+}
 
 /* ════════════════════════════════════════
    RESPONSIVE — Tablet (≤ 768px)
 ════════════════════════════════════════ */
 @media (max-width: 768px) {
 
-  .explorar-container { padding: 20px 12px 40px; }
-  .explorar-header { margin-bottom: 20px; }
-  .explorar-header h1 { font-size: 1.4rem; }
+  .explorar-container {
+    padding: 20px 12px 40px;
+  }
+
+  .explorar-header {
+    margin-bottom: 20px;
+  }
+
+  .explorar-header h1 {
+    font-size: 1.4rem;
+  }
 
   .mascotas-grid {
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 10px;
   }
-  .mascota-foto { height: 110px; }
+
+  .mascota-foto {
+    height: 110px;
+  }
 
   .usuarios-top-list {
     grid-template-columns: 1fr;
@@ -321,31 +384,68 @@ html { overflow-x: hidden; }
 ════════════════════════════════════════ */
 @media (max-width: 480px) {
 
-  .explorar-container { padding: 16px 10px 36px; }
+  .explorar-container {
+    padding: 16px 10px 36px;
+  }
 
-  .section-title-row { flex-wrap: wrap; }
-  .section-title-row button { padding: 7px 13px; font-size: .78rem; }
+  .section-title-row {
+    flex-wrap: wrap;
+  }
+
+  .section-title-row button {
+    padding: 7px 13px;
+    font-size: .78rem;
+  }
 
   .mascotas-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
-  .mascota-foto { height: 100px; }
-  .mascota-card h3 { font-size: .82rem; }
-  .mascota-card > p { font-size: .7rem; }
 
-  .destacado-card { padding: 14px; }
-  .destacado-card > p { font-size: .84rem; }
-  .destacado-img { max-height: 180px; }
+  .mascota-foto {
+    height: 100px;
+  }
 
-  .usuario-top-avatar { width: 42px; height: 42px; }
-  .usuario-top-info strong { font-size: .85rem; }
+  .mascota-card h3 {
+    font-size: .82rem;
+  }
+
+  .mascota-card>p {
+    font-size: .7rem;
+  }
+
+  .destacado-card {
+    padding: 14px;
+  }
+
+  .destacado-card>p {
+    font-size: .84rem;
+  }
+
+  .destacado-img {
+    max-height: 180px;
+  }
+
+  .usuario-top-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .usuario-top-info strong {
+    font-size: .85rem;
+  }
 }
 
 /* ════════════════════════════════════════
    RESPONSIVE — Small (≤ 360px)
 ════════════════════════════════════════ */
 @media (max-width: 360px) {
-  .mascotas-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-  .mascota-foto { height: 90px; }
+  .mascotas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .mascota-foto {
+    height: 90px;
+  }
 }

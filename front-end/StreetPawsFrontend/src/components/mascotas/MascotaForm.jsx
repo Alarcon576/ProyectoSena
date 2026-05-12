@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 
 function MascotaForm({ onSubmit, mascotaEdit }) {
@@ -11,7 +10,7 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
     estado_salud: "",
     fecha_ingreso: "",
     estado_adopcion: "",
-    foto: null
+    foto: null,
   });
 
   useEffect(() => {
@@ -19,7 +18,7 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
       setForm({
         ...mascotaEdit,
         fecha_ingreso: mascotaEdit.fecha_ingreso?.split("T")[0] || "",
-        foto: null // 🔥 importante (no forzar imagen al editar)
+        foto: null, // 🔥 importante (no forzar imagen al editar)
       });
     }
   }, [mascotaEdit]);
@@ -27,7 +26,7 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -113,7 +112,7 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
       estado_salud: "",
       fecha_ingreso: "",
       estado_adopcion: "",
-      foto: null
+      foto: null,
     });
   };
 
@@ -121,65 +120,57 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
     <form onSubmit={handleSubmit}>
       <h3>{mascotaEdit ? "Editar" : "Crear"} Mascota</h3>
 
-      <input 
-        name="nombre" 
-        placeholder="Nombre" 
-        value={form.nombre} 
-        onChange={handleChange} 
+      <input
+        name="nombre"
+        placeholder="Nombre"
+        value={form.nombre}
+        onChange={handleChange}
       />
 
-      <select 
-        name="especie" 
-        value={form.especie} 
-        onChange={handleChange}
-      >
+      <select name="especie" value={form.especie} onChange={handleChange}>
         <option value="">Seleccione especie</option>
         <option value="Perro">Perro</option>
         <option value="Gato">Gato</option>
       </select>
 
-      <input 
-        name="raza" 
-        placeholder="Raza" 
-        value={form.raza} 
-        onChange={handleChange} 
-      />
-
-      <input 
-        name="edad" 
-        type="number" 
-        placeholder="Edad" 
-        value={form.edad} 
-        onChange={handleChange} 
-      />
-
-      <select 
-        name="sexo" 
-        value={form.sexo} 
+      <input
+        name="raza"
+        placeholder="Raza"
+        value={form.raza}
         onChange={handleChange}
-      >
+      />
+
+      <input
+        name="edad"
+        type="number"
+        placeholder="Edad"
+        value={form.edad}
+        onChange={handleChange}
+      />
+
+      <select name="sexo" value={form.sexo} onChange={handleChange}>
         <option value="">Seleccione sexo</option>
         <option value="Macho">Macho</option>
         <option value="Hembra">Hembra</option>
       </select>
 
-      <textarea 
-        name="estado_salud" 
-        placeholder="Estado de salud" 
-        value={form.estado_salud} 
-        onChange={handleChange} 
+      <textarea
+        name="estado_salud"
+        placeholder="Estado de salud"
+        value={form.estado_salud}
+        onChange={handleChange}
       />
 
-      <input 
-        name="fecha_ingreso" 
-        type="date" 
-        value={form.fecha_ingreso} 
-        onChange={handleChange} 
+      <input
+        name="fecha_ingreso"
+        type="date"
+        value={form.fecha_ingreso}
+        onChange={handleChange}
       />
 
-      <select 
-        name="estado_adopcion" 
-        value={form.estado_adopcion} 
+      <select
+        name="estado_adopcion"
+        value={form.estado_adopcion}
         onChange={handleChange}
       >
         <option value="">Seleccione estado</option>
@@ -188,15 +179,9 @@ function MascotaForm({ onSubmit, mascotaEdit }) {
       </select>
 
       {/* 🔥 INPUT DE IMAGEN */}
-      <input 
-        type="file" 
-        accept="image/*"
-        onChange={handleFileChange}
-      />
+      <input type="file" accept="image/*" onChange={handleFileChange} />
 
-      <button type="submit">
-        {mascotaEdit ? "Actualizar" : "Crear"}
-      </button>
+      <button type="submit">{mascotaEdit ? "Actualizar" : "Crear"}</button>
     </form>
   );
 }

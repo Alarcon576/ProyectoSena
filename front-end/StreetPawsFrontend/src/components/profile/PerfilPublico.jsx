@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import "./PerfilPublico.css";
 
-const URL_POSTS = "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";
-const URL_PROFILE = "https://proyectosena-production-4ad5.up.railway.app/api/profile";
+const URL_POSTS =
+  "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";
+const URL_PROFILE =
+  "https://proyectosena-production-4ad5.up.railway.app/api/profile";
 
 function PerfilPublico({ onSwitch, userId }) {
   const [user, setUser] = useState(null);
@@ -17,14 +19,16 @@ function PerfilPublico({ onSwitch, userId }) {
     setLoading(true);
     try {
       const res = await fetch(`${URL_PROFILE}/${userId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       const data = await res.json();
       setUser(data);
 
       const resPosts = await fetch(URL_POSTS);
       const allPosts = await resPosts.json();
-      const filtrados = allPosts.filter((post) => post.id_usuario === data.id_usuario);
+      const filtrados = allPosts.filter(
+        (post) => post.id_usuario === data.id_usuario,
+      );
       setPostsUsuario(filtrados);
     } catch (error) {
       console.error("Error perfil público:", error);
@@ -35,12 +39,12 @@ function PerfilPublico({ onSwitch, userId }) {
 
   const totalLikes = postsUsuario.reduce(
     (acc, post) => acc + (post.likes?.length || 0),
-    0
+    0,
   );
 
   const totalComentarios = postsUsuario.reduce(
     (acc, post) => acc + (post.comentarios?.length || 0),
-    0
+    0,
   );
 
   if (loading) {
@@ -66,7 +70,6 @@ function PerfilPublico({ onSwitch, userId }) {
       </nav>
 
       <div className="pp-container">
-
         {/* ── HERO / BANNER ── */}
         <div className="pp-banner">
           <div className="pp-banner-gradient" />
@@ -77,7 +80,11 @@ function PerfilPublico({ onSwitch, userId }) {
           <div className="pp-avatar-wrap">
             <div className="pp-avatar">
               {user.foto_perfil ? (
-                <img src={user.foto_perfil} alt={user.nombre} className="pp-avatar-img" />
+                <img
+                  src={user.foto_perfil}
+                  alt={user.nombre}
+                  className="pp-avatar-img"
+                />
               ) : (
                 <span>{user.nombre?.charAt(0).toUpperCase()}</span>
               )}
@@ -87,7 +94,9 @@ function PerfilPublico({ onSwitch, userId }) {
           <div className="pp-info">
             <h1 className="pp-nombre">{user.nombre}</h1>
             <p className="pp-email">📧 {user.email}</p>
-            {user.ubicacion && <p className="pp-ubicacion">📍 {user.ubicacion}</p>}
+            {user.ubicacion && (
+              <p className="pp-ubicacion">📍 {user.ubicacion}</p>
+            )}
             {user.bio && <p className="pp-bio">{user.bio}</p>}
           </div>
 
@@ -109,9 +118,7 @@ function PerfilPublico({ onSwitch, userId }) {
             </div>
           </div>
 
-          <button className="pp-follow-btn">
-            ➕ Seguir
-          </button>
+          <button className="pp-follow-btn">➕ Seguir</button>
         </div>
 
         {/* ── PUBLICACIONES ── */}
@@ -146,11 +153,14 @@ function PerfilPublico({ onSwitch, userId }) {
                       <span>❤️ {post.likes?.length || 0}</span>
                       <span>💬 {post.comentarios?.length || 0}</span>
                       <span className="pp-post-date">
-                        {new Date(post.fecha_publicacion).toLocaleDateString("es-CO", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric"
-                        })}
+                        {new Date(post.fecha_publicacion).toLocaleDateString(
+                          "es-CO",
+                          {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          },
+                        )}
                       </span>
                     </div>
                   </div>
@@ -159,7 +169,6 @@ function PerfilPublico({ onSwitch, userId }) {
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

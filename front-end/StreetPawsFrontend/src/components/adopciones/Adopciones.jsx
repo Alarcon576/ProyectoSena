@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./Adopciones.css";
 import Mascotas from "../mascotas/Mascotas";
-import SolicitudesAdopcion from "../solicitudes/SolicitudesAdopcion"; // ← nuevo componente
+import SolicitudesAdopcion from "../solicitudes/solicitudesAdopcion";
 
 const URL_MASCOTAS =
   "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./SolicitudesAdopcion.css";
+import "./solicitudesAdopcion.css";
 
 const URL_SOLICITUDES =
   "https://proyectosena-production-4ad5.up.railway.app/api/solicitudes";

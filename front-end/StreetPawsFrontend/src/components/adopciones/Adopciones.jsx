@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./Adopciones.css";
 import Mascotas from "../mascotas/Mascotas";
-import TablaSolicitudes from "./TablaSolicitudes"; // ← nuevo componente
+import SolicitudesAdopcion from "../solicitudes/SolicitudesAdopcion"; // ← nuevo componente
 
 const URL_MASCOTAS =
   "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
@@ -450,7 +450,7 @@ function Adopciones({ onSwitch, user }) {
       {esAdmin && tabAdmin === "solicitudes" && (
         <div className="admin-solicitudes">
           <h2>Solicitudes de Adopción</h2>
-          <TablaSolicitudes token={token} />
+          <SolicitudesAdopcion token={token} />
         </div>
       )}
 

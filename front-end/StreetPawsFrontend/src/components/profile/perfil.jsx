@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./perfil.css";
 
-
 const URL_POSTS =
   "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";
 const URL_PROFILE =

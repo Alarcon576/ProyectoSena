@@ -2,41 +2,30 @@ import { useState } from "react";
 import "./Login.css";
 
 function Login({ onSwitch, onLogin }) {
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [loggedUser, setLoggedUser] = useState(null);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const decodeToken = (token) => {
-    return JSON.parse(atob(token.split(".")[1]));
-  };
+  const decodeToken = (token) => JSON.parse(atob(token.split(".")[1]));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {};
 
-    let newErrors = {};
+    if (!form.email) newErrors.email = "El correo es obligatorio";
+    else if (!form.email.includes("@")) newErrors.email = "Correo inválido";
 
-    // 🔥 VALIDACIONES
-    if (!form.email) {
-      newErrors.email = "El correo es obligatorio";
-    } else if (!form.email.includes("@")) {
-      newErrors.email = "Correo inválido";
-    }
-
-    if (!form.password) {
-      newErrors.password = "La contraseña es obligatoria";
-    } else if (form.password.length < 6) {
+    if (!form.password) newErrors.password = "La contraseña es obligatoria";
+    else if (form.password.length < 6)
       newErrors.password = "Mínimo 6 caracteres";
-    }
 
-    // ❌ si hay errores, no hace fetch
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -56,28 +45,83 @@ function Login({ onSwitch, onLogin }) {
       );
 
       const data = await res.json();
-
       if (!res.ok) {
-        setErrors({ general: data.msg });
+        setErrors({ general: data.msg || "Credenciales incorrectas" });
         return;
       }
 
       localStorage.setItem("token", data.token);
-
       const user = decodeToken(data.token);
+      setLoggedUser(user);
+      setShowSuccessModal(true);
 
-      onLogin(user);
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        onLogin(user);
+      }, 2000);
     } catch {
-      setErrors({ general: "Error servidor" });
+      setErrors({ general: "Error de servidor" });
     }
   };
 
+  const EyeOpen = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+
+  const EyeClosed = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+      <line x1="1" y1="1" x2="23" y2="23" />
+    </svg>
+  );
+
   return (
     <div className="login-container">
-      {/* IZQUIERDA */}
-      <div className="login-left">
-        <h2 className="logo">🐾 Street Paws</h2>
+      {showSuccessModal && (
+        <div className="login-modal-overlay">
+          <div className="login-modal">
+            <div className="login-modal-icon">✓</div>
+            <h3>¡Bienvenido de vuelta!</h3>
+            <p>Iniciaste sesión correctamente. Preparando tu experiencia…</p>
+            <button
+              className="login-modal-btn"
+              onClick={() => {
+                setShowSuccessModal(false);
+                onLogin(loggedUser);
+              }}
+            >
+              Continuar
+            </button>
+          </div>
+        </div>
+      )}
 
+      <div className="login-left">
+        <h2 className="logo">Street Paws</h2>
         <div className="login-text">
           <h1>
             Únete a nuestra <span>comunidad.</span>
@@ -89,11 +133,13 @@ function Login({ onSwitch, onLogin }) {
         </div>
       </div>
 
-      {/* DERECHA */}
       <div className="login-right">
         <form className="login-form" onSubmit={handleSubmit}>
           <h2>Iniciar sesión</h2>
-          <p>Inicia sesión para poder ver lo que tenemos para ti!</p>
+          <p className="login-subtitle">
+            ¡Inicia sesión para ver lo que tenemos para ti!
+          </p>
+
           {errors.general && <p className="error">{errors.general}</p>}
 
           <label>Correo electrónico</label>
@@ -117,10 +163,23 @@ function Login({ onSwitch, onLogin }) {
               value={form.password}
               onChange={handleChange}
             />
-
-            <span onClick={() => setShowPassword(!showPassword)}>👁️</span>
+            <button
+              type="button"
+              className="eye-btn"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={
+                showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+              }
+            >
+              <span
+                className={`eye-icon ${showPassword ? "eye-open" : "eye-closed"}`}
+              >
+                {showPassword ? <EyeClosed /> : <EyeOpen />}
+              </span>
+            </button>
           </div>
           {errors.password && <p className="error">{errors.password}</p>}
+
           <button type="submit">Ingresar</button>
 
           <p className="switch-text">

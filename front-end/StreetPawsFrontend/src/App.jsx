@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import "./App.css";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Mascotas from "./components/mascotas/Mascotas";
@@ -43,7 +44,7 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="app-root">
       {view === "login" && (
         <Login onSwitch={handleSwitch} onLogin={handleLogin} />
       )}

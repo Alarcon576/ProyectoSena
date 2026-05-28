@@ -1,34 +1,124 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
 .reg-page {
   display: flex;
   height: 100vh;
   font-family: 'Inter', sans-serif;
   background: white;
+  overflow: hidden;
 }
 
+/* ═══ MODAL ═══ */
+.reg-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 16px;
+}
+
+.reg-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 32px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.reg-modal-icon {
+  width: 56px;
+  height: 56px;
+  background: #f29933;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: bold;
+  margin: 0 auto 18px;
+}
+
+.reg-modal h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 10px;
+}
+
+.reg-modal p {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.reg-modal-btn {
+  width: 100%;
+  padding: 14px;
+  background: #f29933;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.reg-modal-btn:hover {
+  opacity: 0.88;
+}
+
+/* ═══ LAYOUT ═══ */
 .reg-left-side {
-  flex: 1;
+  width: 38%;
+  flex-shrink: 0;
   background: #1a1a1a;
-  /* O tu imagen: url("../assets/dog.jpg") center/cover */
-  padding: 60px;
+  padding: 48px 44px;
   color: white;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  position: relative;
+  justify-content: space-between;
 }
 
 .reg-brand {
-  position: absolute;
-  top: 40px;
-  font-weight: bold;
-  font-size: 22px;
+  font-weight: 800;
+  font-size: 20px;
   cursor: pointer;
+  letter-spacing: -0.3px;
+}
+
+.reg-hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .reg-hero-content h1 {
-  font-size: 48px;
-  line-height: 1.1;
-  margin-bottom: 20px;
+  font-size: 40px;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  font-weight: 800;
 }
 
 .reg-hero-content h1 span {
@@ -36,47 +126,58 @@
 }
 
 .reg-hero-content p {
-  font-size: 18px;
-  color: #ccc;
-  max-width: 400px;
+  font-size: 16px;
+  color: #aaa;
+  line-height: 1.6;
+  max-width: 320px;
 }
 
+/* ═══ DERECHA ═══ */
 .reg-right-side {
   flex: 1;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   background: white;
+  overflow-y: auto;
+  padding: 24px;
 }
 
 .reg-form-container {
   width: 100%;
-  max-width: 400px;
-  padding: 20px;
+  max-width: 560px;
 }
 
 .reg-form-container h2 {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
-  margin-bottom: 8px;
-  color: #000;
+  color: #111;
+  margin-bottom: 4px;
 }
 
 .reg-subtitle {
   color: #888;
-  margin-bottom: 30px;
-  font-size: 15px;
+  font-size: 14px;
+  margin-bottom: 24px;
 }
 
+/* ═══ GRID 2 COLUMNAS ═══ */
+.reg-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* ═══ CAMPOS ═══ */
 .reg-field {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .reg-field label {
   display: block;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: #333;
 }
 
@@ -88,211 +189,207 @@
 
 .reg-input-box input {
   width: 100%;
-  padding: 15px 45px;
-  border: 1px solid #e2e8f0;
-  border-radius: 15px;
+  padding: 11px 38px 11px 36px;
+  border: 1.5px solid #e8edf2;
+  border-radius: 10px;
   background: #f8fafd;
-  color: #000;
+  color: #111;
   outline: none;
-  font-size: 14px;
-  box-sizing: border-box;
+  font-size: 13px;
+  transition: border-color 0.2s;
+}
+
+.reg-input-box input:focus {
+  border-color: #f29933;
 }
 
 .reg-icon {
   position: absolute;
-  left: 18px;
+  left: 11px;
   color: #94a3b8;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
 }
 
+/* ═══ OJO CON ANIMACIÓN ═══ */
 .reg-eye {
   position: absolute;
-  right: 18px;
+  right: 10px;
   background: transparent;
   border: none;
   cursor: pointer;
   outline: none;
-  font-size: 18px;
+  padding: 0;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
 }
 
+.reg-eye:hover {
+  color: #f29933;
+}
+
+.eye-icon {
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s, transform 0.25s;
+}
+
+.eye-icon.eye-open {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.eye-icon.eye-closed {
+  opacity: 0.7;
+  transform: scale(0.9) rotate(8deg);
+}
+
+/* ═══ FORTALEZA ═══ */
+.strength-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.strength-bar-bg {
+  flex: 1;
+  height: 4px;
+  background: #e8edf2;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.strength-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.strength-label {
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 62px;
+}
+
+/* ═══ BOTÓN ═══ */
 .reg-btn {
   width: 100%;
-  padding: 18px;
+  padding: 14px;
   background: #f29933;
   color: white;
   border: none;
-  border-radius: 18px;
-  font-weight: bold;
-  font-size: 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
-  margin-top: 20px;
-  box-shadow: 0 10px 20px rgba(242, 153, 51, 0.2);
+  margin-top: 6px;
+  box-shadow: 0 6px 18px rgba(242, 153, 51, 0.28);
+  transition: opacity 0.2s, transform 0.2s;
 }
 
+.reg-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ═══ FOOTER ═══ */
 .reg-footer {
   text-align: center;
-  margin-top: 25px;
-  font-size: 14px;
+  margin-top: 18px;
+  font-size: 13px;
   color: #666;
 }
 
 .reg-footer span {
   color: #f29933;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .error-text {
-  color: #ff0000;
-  font-size: 12px;
-  font-weight: bold;
-  margin-top: 5px;
-}
-
-.success-text {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: center;
-  border: 1px solid #c3e6cb;
+  color: #e53935;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
 }
 
 /* ═══════════════════════════════════════
-   RESPONSIVE REGISTER
+   TABLET
 ═══════════════════════════════════════ */
+@media (max-width: 860px) {
 
-@media (max-width: 768px) {
+  html,
+  body,
+  #root {
+    overflow: auto;
+  }
 
   .reg-page {
     flex-direction: column;
-    min-height: 100vh;
     height: auto;
+    min-height: 100vh;
+    overflow: visible;
   }
 
-  /* HERO */
   .reg-left-side {
-    min-height: 260px;
-    padding: 30px 20px;
-    justify-content: flex-end;
+    width: 100%;
+    min-height: 200px;
+    padding: 28px 20px;
+    justify-content: flex-start;
+    gap: 16px;
   }
 
-  .reg-brand {
-    top: 20px;
-    left: 20px;
-    font-size: 18px;
+  .reg-hero-content {
+    justify-content: flex-start;
   }
 
   .reg-hero-content h1 {
-    font-size: 32px;
-    line-height: 1.2;
-    margin-bottom: 14px;
+    font-size: 28px;
   }
 
   .reg-hero-content p {
     font-size: 14px;
-    max-width: 100%;
-    line-height: 1.5;
   }
 
-  /* FORM */
   .reg-right-side {
-    width: 100%;
-    padding: 20px 16px 40px;
+    padding: 28px 20px 48px;
+    overflow-y: visible;
     align-items: flex-start;
   }
 
   .reg-form-container {
     max-width: 100%;
-    padding: 0;
   }
 
-  .reg-form-container h2 {
-    font-size: 28px;
-    margin-top: 10px;
-  }
-
-  .reg-subtitle {
-    font-size: 14px;
-    margin-bottom: 24px;
-  }
-
-  .reg-field {
-    margin-bottom: 16px;
-  }
-
-  .reg-field label {
-    font-size: 13px;
-  }
-
-  .reg-input-box input {
-    padding: 14px 42px;
-    font-size: 14px;
-    border-radius: 14px;
-  }
-
-  .reg-icon {
-    left: 14px;
-    font-size: 14px;
-  }
-
-  .reg-eye {
-    right: 14px;
-    font-size: 16px;
-  }
-
-  .reg-btn {
-    padding: 16px;
-    border-radius: 14px;
-    font-size: 15px;
-    margin-top: 16px;
-  }
-
-  .reg-footer {
-    margin-top: 20px;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  .success-text,
-  .error-text {
-    font-size: 13px;
+  .reg-row {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 }
 
-/* ═══════════════════════════════════════
-   MÓVILES PEQUEÑOS
-═══════════════════════════════════════ */
-
 @media (max-width: 480px) {
-
   .reg-left-side {
-    min-height: 220px;
-    padding: 24px 16px;
+    min-height: 170px;
+    padding: 22px 16px;
   }
 
   .reg-hero-content h1 {
-    font-size: 26px;
+    font-size: 24px;
   }
 
-  .reg-hero-content p {
-    font-size: 13px;
+  .reg-right-side {
+    padding: 22px 16px 40px;
   }
 
   .reg-form-container h2 {
     font-size: 24px;
   }
 
-  .reg-input-box input {
-    padding: 13px 40px;
-    font-size: 13px;
+  .reg-modal {
+    padding: 28px 18px;
   }
-
-  .reg-btn {
-    font-size: 14px;
-    padding: 14px;
-  }
-
 }

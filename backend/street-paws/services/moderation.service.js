@@ -11,61 +11,20 @@ const normalizarTexto = (texto = "") => {
   return texto
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // quitar tildes
-    .replace(/[^a-z0-9\s]/g, " ") // quitar símbolos
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\w\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 };
 
+/* =========================================================
+   GROSERÍAS FUERTES
+========================================================= */
 const palabrasProhibidas = [
-  "hpta",
-  "hp",
   "hijueputa",
   "gonorrea",
-  "gono",
-  "mk",
-  "marica",
-  "marik",
   "pirobo",
-  "piroba",
-  "puta",
-  "carechimba",
-  "cacorro"
-];
-
-const palabrasClaveMascotas = [
-  "perro",
-  "perros",
-  "gato",
-  "gatos",
-  "mascota",
-  "mascotas",
-  "animal",
-  "animales",
-  "rescate",
-  "adopcion",
-  "adoptar",
-  "veterinario",
-  "veterinaria",
-  "cachorro",
-  "cachorros",
-  "peludo",
-  "peludos",
-  "huella",
-  "huellas",
-  "abandono",
-  "refugio",
-  "esterilizacion",
-  "vacuna",
-  "vacunas",
-  "amor",
-  "compañero",
-  "amistad",
-  "leal",
-  "salud",
-  "bienestar",
-  "domestico",
-  "asco",
+  "carechimba"
 ];
 
 const contieneGroserias = (texto) => {
@@ -77,17 +36,8 @@ const contieneGroserias = (texto) => {
   });
 };
 
-const contieneTematicaMascotas = (texto) => {
-  const limpio = normalizarTexto(texto);
-
-  return palabrasClaveMascotas.some((palabra) => {
-    const regex = new RegExp(`\\b${palabra}\\b`, "i");
-    return regex.test(limpio);
-  });
-};
-
 /* =========================================================
-   CAPA 1 - MODERACIÓN OPENAI
+   MODERACIÓN OPENAI
 ========================================================= */
 export const moderarTexto = async (texto) => {
   try {
@@ -104,56 +54,58 @@ export const moderarTexto = async (texto) => {
 };
 
 /* =========================================================
-   CAPA 2 - VALIDACIÓN IA SEMÁNTICA
+   VALIDACIÓN IA MÁS FLEXIBLE
 ========================================================= */
 export const validarRelevanciaConIA = async (texto) => {
   try {
-    const limpio = normalizarTexto(texto);
-
-    if (contieneGroserias(limpio)) {
-      return false;
-    }
-
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
       input: `
 Responde únicamente con true o false.
 
-Reglas:
-- true SOLO si el texto trata claramente sobre mascotas,
-  perros, gatos,
-  bienestar animal o animales domésticos.
-- false si contiene groserías.
-- false si contiene insultos o abreviaciones ofensivas colombianas.
-  therians o contextos irrelevantes.
+Aprueba (true) si:
+- El texto tiene relación con mascotas, animales,
+  adopciones, rescates, veterinaria o experiencias personales.
+- También aprueba textos casuales o sociales normales.
 
-Texto: "${limpio}"
+Rechaza (false) SOLO si:
+- Es spam.
+- Es ofensivo.
+- Habla de violencia explícita.
+- Es completamente irrelevante o absurdo.
+- Tiene insultos fuertes.
+
+Texto:
+"${texto}"
       `
     });
 
     const resultado = response.output_text.trim().toLowerCase();
-    return resultado === "true";
+
+    return resultado.includes("true");
   } catch (error) {
     console.error("Error IA relevancia:", error);
-    return false;
+
+    // En caso de error mejor permitir
+    return true;
   }
 };
 
 /* =========================================================
-   FUNCIÓN FINAL - VALIDAR PUBLICACIÓN
+   VALIDAR PUBLICACIÓN
 ========================================================= */
 export const validarPublicacion = async (texto) => {
   try {
     const limpio = normalizarTexto(texto);
 
-    if (!limpio) {
+    if (!limpio || limpio.length < 3) {
       return {
         valido: false,
-        motivo: "El texto está vacío"
+        motivo: "Texto demasiado corto"
       };
     }
 
-    // CAPA 1 → Moderación OpenAI
+    // 1. Moderación OpenAI
     const moderacion = await moderarTexto(limpio);
 
     if (moderacion.flagged) {
@@ -163,31 +115,21 @@ export const validarPublicacion = async (texto) => {
       };
     }
 
-    // CAPA 2 → Groserías locales
+    // 2. Groserías fuertes
     if (contieneGroserias(limpio)) {
       return {
         valido: false,
-        motivo: "Contiene lenguaje ofensivo"
+        motivo: "Lenguaje ofensivo"
       };
     }
 
-    // CAPA 3 → Validación rápida por temática
-    const tieneTemaMascotas = contieneTematicaMascotas(limpio);
+    // 3. Validación IA flexible
+    const esValido = await validarRelevanciaConIA(limpio);
 
-    if (!tieneTemaMascotas) {
+    if (!esValido) {
       return {
         valido: false,
-        motivo: "La publicación no está relacionada con mascotas"
-      };
-    }
-
-    // CAPA 4 → Validación IA semántica
-    const esRelevante = await validarRelevanciaConIA(limpio);
-
-    if (!esRelevante) {
-      return {
-        valido: false,
-        motivo: "La IA detectó contexto no relacionado con mascotas"
+        motivo: "Contenido no permitido"
       };
     }
 
@@ -198,9 +140,11 @@ export const validarPublicacion = async (texto) => {
   } catch (error) {
     console.error("Error validando publicación:", error);
 
+    // MUY IMPORTANTE:
+    // no bloquees publicaciones por errores internos
     return {
-      valido: false,
-      motivo: "Error interno validando contenido"
+      valido: true,
+      motivo: "Publicado con validación parcial"
     };
   }
 };

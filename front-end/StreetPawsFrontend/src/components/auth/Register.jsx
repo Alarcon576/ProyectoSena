@@ -20,30 +20,42 @@ function Register({ onSwitch }) {
     let score = 0;
     if (pwd.length >= 8) score++;
     if (/[A-Z]/.test(pwd)) score++;
+    if (/[a-z]/.test(pwd)) score++;
     if (/[0-9]/.test(pwd)) score++;
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) score++;
-    return score;
+    if (/[!@#$%^&*(),.?":{}|<>_\-]/.test(pwd)) score++;
+    if (pwd.length >= 12) score++;
+    return Math.min(score, 4);
   };
 
   const strengthInfo = (score) => {
-    if (score === 0) return { label: "", color: "#e0e0e0", width: "0%" };
-    if (score === 1)
-      return { label: "Muy débil", color: "#e53935", width: "25%" };
-    if (score === 2) return { label: "Débil", color: "#fb8c00", width: "50%" };
-    if (score === 3) return { label: "Media", color: "#fdd835", width: "75%" };
-    return { label: "Fuerte", color: "#43a047", width: "100%" };
+    if (score === 0) return { label: "",          color: "#e0e0e0" };
+    if (score === 1) return { label: "Muy débil",  color: "#e53935" };
+    if (score === 2) return { label: "Débil",      color: "#fb8c00" };
+    if (score === 3) return { label: "Media",      color: "#fdd835" };
+    return               { label: "Fuerte",    color: "#43a047" };
   };
 
+  const getChecks = (pwd) => [
+    { key: "len",     label: "8+ caracteres",      ok: pwd.length >= 8 },
+    { key: "upper",   label: "Mayúscula",            ok: /[A-Z]/.test(pwd) },
+    { key: "lower",   label: "Minúscula",            ok: /[a-z]/.test(pwd) },
+    { key: "number",  label: "Número",               ok: /[0-9]/.test(pwd) },
+    { key: "special", label: "Carácter especial",    ok: /[!@#$%^&*(),.?":{}|<>_\-]/.test(pwd) },
+    { key: "nospace", label: "Sin espacios",         ok: !/\s/.test(pwd) && pwd.length > 0 },
+  ];
+
   const strengthScore = getStrength(form.password);
-  const strength = strengthInfo(strengthScore);
+  const strength      = strengthInfo(strengthScore);
+  const checks        = getChecks(form.password);
 
   const validatePassword = (pwd) => {
     const errs = [];
-    if (pwd.length < 8) errs.push("Mínimo 8 caracteres");
-    if (!/[A-Z]/.test(pwd)) errs.push("al menos una mayúscula");
-    if (!/[0-9]/.test(pwd)) errs.push("al menos un número");
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd))
-      errs.push("al menos un carácter especial");
+    if (pwd.length < 8)                              errs.push("Mínimo 8 caracteres");
+    if (!/[A-Z]/.test(pwd))                          errs.push("al menos una mayúscula");
+    if (!/[a-z]/.test(pwd))                          errs.push("al menos una minúscula");
+    if (!/[0-9]/.test(pwd))                          errs.push("al menos un número");
+    if (!/[!@#$%^&*(),.?":{}|<>_\-]/.test(pwd))     errs.push("al menos un carácter especial");
+    if (/\s/.test(pwd))                              errs.push("no puede contener espacios");
     return errs;
   };
 
@@ -78,11 +90,11 @@ function Register({ onSwitch }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            nombre: form.nombre,
-            email: form.email,
+            nombre:    form.nombre,
+            email:     form.email,
             contrasena: form.password,
             direccion: form.direccion || "",
-            telefono: form.telefono || "",
+            telefono:  form.telefono  || "",
           }),
         },
       );
@@ -108,122 +120,58 @@ function Register({ onSwitch }) {
     }
   };
 
-  // SVG eye icons
+  /* ── SVG icons ── */
   const EyeOpen = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
       <circle cx="12" cy="12" r="3" />
     </svg>
   );
 
   const EyeClosed = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
       <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
       <line x1="1" y1="1" x2="23" y2="23" />
     </svg>
   );
 
-  // SVG field icons
   const IconUser = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
       <circle cx="12" cy="7" r="4" />
     </svg>
   );
 
   const IconMail = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
       <polyline points="22,6 12,13 2,6" />
     </svg>
   );
 
   const IconHome = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
       <polyline points="9 22 9 12 15 12 15 22" />
     </svg>
   );
 
   const IconPhone = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56a16 16 0 0 0 5.68 5.68l.87-.87a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
     </svg>
   );
 
   const IconLock = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
@@ -231,14 +179,13 @@ function Register({ onSwitch }) {
 
   return (
     <div className="reg-page">
+      {/* ── Modal éxito ── */}
       {showSuccessModal && (
         <div className="reg-modal-overlay">
           <div className="reg-modal">
             <div className="reg-modal-icon">✓</div>
             <h3>¡Registro exitoso!</h3>
-            <p>
-              Tu cuenta ha sido creada correctamente. Ya puedes iniciar sesión.
-            </p>
+            <p>Tu cuenta ha sido creada correctamente. Ya puedes iniciar sesión.</p>
             <button
               className="reg-modal-btn"
               onClick={() => {
@@ -252,34 +199,29 @@ function Register({ onSwitch }) {
         </div>
       )}
 
+      {/* ── Lado izquierdo ── */}
       <div className="reg-left-side">
-        <div className="reg-brand" onClick={() => onSwitch("login")}>
-          Street Paws
-        </div>
+        <div className="reg-brand" onClick={() => onSwitch("login")}>Street Paws</div>
         <div className="reg-hero-content">
-          <h1>
-            Únete a nuestra <span>comunidad.</span>
-          </h1>
-          <p>
-            Cada registro es una oportunidad más para darles el hogar que
-            merecen.
-          </p>
+          <h1>Únete a nuestra <span>comunidad.</span></h1>
+          <p>Cada registro es una oportunidad más para darles el hogar que merecen.</p>
         </div>
       </div>
 
+      {/* ── Lado derecho ── */}
       <div className="reg-right-side">
         <div className="reg-form-container">
           <h2>Crear cuenta</h2>
           <p className="reg-subtitle">Regístrate para empezar a ayudar.</p>
 
           <form onSubmit={handleSubmit}>
+
+            {/* Fila 1: Nombre + Email */}
             <div className="reg-row">
               <div className="reg-field">
                 <label>Nombre completo</label>
                 <div className="reg-input-box">
-                  <span className="reg-icon">
-                    <IconUser />
-                  </span>
+                  <span className="reg-icon"><IconUser /></span>
                   <input
                     name="nombre"
                     type="text"
@@ -294,9 +236,7 @@ function Register({ onSwitch }) {
               <div className="reg-field">
                 <label>Correo electrónico</label>
                 <div className="reg-input-box">
-                  <span className="reg-icon">
-                    <IconMail />
-                  </span>
+                  <span className="reg-icon"><IconMail /></span>
                   <input
                     name="email"
                     type="email"
@@ -309,13 +249,12 @@ function Register({ onSwitch }) {
               </div>
             </div>
 
+            {/* Fila 2: Dirección + Teléfono */}
             <div className="reg-row">
               <div className="reg-field">
                 <label>Dirección</label>
                 <div className="reg-input-box">
-                  <span className="reg-icon">
-                    <IconHome />
-                  </span>
+                  <span className="reg-icon"><IconHome /></span>
                   <input
                     name="direccion"
                     type="text"
@@ -329,9 +268,7 @@ function Register({ onSwitch }) {
               <div className="reg-field">
                 <label>Teléfono</label>
                 <div className="reg-input-box">
-                  <span className="reg-icon">
-                    <IconPhone />
-                  </span>
+                  <span className="reg-icon"><IconPhone /></span>
                   <input
                     name="telefono"
                     type="number"
@@ -343,13 +280,12 @@ function Register({ onSwitch }) {
               </div>
             </div>
 
+            {/* Fila 3: Contraseña + Confirmar */}
             <div className="reg-row">
               <div className="reg-field">
                 <label>Contraseña</label>
                 <div className="reg-input-box">
-                  <span className="reg-icon">
-                    <IconLock />
-                  </span>
+                  <span className="reg-icon"><IconLock /></span>
                   <input
                     name="password"
                     type={showPassword ? "text" : "password"}
@@ -361,47 +297,53 @@ function Register({ onSwitch }) {
                     type="button"
                     className="reg-eye"
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={
-                      showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
-                    }
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   >
-                    <span
-                      className={`eye-icon ${showPassword ? "eye-open" : "eye-closed"}`}
-                    >
+                    <span className={`eye-icon ${showPassword ? "eye-open" : "eye-closed"}`}>
                       {showPassword ? <EyeClosed /> : <EyeOpen />}
                     </span>
                   </button>
                 </div>
+
+                {/* ── Indicador de fortaleza ── */}
                 {form.password.length > 0 && (
                   <div className="strength-wrapper">
-                    <div className="strength-bar-bg">
-                      <div
-                        className="strength-bar-fill"
-                        style={{
-                          width: strength.width,
-                          backgroundColor: strength.color,
-                        }}
-                      />
+                    {/* Barra segmentada */}
+                    <div className="strength-bars">
+                      {[1, 2, 3, 4].map((seg) => (
+                        <div
+                          key={seg}
+                          className={`strength-bar-segment ${
+                            strengthScore >= seg ? `filled-${strengthScore}` : ""
+                          }`}
+                        />
+                      ))}
                     </div>
-                    <span
-                      className="strength-label"
-                      style={{ color: strength.color }}
-                    >
+                    <span className="strength-label" style={{ color: strength.color }}>
                       {strength.label}
                     </span>
+                    {/* Checklist */}
+                    <div className="strength-checklist">
+                      {checks.map((c) => (
+                        <span
+                          key={c.key}
+                          className={`strength-check-item ${c.ok ? "valid" : "invalid"}`}
+                        >
+                          <span className="strength-check-icon">{c.ok ? "✓" : "·"}</span>
+                          {c.label}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
-                {errors.password && (
-                  <p className="error-text">{errors.password}</p>
-                )}
+
+                {errors.password && <p className="error-text">{errors.password}</p>}
               </div>
 
               <div className="reg-field">
                 <label>Confirmar contraseña</label>
                 <div className="reg-input-box">
-                  <span className="reg-icon">
-                    <IconLock />
-                  </span>
+                  <span className="reg-icon"><IconLock /></span>
                   <input
                     name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
@@ -413,31 +355,19 @@ function Register({ onSwitch }) {
                     type="button"
                     className="reg-eye"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    aria-label={
-                      showConfirmPassword
-                        ? "Ocultar contraseña"
-                        : "Mostrar contraseña"
-                    }
+                    aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   >
-                    <span
-                      className={`eye-icon ${showConfirmPassword ? "eye-open" : "eye-closed"}`}
-                    >
+                    <span className={`eye-icon ${showConfirmPassword ? "eye-open" : "eye-closed"}`}>
                       {showConfirmPassword ? <EyeClosed /> : <EyeOpen />}
                     </span>
                   </button>
                 </div>
-                {errors.confirmPassword && (
-                  <p className="error-text">{errors.confirmPassword}</p>
-                )}
-                {errors.general && (
-                  <p className="error-text">{errors.general}</p>
-                )}
+                {errors.confirmPassword && <p className="error-text">{errors.confirmPassword}</p>}
+                {errors.general && <p className="error-text">{errors.general}</p>}
               </div>
             </div>
 
-            <button type="submit" className="reg-btn">
-              Crear cuenta
-            </button>
+            <button type="submit" className="reg-btn">Crear cuenta</button>
           </form>
 
           <p className="reg-footer">

@@ -121,13 +121,11 @@ Responde únicamente con true o false.
 
 Reglas:
 - true SOLO si el texto trata claramente sobre mascotas,
-  perros, gatos, adopción, rescate animal, veterinaria,
+  perros, gatos,
   bienestar animal o animales domésticos.
 - false si contiene groserías.
 - false si contiene insultos o abreviaciones ofensivas colombianas.
-- false si habla de mascotas en memes, roleplay, bromas,
   therians o contextos irrelevantes.
-- false si no tiene intención real sobre animales.
 
 Texto: "${limpio}"
       `

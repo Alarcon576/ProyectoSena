@@ -11,6 +11,9 @@ const URL_PROFILE =
   "https://proyectosena-production-4ad5.up.railway.app/api/profile";
 const URL_IA = "https://proyectosena-production-4ad5.up.railway.app/api/ia";
 
+const URL_NOTICIAS =
+  "https://proyectosena-production-4ad5.up.railway.app/api/noticias";
+
 function Feed({ onSwitch }) {
   const [posts, setPosts] = useState([]);
   const [contenido, setContenido] = useState("");
@@ -359,7 +362,8 @@ function Feed({ onSwitch }) {
     () => (
       <>
         <ul className="menu-list">
-          <li onClick={() => onSwitch("feed")}>Noticias</li>
+          <li onClick={() => onSwitch("noticias")}>
+  Noticias</li>
         </ul>
         <div className="tip-box">
           <h4>💡 Tip del día</h4>

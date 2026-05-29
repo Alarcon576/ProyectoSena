@@ -9,6 +9,7 @@ import PerfilPublico from "./components/profile/PerfilPublico";
 import Explorar from "./components/explorar/Explorar";
 import Adopciones from "./components/adopciones/Adopciones";
 import Configuracion from "./components/configuracion/Configuracion";
+import Noticias from "./components/noticias/Noticias";
 
 function App() {
   const [view, setView] = useState("login");
@@ -81,6 +82,8 @@ function App() {
       {view === "explorar" && <Explorar onSwitch={handleSwitch} />}
 
       {view === "adopciones" && <Adopciones onSwitch={handleSwitch} user={user} />}
+
+      {view === "noticias" && <Noticias onSwitch={handleSwitch} />}
 
       {view === "perfil" && <Perfil onSwitch={handleSwitch} />}
 

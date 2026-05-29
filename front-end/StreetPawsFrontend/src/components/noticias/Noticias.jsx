@@ -13,12 +13,17 @@ function Noticias() {
 
   const cargarNoticias = async () => {
     try {
-      const res = await fetch(URL);
+      const res = await fetch(URL_NOTICIAS);
+
+      if (!res.ok) {
+        throw new Error("Error obteniendo noticias");
+      }
+
       const data = await res.json();
 
-      setNoticias(data);
+      setNoticias(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error(error);
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
@@ -35,7 +40,12 @@ function Noticias() {
       <div className="noticias-grid">
         {noticias.map((n, index) => (
           <div className="noticia-card" key={index}>
-            <img src={n.image} alt={n.title} />
+            {n.image && (
+              <img
+                src={n.image}
+                alt={n.title}
+              />
+            )}
 
             <h3>{n.title}</h3>
 

@@ -48,7 +48,30 @@ const validarComentario = async (contenido) => {
     "rata",
     "payaso",
     "tonto",
-    "cepeda"
+    "cepeda",
+    "mamahuevo",
+    "hpta",
+    "huevón",
+    "mlp",
+    "violador",
+    "asesino",
+    "racista",
+    "machista",
+    "homofóbico",
+    "transfóbico",
+    "xenófobo",
+    "misógino",
+    "misándrico",
+    "nazi",
+    "fascista",
+    "terrorista",
+    "dictador",
+    "genocida",
+    "pedófilo",
+    "hp",
+    "prb",
+
+
   ];
 
   const contieneBloqueado =

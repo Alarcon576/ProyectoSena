@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import "./Adopciones.css";
 import Mascotas from "../mascotas/Mascotas";
 import SolicitudesAdopcion from "../solicitudes/solicitudesAdopcion";
+import ModalSolicitudAdopcion from "./AdopcionesForm"; 
 
-const URL_MASCOTAS    = "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
-const URL_SOLICITUDES = "https://proyectosena-production-4ad5.up.railway.app/api/solicitudes";
-const URL_PROFILE     = "https://proyectosena-production-4ad5.up.railway.app/api/profile";
+const URL_MASCOTAS  = "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
+const URL_FAVORITOS = "https://proyectosena-production-4ad5.up.railway.app/api/favoritos";
+const URL_PROFILE   = "https://proyectosena-production-4ad5.up.railway.app/api/profile";
 
 const ESPECIES = ["Todos","Perro","Gato"];
 const EDADES   = ["Todos","Cachorro (0-1 año)","Joven (1-3 años)","Adulto (3-7 años)","Adulto mayor (+7 años)"];
@@ -28,21 +29,20 @@ const TEXTO_BTN_NO_DISPONIBLE = {
 };
 
 function Adopciones({ onSwitch, user }) {
-  const [mascotas, setMascotas]     = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [busqueda, setBusqueda]     = useState("");
+  const [mascotas, setMascotas]   = useState([]);
+  const [loading, setLoading]     = useState(true);
+  const [busqueda, setBusqueda]   = useState("");
   const [filtroEspecie, setFiltroEspecie]   = useState("Todos");
   const [filtroEdad, setFiltroEdad]         = useState("Todos");
   const [filtroTamanio, setFiltroTamanio]   = useState("Todos");
   const [filtroGenero, setFiltroGenero]     = useState("Todos");
+  const [favoritos, setFavoritos]           = useState([]);
+  const [togglingId, setTogglingId]         = useState(null);
   const [mascotaSeleccionada, setMascotaSeleccionada] = useState(null);
-  const [modalSolicitud, setModalSolicitud] = useState(null);
-  const [notas, setNotas]           = useState("");
-  const [enviando, setEnviando]     = useState(false);
-  const [exito, setExito]           = useState(false);
+  const [modalSolicitud, setModalSolicitud] = useState(null); // mascota para el modal de solicitud
   const [menuAvatarAbierto, setMenuAvatarAbierto] = useState(false);
   const [usuarioActual, setUsuarioActual]   = useState(null);
-  const [tabAdmin, setTabAdmin]     = useState("mascotas");
+  const [tabAdmin, setTabAdmin]   = useState("mascotas");
 
   const token   = localStorage.getItem("token");
   const esAdmin = user?.rol === 2;
@@ -57,7 +57,7 @@ function Adopciones({ onSwitch, user }) {
 
   useEffect(() => {
     cargarMascotas();
-    if (token) { cargarUsuarioActual(); }
+    if (token) { cargarIdsFavoritos(); cargarUsuarioActual(); }
   }, []);
 
   useEffect(() => {
@@ -73,14 +73,33 @@ function Adopciones({ onSwitch, user }) {
       const data = await res.json();
       setMascotas(Array.isArray(data) ? data : []);
     } catch { setMascotas([]); }
-    finally { setLoading(false); }
+    finally   { setLoading(false); }
+  };
+
+  const cargarIdsFavoritos = async () => {
+    try {
+      const res  = await fetch(`${URL_FAVORITOS}/ids`, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      setFavoritos(Array.isArray(data) ? data : []);
+    } catch {}
   };
 
   const cargarUsuarioActual = async () => {
     try {
-      const res  = await fetch(`${URL_PROFILE}/me`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${URL_PROFILE}/me`, { headers: { Authorization: `Bearer ${token}` } });
       setUsuarioActual(await res.json());
     } catch {}
+  };
+
+  const toggleFavorito = async (id_mascota) => {
+    if (!token) { alert("Debes iniciar sesión para guardar favoritos"); return; }
+    setTogglingId(id_mascota);
+    try {
+      const res  = await fetch(`${URL_FAVORITOS}/${id_mascota}`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      setFavoritos(prev => data.accion === "agregado" ? [...prev, id_mascota] : prev.filter(id => id !== id_mascota));
+    } catch {}
+    finally { setTimeout(() => setTogglingId(null), 300); }
   };
 
   const clasificarEdad = e => e <= 1 ? "Cachorro (0-1 año)" : e <= 3 ? "Joven (1-3 años)" : e <= 7 ? "Adulto (3-7 años)" : "Adulto mayor (+7 años)";
@@ -91,7 +110,7 @@ function Adopciones({ onSwitch, user }) {
     return ESTADO_INFO[k] || { label: estado || "Desconocido", cls: "badge--otro" };
   };
   const getBtnTexto = (disponible, estado) => {
-    if (disponible) return "Adoptame 🐾";
+    if (disponible) return "Quiero adoptarme 🐾";
     const k = estado?.toLowerCase() || "";
     return TEXTO_BTN_NO_DISPONIBLE[k] || "Momentáneamente no disponible";
   };
@@ -102,6 +121,7 @@ function Adopciones({ onSwitch, user }) {
       (!busqueda || m.nombre?.toLowerCase().includes(txt) || m.raza?.toLowerCase().includes(txt) || m.especie?.toLowerCase().includes(txt)) &&
       (filtroEspecie === "Todos" || m.especie?.toLowerCase() === filtroEspecie.toLowerCase()) &&
       (filtroEdad    === "Todos" || clasificarEdad(m.edad) === filtroEdad) &&
+      (filtroTamanio === "Todos" || m.tamanio?.toLowerCase() === filtroTamanio.toLowerCase()) &&
       (filtroGenero  === "Todos" || m.sexo?.toLowerCase()   === filtroGenero.toLowerCase())
     );
   });
@@ -110,22 +130,6 @@ function Adopciones({ onSwitch, user }) {
     ...mascotasFiltradas.filter(m => m.estado_adopcion?.toLowerCase() === "disponible"),
     ...mascotasFiltradas.filter(m => m.estado_adopcion?.toLowerCase() !== "disponible"),
   ];
-
-  const enviarSolicitud = async () => {
-    if (!modalSolicitud) return;
-    setEnviando(true);
-    try {
-      const res = await fetch(URL_SOLICITUDES, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ id_mascota: modalSolicitud.id_mascota, notas: notas || null }),
-      });
-      if (!res.ok) { const d = await res.json(); alert(d.error || "No se pudo enviar"); return; }
-      setExito(true);
-      setTimeout(() => { setModalSolicitud(null); setNotas(""); setExito(false); }, 2200);
-    } catch { alert("Error de conexión"); }
-    finally { setEnviando(false); }
-  };
 
   return (
     <>
@@ -200,8 +204,14 @@ function Adopciones({ onSwitch, user }) {
                 {mascotaSeleccionada.sexo && <span>{mascotaSeleccionada.sexo === "Macho" ? "♂️" : "♀️"} {mascotaSeleccionada.sexo}</span>}
               </div>
               {mascotaSeleccionada.estado_adopcion?.toLowerCase() === "disponible" && (
-                <button className="btn-adoptar-modal" onClick={() => { setMascotaSeleccionada(null); setModalSolicitud(mascotaSeleccionada); }}>
-                  ¡Adoptame! 🐾
+                <button
+                  className="btn-adoptar-modal"
+                  onClick={() => {
+                    setMascotaSeleccionada(null);
+                    setModalSolicitud(mascotaSeleccionada);
+                  }}
+                >
+                  ¡Quiero adoptarme! 🐾
                 </button>
               )}
             </div>
@@ -209,43 +219,14 @@ function Adopciones({ onSwitch, user }) {
         </div>
       )}
 
-      {/* ── Modal solicitud ── */}
+      {/* ── Modal solicitud de adopción (componente separado) ── */}
       {modalSolicitud && (
-        <div className="adopt-modal-overlay" onClick={() => { setModalSolicitud(null); setNotas(""); setExito(false); }}>
-          <div className="adopt-modal-solicitud" onClick={e => e.stopPropagation()}>
-            <button className="adopt-modal-close" onClick={() => { setModalSolicitud(null); setNotas(""); setExito(false); }}>✕</button>
-            {exito ? (
-              <div className="solicitud-exito">
-                <div className="exito-icon">🐾</div>
-                <h3>¡Solicitud enviada!</h3>
-                <p>Pronto nos pondremos en contacto sobre <strong>{modalSolicitud.nombre}</strong>.</p>
-              </div>
-            ) : (
-              <>
-                <h2>Solicitar adopción</h2>
-                <div className="solicitud-mascota-preview">
-                  <div className="solicitud-avatar">
-                    {modalSolicitud.fotos?.[0]?.url_foto
-                      ? <img src={modalSolicitud.fotos[0].url_foto} alt={modalSolicitud.nombre} />
-                      : <span>🐾</span>}
-                  </div>
-                  <div>
-                    <strong>{modalSolicitud.nombre}</strong>
-                    <span>{modalSolicitud.raza} · {getEdadTexto(modalSolicitud.edad)}</span>
-                  </div>
-                </div>
-                <label>¿Algo que quieras contarnos? <span>(opcional)</span></label>
-                <textarea placeholder="Cuéntanos sobre tu hogar, tu familia, tu estilo de vida…" value={notas} onChange={e => setNotas(e.target.value)} rows={4} />
-                <div className="solicitud-actions">
-                  <button className="btn-cancelar-solicitud" onClick={() => { setModalSolicitud(null); setNotas(""); }}>Cancelar</button>
-                  <button className="btn-enviar-solicitud" onClick={enviarSolicitud} disabled={enviando}>
-                    {enviando ? <span className="spinner" /> : "Enviar solicitud"}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+        <ModalSolicitudAdopcion
+          mascota={modalSolicitud}
+          token={token}
+          onClose={() => setModalSolicitud(null)}
+          getEdadTexto={getEdadTexto}
+        />
       )}
 
       {/* Admin: mascotas */}
@@ -261,7 +242,7 @@ function Adopciones({ onSwitch, user }) {
       {/* ════ VISTA USUARIO NORMAL ════ */}
       {!esAdmin && (
         <>
-          {/* ── Banner superior: CTA + buscador, difuminado suave ── */}
+          {/* ── Banner superior ── */}
           <section className="adopt-top-cta">
             <div className="adopt-top-cta-inner">
               <span className="adopt-top-cta-eyebrow">Adopta, no compres</span>
@@ -281,7 +262,7 @@ function Adopciones({ onSwitch, user }) {
           </section>
 
           <div className="adopt-page">
-            {/* ── Filtros únicos ── */}
+            {/* ── Filtros ── */}
             <div className="adopt-filters-wrap">
               <div className="adopt-filters-top">
                 <h2 className="adopt-filters-title">
@@ -293,6 +274,7 @@ function Adopciones({ onSwitch, user }) {
               <div className="adopt-filters-group">
                 <FilterDropdown label="Especie" options={ESPECIES} value={filtroEspecie} onChange={setFiltroEspecie} />
                 <FilterDropdown label="Edad"    options={EDADES}   value={filtroEdad}    onChange={setFiltroEdad}    />
+                <FilterDropdown label="Tamaño"  options={TAMANIOS} value={filtroTamanio} onChange={setFiltroTamanio} />
                 <FilterDropdown label="Género"  options={GENEROS}  value={filtroGenero}  onChange={setFiltroGenero}  />
               </div>
             </div>
@@ -302,6 +284,7 @@ function Adopciones({ onSwitch, user }) {
               <div className="adopt-active-filters">
                 {filtroEspecie !== "Todos" && <span className="adopt-filter-chip">{filtroEspecie} <button onClick={() => setFiltroEspecie("Todos")}>✕</button></span>}
                 {filtroEdad    !== "Todos" && <span className="adopt-filter-chip">{filtroEdad}    <button onClick={() => setFiltroEdad("Todos")}>✕</button></span>}
+                {filtroTamanio !== "Todos" && <span className="adopt-filter-chip">{filtroTamanio} <button onClick={() => setFiltroTamanio("Todos")}>✕</button></span>}
                 {filtroGenero  !== "Todos" && <span className="adopt-filter-chip">{filtroGenero}  <button onClick={() => setFiltroGenero("Todos")}>✕</button></span>}
                 {busqueda && <span className="adopt-filter-chip">"{busqueda}" <button onClick={() => setBusqueda("")}>✕</button></span>}
               </div>
@@ -320,6 +303,7 @@ function Adopciones({ onSwitch, user }) {
               <div className="adopt-grid">
                 {mascotasOrdenadas.map(mascota => {
                   const disponible = mascota.estado_adopcion?.toLowerCase() === "disponible";
+                  const esFavorito = favoritos.includes(mascota.id_mascota);
                   const badge      = getBadge(mascota.estado_adopcion);
                   return (
                     <div
@@ -330,6 +314,13 @@ function Adopciones({ onSwitch, user }) {
                         {mascota.fotos?.[0]?.url_foto
                           ? <img src={mascota.fotos[0].url_foto} alt={mascota.nombre} className="adopt-card-img" />
                           : <div className="adopt-card-img-placeholder">🐾</div>}
+                        <button
+                          className={`adopt-card-heart ${esFavorito ? "adopt-card-heart--active" : ""} ${togglingId === mascota.id_mascota ? "adopt-card-heart--toggling" : ""}`}
+                          onClick={e => { e.stopPropagation(); toggleFavorito(mascota.id_mascota); }}
+                          title={esFavorito ? "Quitar de favoritos" : "Guardar en favoritos"}
+                        >
+                          {esFavorito ? "❤️" : "🤍"}
+                        </button>
                         <span className={`adopt-card-status-badge ${badge.cls}`}>{badge.label}</span>
                       </div>
                       <div className="adopt-card-body">
@@ -365,6 +356,7 @@ function Adopciones({ onSwitch, user }) {
                 <p>Ayudando a los animales de la calle a encontrar hogares amorosos. Tu adopción puede salvar una vida y traerte alegría.</p>
                 <div className="footer-social">
                   <button title="Compartir">↗</button>
+                  <button title="Favoritos">♡</button>
                   <button title="Contacto">✉</button>
                 </div>
               </div>

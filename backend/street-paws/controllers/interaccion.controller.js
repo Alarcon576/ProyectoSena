@@ -24,58 +24,24 @@ const validarComentario = async (contenido) => {
     return "No se permiten links en comentarios";
   }
 
-  // 🚫 blacklist insultos + política + religión
   const palabrasProhibidas = [
     "idiota",
     "estupido",
     "imbecil",
     "mierda",
     "gonorrea",
-    "malparido",
-    "hp",
-    "petro",
-    "uribe",
-    "presidente",
-    "senado",
-    "congreso",
-    "izquierda",
-    "derecha",
-    "religion",
-    "dios",
-    "jesus",
-    "iglesia"
+    "malparido"
   ];
 
-  const contieneBloqueado = palabrasProhibidas.some((p) =>
-    texto.includes(p)
-  );
+  const contieneBloqueado =
+    palabrasProhibidas.some((p) =>
+      texto.includes(p)
+    );
 
   if (contieneBloqueado) {
-    return "El comentario contiene lenguaje no permitido";
+    return "El comentario contiene lenguaje ofensivo";
   }
 
-  // 🐾 solo mascotas
-  const palabrasMascotas = [
-    "perro",
-    "gato",
-    "mascota",
-    "adopcion",
-    "animal",
-    "peludo",
-    "rescate",
-    "cachorro",
-    "veterinario"
-  ];
-
-  const relacionadoMascotas = palabrasMascotas.some((p) =>
-    texto.includes(p)
-  );
-
-  if (!relacionadoMascotas) {
-    return "Los comentarios deben estar relacionados con mascotas";
-  }
-
-  // 🤖 IA como segunda capa
   const revision = await moderarTexto(contenido);
 
   if (revision.flagged) {
@@ -84,7 +50,6 @@ const validarComentario = async (contenido) => {
 
   return null;
 };
-
 /* =====================
    ❤️ TOGGLE LIKE
 ===================== */

@@ -48,6 +48,10 @@ function Noticias() {
   // Primera noticia como featured, el resto en el grid
   const [featured, ...resto] = noticias;
 
+  // Imagen predeterminada cuando la original falla o no existe
+  const IMG_FALLBACK = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80";
+  const handleImgError = (e) => { e.target.src = IMG_FALLBACK; };
+
   return (
     <div className="noticias-container">
 
@@ -69,9 +73,11 @@ function Noticias() {
       >
         <div className="noticias-featured-img">
           <span className="noticias-featured-badge">Destacado</span>
-          {featured.image
-            ? <img src={featured.image} alt={featured.title} />
-            : <div className="noticia-card-img-placeholder">🐾</div>}
+          <img
+            src={featured.image || IMG_FALLBACK}
+            alt={featured.title}
+            onError={handleImgError}
+          />
         </div>
         <div className="noticias-featured-body">
           <h3>{featured.title}</h3>
@@ -92,9 +98,11 @@ function Noticias() {
               rel="noreferrer"
             >
               <div className="noticia-card-img-wrap">
-                {n.image
-                  ? <img src={n.image} alt={n.title} />
-                  : <div className="noticia-card-img-placeholder">🐾</div>}
+                <img
+                  src={n.image || IMG_FALLBACK}
+                  alt={n.title}
+                  onError={handleImgError}
+                />
               </div>
               <div className="noticia-card-body">
                 <h3>{n.title}</h3>

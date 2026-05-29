@@ -71,48 +71,32 @@ function Mascotas({ onSwitch, user, embebido = false }) {
       setMensajeForm({ texto: "El nombre es obligatorio", tipo: "error" });
       return;
     }
-
     if (!form.especie) {
       setMensajeForm({ texto: "Debe seleccionar una especie", tipo: "error" });
       return;
     }
-
     if (!form.raza.trim()) {
       setMensajeForm({ texto: "La raza es obligatoria", tipo: "error" });
       return;
     }
-
     if (!form.edad || isNaN(form.edad) || form.edad <= 0) {
       setMensajeForm({ texto: "Ingrese una edad válida", tipo: "error" });
       return;
     }
-
     if (!form.sexo) {
       setMensajeForm({ texto: "Debe seleccionar el sexo", tipo: "error" });
       return;
     }
-
     if (!form.estado_salud.trim()) {
-      setMensajeForm({
-        texto: "El estado de salud es obligatorio",
-        tipo: "error",
-      });
+      setMensajeForm({ texto: "El estado de salud es obligatorio", tipo: "error" });
       return;
     }
-
     if (!form.fecha_ingreso) {
-      setMensajeForm({
-        texto: "Debe seleccionar la fecha de ingreso",
-        tipo: "error",
-      });
+      setMensajeForm({ texto: "Debe seleccionar la fecha de ingreso", tipo: "error" });
       return;
     }
-
     if (!form.estado_adopcion) {
-      setMensajeForm({
-        texto: "Debe seleccionar el estado de adopción",
-        tipo: "error",
-      });
+      setMensajeForm({ texto: "Debe seleccionar el estado de adopción", tipo: "error" });
       return;
     }
 
@@ -121,29 +105,21 @@ function Mascotas({ onSwitch, user, embebido = false }) {
       const endpoint = editando ? `${URL}/${editando}` : URL;
 
       const formData = new FormData();
-
       Object.keys(form).forEach((key) => {
-        if (form[key] !== null) {
-          formData.append(key, form[key]);
-        }
+        if (form[key] !== null) formData.append(key, form[key]);
       });
 
       const res = await fetch(endpoint, {
         method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
       if (res.ok) {
         setMensajeGlobal({
-          texto: editando
-            ? "Actualizado correctamente"
-            : "¡Mascota creada correctamente!",
+          texto: editando ? "Actualizado correctamente" : "¡Mascota creada correctamente!",
           tipo: "success",
         });
-
         setEditando(null);
         limpiarForm();
         setMostrarForm(false);
@@ -162,9 +138,7 @@ function Mascotas({ onSwitch, user, embebido = false }) {
 
     await fetch(`${URL}/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     setMensajeGlobal({ texto: "Eliminado correctamente", tipo: "success" });
@@ -177,8 +151,8 @@ function Mascotas({ onSwitch, user, embebido = false }) {
   };
 
   return (
-    <div className="mascotas-container">
-      {/* Header solo se muestra cuando NO está embebido dentro de Adopciones */}
+    <div className={`mascotas-container ${embebido ? "mascotas-container--embebido" : ""}`}>
+      {/* Header solo cuando NO está embebido dentro de Adopciones */}
       {!embebido && (
         <div className="mascotas-header">
           <h2>🐾 Street Paws</h2>
@@ -199,41 +173,19 @@ function Mascotas({ onSwitch, user, embebido = false }) {
               <h3>{editando ? "Editar mascota" : "Nueva mascota"}</h3>
 
               <form onSubmit={handleSubmit}>
-                {mensajeForm.texto && (
-                  <p className="error">{mensajeForm.texto}</p>
-                )}
+                {mensajeForm.texto && <p className="error">{mensajeForm.texto}</p>}
 
-                <input
-                  name="nombre"
-                  placeholder="Nombre"
-                  value={form.nombre}
-                  onChange={handleChange}
-                />
+                <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={handleChange} />
 
-                <select
-                  name="especie"
-                  value={form.especie}
-                  onChange={handleChange}
-                >
+                <select name="especie" value={form.especie} onChange={handleChange}>
                   <option value="">Seleccione especie</option>
                   <option value="Perro">Perro</option>
                   <option value="Gato">Gato</option>
                 </select>
 
-                <input
-                  name="raza"
-                  placeholder="Raza"
-                  value={form.raza}
-                  onChange={handleChange}
-                />
+                <input name="raza" placeholder="Raza" value={form.raza} onChange={handleChange} />
 
-                <input
-                  name="edad"
-                  type="number"
-                  placeholder="Edad"
-                  value={form.edad}
-                  onChange={handleChange}
-                />
+                <input name="edad" type="number" placeholder="Edad" value={form.edad} onChange={handleChange} />
 
                 <select name="sexo" value={form.sexo} onChange={handleChange}>
                   <option value="">Seleccione sexo</option>
@@ -241,25 +193,11 @@ function Mascotas({ onSwitch, user, embebido = false }) {
                   <option value="Hembra">Hembra</option>
                 </select>
 
-                <textarea
-                  name="estado_salud"
-                  placeholder="Estado de salud"
-                  value={form.estado_salud}
-                  onChange={handleChange}
-                />
+                <textarea name="estado_salud" placeholder="Estado de salud" value={form.estado_salud} onChange={handleChange} />
 
-                <input
-                  name="fecha_ingreso"
-                  type="date"
-                  value={form.fecha_ingreso}
-                  onChange={handleChange}
-                />
+                <input name="fecha_ingreso" type="date" value={form.fecha_ingreso} onChange={handleChange} />
 
-                <select
-                  name="estado_adopcion"
-                  value={form.estado_adopcion}
-                  onChange={handleChange}
-                >
+                <select name="estado_adopcion" value={form.estado_adopcion} onChange={handleChange}>
                   <option value="">Seleccione estado</option>
                   <option value="Disponible">Disponible</option>
                   <option value="No disponible">No disponible</option>
@@ -267,15 +205,8 @@ function Mascotas({ onSwitch, user, embebido = false }) {
 
                 <input type="file" onChange={handleFileChange} />
 
-                <button className="btn-save">
-                  {editando ? "Actualizar" : "Crear"}
-                </button>
-
-                <button
-                  type="button"
-                  className="btn-cancel"
-                  onClick={() => setMostrarForm(false)}
-                >
+                <button className="btn-save">{editando ? "Actualizar" : "Crear"}</button>
+                <button type="button" className="btn-cancel" onClick={() => setMostrarForm(false)}>
                   Cancelar
                 </button>
               </form>
@@ -301,9 +232,7 @@ function Mascotas({ onSwitch, user, embebido = false }) {
           <h3>Lista de mascotas</h3>
 
           {mensajeGlobal.texto && (
-            <p
-              className={mensajeGlobal.tipo === "success" ? "success" : "error"}
-            >
+            <p className={mensajeGlobal.tipo === "success" ? "success" : "error"}>
               {mensajeGlobal.texto}
             </p>
           )}
@@ -318,42 +247,27 @@ function Mascotas({ onSwitch, user, embebido = false }) {
                       : "badge no-disponible"
                   }
                 >
-                  {m.estado_adopcion}
+                  {m.estado_adopcion === "Disponible" ? "Busca hogar 🐾" : "Momentáneamente no disponible"}
                 </span>
 
                 {m.fotos?.[0] && (
-                  <img
-                    src={m.fotos[0].url_foto}
-                    className="card-img"
-                    alt={m.nombre}
-                  />
+                  <img src={m.fotos[0].url_foto} className="card-img" alt={m.nombre} />
                 )}
 
                 <div className="card-body">
                   <h4>{m.nombre}</h4>
-                  <p>
-                    <strong>Especie:</strong> {m.especie}
-                  </p>
-                  <p>
-                    <strong>Raza:</strong> {m.raza}
-                  </p>
-                  <p>
-                    <strong>Edad:</strong> {m.edad}
-                  </p>
-                  <p>
-                    <strong>Sexo:</strong> {m.sexo}
-                  </p>
-                  <p>
-                    <strong>Estado de Salud:</strong> {m.estado_salud}
-                  </p>
-                  <p>
-                    <strong>Fecha:</strong> {m.fecha_ingreso?.split("T")[0]}
-                  </p>
+                  <p><strong>Especie:</strong> {m.especie}</p>
+                  <p><strong>Raza:</strong> {m.raza}</p>
+                  <p><strong>Edad:</strong> {m.edad}</p>
+                  <p><strong>Sexo:</strong> {m.sexo}</p>
+                  <p><strong>Estado de Salud:</strong> {m.estado_salud}</p>
+                  <p><strong>Fecha:</strong> {m.fecha_ingreso?.split("T")[0]}</p>
                 </div>
 
                 {esAdmin && (
                   <div className="card-actions">
                     <button
+                      title="Editar"
                       onClick={() => {
                         setForm({
                           nombre: m.nombre,
@@ -373,8 +287,7 @@ function Mascotas({ onSwitch, user, embebido = false }) {
                     >
                       ✏️
                     </button>
-
-                    <button onClick={() => handleEliminar(m.id_mascota)}>
+                    <button title="Eliminar" onClick={() => handleEliminar(m.id_mascota)}>
                       🗑️
                     </button>
                   </div>

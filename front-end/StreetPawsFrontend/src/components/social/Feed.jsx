@@ -32,15 +32,17 @@ function Feed({ onSwitch }) {
   const [textoComentarioEditado, setTextoComentarioEditado] = useState("");
   const [loadingComentario, setLoadingComentario] = useState(false);
 
+  // ── NUEVO: spinner al ENVIAR un comentario nuevo (por post) ──
+  const [enviandoComentario, setEnviandoComentario] = useState(null);
+
   // Menús
   const [menuAvatarAbierto, setMenuAvatarAbierto] = useState(false);
   const [menuPostAbierto, setMenuPostAbierto] = useState(null);
 
-  // ── DRAWER SIDEBAR MÓVIL ──
+  // Drawer móvil
   const [drawerAbierto, setDrawerAbierto] = useState(false);
 
   const inputImagenRef = useRef(null);
-
   const token = localStorage.getItem("token");
 
   const [mascotas, setMascotas] = useState([]);
@@ -53,42 +55,26 @@ function Feed({ onSwitch }) {
   /* ── Cerrar menús al click fuera ── */
   useEffect(() => {
     const cerrar = (e) => {
-      if (!e.target.closest(".nav-avatar-wrapper")) {
-        setMenuAvatarAbierto(false);
-      }
-
-      if (!e.target.closest(".post-menu-container")) {
-        setMenuPostAbierto(null);
-      }
+      if (!e.target.closest(".nav-avatar-wrapper")) setMenuAvatarAbierto(false);
+      if (!e.target.closest(".post-menu-container")) setMenuPostAbierto(null);
     };
-
     document.addEventListener("click", cerrar);
-
     return () => document.removeEventListener("click", cerrar);
   }, []);
 
-  /* ── Cerrar modal con Escape ── */
+  /* ── Cerrar modal/drawer con Escape ── */
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === "Escape") {
-        setModalEditPost(null);
-        setDrawerAbierto(false);
-      }
+      if (e.key === "Escape") { setModalEditPost(null); setDrawerAbierto(false); }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  /* ── Bloquear scroll del body cuando el drawer está abierto ── */
+  /* ── Bloquear scroll cuando el drawer está abierto ── */
   useEffect(() => {
-    if (drawerAbierto) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = drawerAbierto ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [drawerAbierto]);
 
   /* ════ DATA ════ */
@@ -97,36 +83,31 @@ function Feed({ onSwitch }) {
       const res = await fetch(URL_POSTS);
       const data = await res.json();
       setPosts(data);
-    } catch (err) {
-      console.error("Error cargando posts:", err);
-    }
+    } catch (err) { console.error("Error cargando posts:", err); }
   };
 
   const cargarUsuarioActual = async () => {
     try {
-      const res = await fetch(`${URL_PROFILE}/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(`${URL_PROFILE}/me`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       setUsuarioActual(data);
-    } catch (err) {
-      console.error("Error cargando usuario:", err);
-    }
+    } catch (err) { console.error("Error cargando usuario:", err); }
   };
 
-  useEffect(() => {
-    cargarPosts();
-    cargarUsuarioActual();
-  }, []);
+  useEffect(() => { cargarPosts(); cargarUsuarioActual(); }, []);
 
   /* ════ CREAR POST ════ */
   const crearPost = async (e) => {
     e.preventDefault();
-    if (!contenido.trim() && !imagen) return;
+    // Permite publicar con SOLO imagen, SOLO texto, o ambos. Bloquea solo si faltan ambos.
+    if (!contenido.trim() && !imagen) {
+      alert("Escribe algo o agrega una imagen para publicar 🐾");
+      return;
+    }
     setLoadingPost(true);
     try {
       const fd = new FormData();
-      fd.append("contenido_texto", contenido);
+      fd.append("contenido_texto", contenido.trim());
       if (imagen) fd.append("imagen", imagen);
 
       const res = await fetch(URL_POSTS, {
@@ -136,9 +117,7 @@ function Feed({ onSwitch }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        alert(
-          data.error || "La publicación no cumple las normas de la comunidad",
-        );
+        alert(data.error || "La publicación no cumple las normas de la comunidad");
         return;
       }
       setContenido("");
@@ -166,9 +145,7 @@ function Feed({ onSwitch }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       await cargarPosts();
-    } catch (err) {
-      console.error("Error dando like:", err);
-    }
+    } catch (err) { console.error("Error dando like:", err); }
   };
 
   const yaDioLike = (post) =>
@@ -178,13 +155,11 @@ function Feed({ onSwitch }) {
   const crearComentario = async (idPost) => {
     const texto = comentarios[idPost];
     if (!texto?.trim()) return;
+    setEnviandoComentario(idPost); // ← activa spinner para este post
     try {
       const res = await fetch(`${URL_INTERACCIONES}/comentario/${idPost}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ contenido: texto }),
       });
       if (!res.ok) {
@@ -196,28 +171,25 @@ function Feed({ onSwitch }) {
       await cargarPosts();
     } catch (err) {
       console.error("Error comentando:", err);
+    } finally {
+      setEnviandoComentario(null); // ← apaga spinner
     }
   };
 
   const eliminarComentario = async (idComentario) => {
     if (!window.confirm("¿Eliminar este comentario?")) return;
     try {
-      const res = await fetch(
-        `${URL_INTERACCIONES}/comentario/${idComentario}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const res = await fetch(`${URL_INTERACCIONES}/comentario/${idComentario}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         alert(data.error || "No se pudo eliminar el comentario");
         return;
       }
       await cargarPosts();
-    } catch (err) {
-      console.error("Error eliminando comentario:", err);
-    }
+    } catch (err) { console.error("Error eliminando comentario:", err); }
   };
 
   const iniciarEdicionComentario = (c) => {
@@ -229,17 +201,11 @@ function Feed({ onSwitch }) {
     if (!textoComentarioEditado.trim()) return;
     setLoadingComentario(true);
     try {
-      const res = await fetch(
-        `${URL_INTERACCIONES}/comentario/${idComentario}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ contenido: textoComentarioEditado }),
-        },
-      );
+      const res = await fetch(`${URL_INTERACCIONES}/comentario/${idComentario}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ contenido: textoComentarioEditado }),
+      });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         alert(data.error || "No se pudo editar el comentario");
@@ -267,11 +233,7 @@ function Feed({ onSwitch }) {
 
   const guardarEdicion = async () => {
     if (!modalEditPost) return;
-    if (
-      !textoEditado.trim() &&
-      !imagenEditada &&
-      !modalEditPost.imagenes?.[0]
-    ) {
+    if (!textoEditado.trim() && !imagenEditada && !modalEditPost.imagenes?.[0]) {
       alert("La publicación no puede quedar vacía");
       return;
     }
@@ -286,7 +248,6 @@ function Feed({ onSwitch }) {
         headers: { Authorization: `Bearer ${token}` },
         body: fd,
       });
-
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         alert(data.error || "No se pudo guardar la edición");
@@ -305,21 +266,15 @@ function Feed({ onSwitch }) {
 
   /* ════ ELIMINAR POST ════ */
   const eliminarPost = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar esta publicación?"))
-      return;
+    if (!window.confirm("¿Seguro que deseas eliminar esta publicación?")) return;
     try {
       const res = await fetch(`${URL_POSTS}/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) {
-        alert("No se pudo eliminar la publicación");
-        return;
-      }
+      if (!res.ok) { alert("No se pudo eliminar la publicación"); return; }
       await cargarPosts();
-    } catch (err) {
-      console.error("Error eliminando:", err);
-    }
+    } catch (err) { console.error("Error eliminando:", err); }
   };
 
   const postsFiltrados = posts.filter((p) =>
@@ -334,10 +289,7 @@ function Feed({ onSwitch }) {
           id: usuario.id_usuario,
           nombre: usuario.nombre,
           foto_perfil: usuario.foto_perfil,
-          totalPosts: 0,
-          totalLikes: 0,
-          totalComentarios: 0,
-          score: 0,
+          totalPosts: 0, totalLikes: 0, totalComentarios: 0, score: 0,
         };
       }
       acc[usuario.id_usuario].totalPosts += 1;
@@ -346,70 +298,43 @@ function Feed({ onSwitch }) {
       return acc;
     }, {}),
   )
-    .map((usuario) => ({
-      ...usuario,
-      score:
-        usuario.totalPosts * 3 +
-        usuario.totalLikes +
-        usuario.totalComentarios * 2,
-    }))
+    .map((u) => ({ ...u, score: u.totalPosts * 3 + u.totalLikes + u.totalComentarios * 2 }))
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
 
   const obtenerMascotasAleatorias = (lista, cantidad = 2) => {
     if (!lista || lista.length === 0) return [];
-    const disponibles = lista.filter(
-      (m) => m.estado_adopcion?.toLowerCase() === "disponible",
-    );
+    const disponibles = lista.filter((m) => m.estado_adopcion?.toLowerCase() === "disponible");
     const base = disponibles.length > 0 ? disponibles : lista;
-    const mezcladas = [...base].sort(() => Math.random() - 0.5);
-    return mezcladas.slice(0, cantidad);
+    return [...base].sort(() => Math.random() - 0.5).slice(0, cantidad);
   };
 
   const cargarMascotas = async () => {
     try {
-      const res = await fetch(URL_MASCOTAS, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(URL_MASCOTAS, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
-      if (!Array.isArray(data)) {
-        setMascotas([]);
-        return;
-      }
+      if (!Array.isArray(data)) { setMascotas([]); return; }
       setMascotas(data);
-    } catch (error) {
-      console.error("Error cargando mascotas:", error);
-      setMascotas([]);
-    }
+    } catch (error) { console.error("Error cargando mascotas:", error); setMascotas([]); }
   };
 
-  useEffect(() => {
-    cargarMascotas();
-  }, []);
+  useEffect(() => { cargarMascotas(); }, []);
 
   useEffect(() => {
     if (mascotas.length === 0) return;
-    const rotarMascotas = () => {
-      setMascotasRandom(obtenerMascotasAleatorias(mascotas, 2));
-    };
-    rotarMascotas();
-    const intervalo = setInterval(rotarMascotas, 15000);
+    const rotar = () => setMascotasRandom(obtenerMascotasAleatorias(mascotas, 2));
+    rotar();
+    const intervalo = setInterval(rotar, 15000);
     return () => clearInterval(intervalo);
   }, [mascotas]);
 
   const hashtagsDinamicos = Object.entries(
     posts.reduce((acc, post) => {
-      const texto = post.contenido_texto || "";
-      const hashtags = texto.match(/#\w+/g) || [];
-      hashtags.forEach((tag) => {
-        const limpio = tag.toLowerCase();
-        acc[limpio] = (acc[limpio] || 0) + 1;
-      });
+      const hashtags = (post.contenido_texto || "").match(/#\w+/g) || [];
+      hashtags.forEach((tag) => { const l = tag.toLowerCase(); acc[l] = (acc[l] || 0) + 1; });
       return acc;
     }, {}),
-  )
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
+  ).sort((a, b) => b[1] - a[1]).slice(0, 3);
 
   const consultarSaludIA = async () => {
     if (!sintomasIA.trim()) return;
@@ -417,51 +342,29 @@ function Feed({ onSwitch }) {
     try {
       const res = await fetch(`${URL_IA}/salud`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          especie: "Mascota",
-          edad: 1,
-          sintomas: sintomasIA,
-        }),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ especie: "Mascota", edad: 1, sintomas: sintomasIA }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        alert(data.error || "No se pudo consultar la IA");
-        return;
-      }
-      let texto = data.resultado;
-      texto = texto.replace(/```json|```/g, "").trim();
-      try {
-        const resultado = JSON.parse(texto);
-        setRespuestaIA(resultado);
-      } catch (error) {
-        setRespuestaIA({ nivel: "desconocido", orientacion: texto });
-      }
-    } catch (error) {
-      console.error("Error salud IA:", error);
-      alert("Error consultando la IA");
-    } finally {
-      setLoadingIA(false);
-    }
+      if (!res.ok) { alert(data.error || "No se pudo consultar la IA"); return; }
+      let texto = data.resultado.replace(/```json|```/g, "").trim();
+      try { setRespuestaIA(JSON.parse(texto)); }
+      catch { setRespuestaIA({ nivel: "desconocido", orientacion: texto }); }
+    } catch (error) { console.error("Error salud IA:", error); alert("Error consultando la IA"); }
+    finally { setLoadingIA(false); }
   };
 
-  /* ── Contenido del sidebar (reutilizado en desktop y drawer) ── */
+  /* ── Sidebar izquierdo ── */
   const SidebarLeftContent = useMemo(
     () => (
       <>
         <ul className="menu-list">
           <li onClick={() => onSwitch("feed")}>Noticias</li>
-          <li>Mis Adopciones</li>
+          <li onClick={() => onSwitch("adopciones")}>Mis Adopciones</li>
         </ul>
         <div className="tip-box">
           <h4>💡 Tip del día</h4>
-          <p>
-            ¿Sabías que el contacto visual con tu mascota libera oxitocina tanto
-            en ti como en él?
-          </p>
+          <p>¿Sabías que el contacto visual con tu mascota libera oxitocina tanto en ti como en él?</p>
         </div>
       </>
     ),
@@ -479,11 +382,7 @@ function Feed({ onSwitch }) {
             value={sintomasIA}
             onChange={(e) => setSintomasIA(e.target.value)}
           />
-          <button
-            className="btn-salud-ia"
-            onClick={consultarSaludIA}
-            disabled={loadingIA}
-          >
+          <button className="btn-salud-ia" onClick={consultarSaludIA} disabled={loadingIA}>
             {loadingIA ? "Consultando..." : "Consultar IA"}
           </button>
           {respuestaIA && (
@@ -514,23 +413,15 @@ function Feed({ onSwitch }) {
             <p>No hay mascotas disponibles</p>
           ) : (
             mascotasRandom.map((mascota) => (
-              <div className="adopt-item" key={mascota.id_mascota}>
+              <div className="adopt-item" key={mascota.id_mascota} onClick={() => onSwitch("adopciones")}>
                 <div className="adopt-avatar">
-                  {mascota.fotos?.[0]?.url_foto ? (
-                    <img
-                      src={mascota.fotos[0].url_foto}
-                      alt={mascota.nombre}
-                      className="avatar-feed-img"
-                    />
-                  ) : (
-                    mascota.nombre.charAt(0)
-                  )}
+                  {mascota.fotos?.[0]?.url_foto
+                    ? <img src={mascota.fotos[0].url_foto} alt={mascota.nombre} className="avatar-feed-img" />
+                    : mascota.nombre.charAt(0)}
                 </div>
                 <div className="adopt-info">
                   <strong>{mascota.nombre}</strong>
-                  <span>
-                    {mascota.raza} · {mascota.edad}
-                  </span>
+                  <span>{mascota.raza} · {mascota.edad}</span>
                 </div>
                 <span className="adopt-badge disponible">Disponible</span>
               </div>
@@ -543,20 +434,11 @@ function Feed({ onSwitch }) {
           {lideresComunidad.map((lider, index) => (
             <div className="lider-item" key={lider.id}>
               <div className="lider-avatar">
-                {lider.foto_perfil ? (
-                  <img
-                    src={lider.foto_perfil}
-                    alt={lider.nombre}
-                    className="avatar-feed-img"
-                  />
-                ) : (
-                  lider.nombre.charAt(0)
-                )}
+                {lider.foto_perfil
+                  ? <img src={lider.foto_perfil} alt={lider.nombre} className="avatar-feed-img" />
+                  : lider.nombre.charAt(0)}
               </div>
-              <span
-                className="lider-nombre clickable-user"
-                onClick={() => onSwitch("perfilPublico", lider.id)}
-              >
+              <span className="lider-nombre clickable-user" onClick={() => onSwitch("perfilPublico", lider.id)}>
                 #{index + 1} {lider.nombre}
               </span>
               <span className="lider-pts">{lider.score} pts</span>
@@ -565,14 +447,7 @@ function Feed({ onSwitch }) {
         </div>
       </>
     ),
-    [
-      sintomasIA,
-      respuestaIA,
-      loadingIA,
-      hashtagsDinamicos,
-      mascotasRandom,
-      lideresComunidad,
-    ],
+    [sintomasIA, respuestaIA, loadingIA, hashtagsDinamicos, mascotasRandom, lideresComunidad],
   );
 
   return (
@@ -583,24 +458,13 @@ function Feed({ onSwitch }) {
           <div className="modal-edit-post" onClick={(e) => e.stopPropagation()}>
             <div className="modal-edit-header">
               <h2>Editar publicación</h2>
-              <button
-                className="modal-close-btn"
-                onClick={() => setModalEditPost(null)}
-              >
-                ✕
-              </button>
+              <button className="modal-close-btn" onClick={() => setModalEditPost(null)}>✕</button>
             </div>
             <div className="modal-edit-user">
               <div className="avatar-mini">
-                {usuarioActual?.foto_perfil ? (
-                  <img
-                    src={usuarioActual.foto_perfil}
-                    alt=""
-                    className="avatar-feed-img"
-                  />
-                ) : (
-                  usuarioActual?.nombre?.charAt(0) || "U"
-                )}
+                {usuarioActual?.foto_perfil
+                  ? <img src={usuarioActual.foto_perfil} alt="" className="avatar-feed-img" />
+                  : usuarioActual?.nombre?.charAt(0) || "U"}
               </div>
               <div>
                 <strong>{usuarioActual?.nombre}</strong>
@@ -623,43 +487,19 @@ function Feed({ onSwitch }) {
             {imagenEditada && (
               <div className="modal-edit-img-preview">
                 <img src={URL.createObjectURL(imagenEditada)} alt="nueva" />
-                <button
-                  className="modal-edit-remove-img"
-                  onClick={() => setImagenEditada(null)}
-                >
-                  ✕ Quitar
-                </button>
+                <button className="modal-edit-remove-img" onClick={() => setImagenEditada(null)}>✕ Quitar</button>
               </div>
             )}
             <div className="modal-edit-footer">
               <label className="upload-btn">
                 📷 Cambiar foto
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={(e) => {
-                    if (e.target.files[0]) setImagenEditada(e.target.files[0]);
-                  }}
-                />
+                <input type="file" accept="image/*" hidden
+                  onChange={(e) => { if (e.target.files[0]) setImagenEditada(e.target.files[0]); }} />
               </label>
               <div className="modal-edit-actions">
-                <button
-                  className="btn-cancelar"
-                  onClick={() => setModalEditPost(null)}
-                >
-                  Cancelar
-                </button>
-                <button
-                  className="btn-guardar"
-                  onClick={guardarEdicion}
-                  disabled={loadingEdit}
-                >
-                  {loadingEdit ? (
-                    <span className="spinner" />
-                  ) : (
-                    "Guardar cambios"
-                  )}
+                <button className="btn-cancelar" onClick={() => setModalEditPost(null)}>Cancelar</button>
+                <button className="btn-guardar" onClick={guardarEdicion} disabled={loadingEdit}>
+                  {loadingEdit ? <span className="spinner" /> : "Guardar cambios"}
                 </button>
               </div>
             </div>
@@ -667,25 +507,12 @@ function Feed({ onSwitch }) {
         </div>
       )}
 
-      {/* ══ DRAWER OVERLAY (solo móvil) ══ */}
-      {drawerAbierto && (
-        <div
-          className="sidebar-drawer-overlay"
-          onClick={() => setDrawerAbierto(false)}
-        />
-      )}
-
-      {/* ══ DRAWER PANEL (solo móvil) ══ */}
+      {/* ══ DRAWER ══ */}
+      {drawerAbierto && <div className="sidebar-drawer-overlay" onClick={() => setDrawerAbierto(false)} />}
       <div className={`sidebar-drawer ${drawerAbierto ? "open" : ""}`}>
         <div className="sidebar-drawer-header">
           <h3>Street Paws</h3>
-          <button
-            className="btn-drawer-close"
-            onClick={() => setDrawerAbierto(false)}
-            aria-label="Cerrar panel"
-          >
-            ✕
-          </button>
+          <button className="btn-drawer-close" onClick={() => setDrawerAbierto(false)} aria-label="Cerrar panel">✕</button>
         </div>
         <div className="sidebar-drawer-content">
           {SidebarLeftContent}
@@ -693,99 +520,44 @@ function Feed({ onSwitch }) {
         </div>
       </div>
 
-      {/* ══ TOP NAVBAR ══ */}
+      {/* ══ NAVBAR ══ */}
       <nav className="top-navbar">
-        <div className="nav-brand" onClick={() => onSwitch("feed")}>
-          Street Paws
-        </div>
-
+        <div className="nav-brand" onClick={() => onSwitch("feed")}>Street Paws</div>
         <div className="nav-links">
-          <span className="active" onClick={() => onSwitch("feed")}>
-            Inicio
-          </span>
+          <span className="active" onClick={() => onSwitch("feed")}>Inicio</span>
           <span onClick={() => onSwitch("explorar")}>Explorar</span>
           <span onClick={() => onSwitch("adopciones")}>Adopciones</span>
         </div>
-
         <div className="nav-search">
-          <input
-            type="text"
-            placeholder="Buscar usuarios..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
-
-          {/* Botón para abrir el drawer en móvil */}
+          <input type="text" placeholder="Buscar usuarios..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
           <button
             className="btn-sidebar-toggle"
-            onClick={(e) => {
-              e.stopPropagation();
-              setDrawerAbierto((v) => !v);
-            }}
-            aria-label="Abrir panel lateral"
-            title="IA, Tendencias y más"
-          >
-            ✦
-          </button>
-
-          <div
-            className="nav-avatar-wrapper"
-            onClick={(e) => {
-              e.stopPropagation();
-              setMenuAvatarAbierto((v) => !v);
-            }}
-          >
+            onClick={(e) => { e.stopPropagation(); setDrawerAbierto((v) => !v); }}
+            aria-label="Abrir panel lateral" title="IA, Tendencias y más"
+          >✦</button>
+          <div className="nav-avatar-wrapper" onClick={(e) => { e.stopPropagation(); setMenuAvatarAbierto((v) => !v); }}>
             <div className="nav-avatar">
-              {usuarioActual?.foto_perfil ? (
-                <img
-                  src={usuarioActual.foto_perfil}
-                  alt={usuarioActual.nombre}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              ) : (
-                usuarioActual?.nombre?.charAt(0) || "U"
-              )}
+              {usuarioActual?.foto_perfil
+                ? <img src={usuarioActual.foto_perfil} alt={usuarioActual.nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : usuarioActual?.nombre?.charAt(0) || "U"}
             </div>
             {menuAvatarAbierto && (
-              <div
-                className="dropdown-avatar"
-                onClick={(e) => e.stopPropagation()}
-              >
+              <div className="dropdown-avatar" onClick={(e) => e.stopPropagation()}>
                 <div className="dropdown-avatar-header">
-                  <span className="dropdown-avatar-nombre">
-                    {usuarioActual?.nombre || "Usuario"}
-                  </span>
-                  <span className="dropdown-avatar-email">
-                    {usuarioActual?.email || ""}
-                  </span>
+                  <span className="dropdown-avatar-nombre">{usuarioActual?.nombre || "Usuario"}</span>
+                  <span className="dropdown-avatar-email">{usuarioActual?.email || ""}</span>
                 </div>
                 <div className="dropdown-avatar-divider" />
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMenuAvatarAbierto(false);
-                    onSwitch("perfil");
-                  }}
-                >
+                <button onClick={(e) => { e.stopPropagation(); setMenuAvatarAbierto(false); onSwitch("perfil"); }}>
                   👤 Mi perfil
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMenuAvatarAbierto(false);
-                    onSwitch("configuracion");
-                  }}
-                >
+                <button onClick={(e) => { e.stopPropagation(); setMenuAvatarAbierto(false); onSwitch("configuracion"); }}>
                   ⚙️ Configuración
                 </button>
                 <div className="dropdown-avatar-divider" />
                 <button
                   className="dropdown-avatar-logout"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    localStorage.removeItem("token");
-                    onSwitch("login");
-                  }}
+                  onClick={(e) => { e.stopPropagation(); localStorage.removeItem("token"); onSwitch("login"); }}
                 >
                   🚪 Cerrar sesión
                 </button>
@@ -797,24 +569,16 @@ function Feed({ onSwitch }) {
 
       {/* ══ LAYOUT ══ */}
       <div className="feed-layout">
-        {/* SIDEBAR IZQUIERDO (desktop) */}
         <aside className="sidebar-left">{SidebarLeftContent}</aside>
 
-        {/* FEED CENTRAL */}
         <main className="feed-main">
           {/* ── Crear post ── */}
           <form className="crear-post-card" onSubmit={crearPost}>
             <div className="crear-post-header">
               <div className="avatar-mini">
-                {usuarioActual?.foto_perfil ? (
-                  <img
-                    src={usuarioActual.foto_perfil}
-                    alt={usuarioActual.nombre}
-                    className="avatar-feed-img"
-                  />
-                ) : (
-                  usuarioActual?.nombre?.charAt(0) || "U"
-                )}
+                {usuarioActual?.foto_perfil
+                  ? <img src={usuarioActual.foto_perfil} alt={usuarioActual.nombre} className="avatar-feed-img" />
+                  : usuarioActual?.nombre?.charAt(0) || "U"}
               </div>
               <textarea
                 placeholder="¿Tienes alguna historia o mascota que compartir?"
@@ -824,35 +588,18 @@ function Feed({ onSwitch }) {
             </div>
             {imagen && (
               <div className="crear-post-img-preview">
-                <img
-                  src={URL.createObjectURL(imagen)}
-                  alt="preview"
-                  className="preview-image"
-                />
-                <button
-                  type="button"
-                  className="btn-quitar-imagen"
-                  onClick={quitarImagenNueva}
-                  title="Quitar imagen"
-                >
-                  ✕
-                </button>
+                <img src={URL.createObjectURL(imagen)} alt="preview" className="preview-image" />
+                <button type="button" className="btn-quitar-imagen" onClick={quitarImagenNueva} title="Quitar imagen">✕</button>
               </div>
             )}
             <div className="crear-post-footer">
               <label className="upload-btn">
                 Foto
-                <input
-                  ref={inputImagenRef}
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={(e) => {
-                    if (e.target.files[0]) setImagen(e.target.files[0]);
-                  }}
-                />
+                <input ref={inputImagenRef} type="file" accept="image/*" hidden
+                  onChange={(e) => { if (e.target.files[0]) setImagen(e.target.files[0]); }} />
               </label>
-              <button type="submit" disabled={loadingPost}>
+              {/* Permite publicar con solo imagen O solo texto */}
+              <button type="submit" disabled={loadingPost || (!contenido.trim() && !imagen)}>
                 {loadingPost ? <span className="spinner" /> : "Publicar"}
               </button>
             </div>
@@ -862,100 +609,53 @@ function Feed({ onSwitch }) {
           {postsFiltrados.map((post) => {
             const esMio = usuarioActual?.id_usuario === post.usuario.id_usuario;
             const likeado = yaDioLike(post);
+            const enviando = enviandoComentario === post.id_publicacion;
 
             return (
               <div className="post-card" key={post.id_publicacion}>
                 <div className="post-header">
                   <div className="post-user">
                     <div className="avatar-mini">
-                      {post.usuario?.foto_perfil ? (
-                        <img
-                          src={post.usuario.foto_perfil}
-                          alt={post.usuario.nombre}
-                          className="avatar-feed-img"
-                        />
-                      ) : (
-                        post.usuario.nombre?.charAt(0)
-                      )}
+                      {post.usuario?.foto_perfil
+                        ? <img src={post.usuario.foto_perfil} alt={post.usuario.nombre} className="avatar-feed-img" />
+                        : post.usuario.nombre?.charAt(0)}
                     </div>
                     <div className="post-user-info">
                       <h4>
-                        <span
-                          className="clickable-user"
-                          onClick={() =>
-                            onSwitch("perfilPublico", post.usuario.id_usuario)
-                          }
-                        >
+                        <span className="clickable-user" onClick={() => onSwitch("perfilPublico", post.usuario.id_usuario)}>
                           {post.usuario.nombre}
                         </span>
                       </h4>
-                      <span>
-                        {new Date(post.fecha_publicacion).toLocaleString()}
-                      </span>
+                      <span>{new Date(post.fecha_publicacion).toLocaleString()}</span>
                     </div>
                   </div>
 
                   {esMio && (
-                    <div
-                      className="post-menu-container"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <div className="post-menu-container" onClick={(e) => e.stopPropagation()}>
                       <button
                         className="btn-tres-puntos"
-                        onClick={() =>
-                          setMenuPostAbierto(
-                            menuPostAbierto === post.id_publicacion
-                              ? null
-                              : post.id_publicacion,
-                          )
-                        }
-                      >
-                        ···
-                      </button>
+                        onClick={() => setMenuPostAbierto(menuPostAbierto === post.id_publicacion ? null : post.id_publicacion)}
+                      >···</button>
                       {menuPostAbierto === post.id_publicacion && (
                         <div className="dropdown-menu-post">
-                          <button
-                            onClick={() => {
-                              setMenuPostAbierto(null);
-                              abrirModalEdicion(post);
-                            }}
-                          >
-                            ✏️ Editar
-                          </button>
-                          <button
-                            className="dropdown-eliminar"
-                            onClick={() => {
-                              setMenuPostAbierto(null);
-                              eliminarPost(post.id_publicacion);
-                            }}
-                          >
-                            🗑️ Eliminar
-                          </button>
+                          <button onClick={() => { setMenuPostAbierto(null); abrirModalEdicion(post); }}>✏️ Editar</button>
+                          <button className="dropdown-eliminar" onClick={() => { setMenuPostAbierto(null); eliminarPost(post.id_publicacion); }}>🗑️ Eliminar</button>
                         </div>
                       )}
                     </div>
                   )}
                 </div>
 
-                <p className="post-text">{post.contenido_texto}</p>
+                {post.contenido_texto && <p className="post-text">{post.contenido_texto}</p>}
                 {post.imagenes?.[0] && (
-                  <img
-                    src={post.imagenes[0].url_imagen}
-                    alt="post"
-                    className="post-image"
-                  />
+                  <img src={post.imagenes[0].url_imagen} alt="post" className="post-image" />
                 )}
 
                 <div className="post-actions">
-                  <button
-                    className={`btn-like ${likeado ? "liked" : ""}`}
-                    onClick={() => toggleLike(post.id_publicacion)}
-                  >
+                  <button className={`btn-like ${likeado ? "liked" : ""}`} onClick={() => toggleLike(post.id_publicacion)}>
                     {likeado ? "❤️" : "🤍"} {post.likes.length}
                   </button>
-                  <button
-                    onClick={() => toggleComentarios(post.id_publicacion)}
-                  >
+                  <button onClick={() => toggleComentarios(post.id_publicacion)}>
                     💬 {post.comentarios.length}
                   </button>
                 </div>
@@ -963,13 +663,10 @@ function Feed({ onSwitch }) {
                 {mostrarComentarios[post.id_publicacion] && (
                   <div className="comentarios-dropdown">
                     {post.comentarios.length === 0 && (
-                      <p className="sin-comentarios">
-                        Sé el primero en comentar 🐾
-                      </p>
+                      <p className="sin-comentarios">Sé el primero en comentar 🐾</p>
                     )}
                     {post.comentarios.map((c) => {
-                      const esMiComentario =
-                        usuarioActual?.id_usuario === c.usuario.id_usuario;
+                      const esMiComentario = usuarioActual?.id_usuario === c.usuario.id_usuario;
                       const puedeBorrar = esMiComentario || esMio;
                       return (
                         <div className="comentario-item" key={c.id_comentario}>
@@ -978,69 +675,34 @@ function Feed({ onSwitch }) {
                               <input
                                 type="text"
                                 value={textoComentarioEditado}
-                                onChange={(e) =>
-                                  setTextoComentarioEditado(e.target.value)
-                                }
+                                onChange={(e) => setTextoComentarioEditado(e.target.value)}
                                 onKeyDown={(e) => {
-                                  if (e.key === "Enter")
-                                    guardarEdicionComentario(c.id_comentario);
-                                  if (e.key === "Escape")
-                                    setEditandoComentario(null);
+                                  if (e.key === "Enter") guardarEdicionComentario(c.id_comentario);
+                                  if (e.key === "Escape") setEditandoComentario(null);
                                 }}
                                 autoFocus
                               />
                               <div className="comentario-edit-btns">
-                                <button
-                                  onClick={() =>
-                                    guardarEdicionComentario(c.id_comentario)
-                                  }
-                                  disabled={loadingComentario}
-                                >
+                                <button onClick={() => guardarEdicionComentario(c.id_comentario)} disabled={loadingComentario}>
                                   {loadingComentario ? "..." : "Guardar"}
                                 </button>
-                                <button
-                                  onClick={() => setEditandoComentario(null)}
-                                >
-                                  Cancelar
-                                </button>
+                                <button onClick={() => setEditandoComentario(null)}>Cancelar</button>
                               </div>
                             </div>
                           ) : (
                             <div className="comentario-cuerpo">
                               <div className="comentario-texto">
-                                <strong
-                                  className="comentario-autor"
-                                  onClick={() =>
-                                    onSwitch(
-                                      "perfilPublico",
-                                      c.usuario.id_usuario,
-                                    )
-                                  }
-                                >
+                                <strong className="comentario-autor" onClick={() => onSwitch("perfilPublico", c.usuario.id_usuario)}>
                                   {c.usuario.nombre}
                                 </strong>{" "}
                                 {c.contenido}
                               </div>
                               <div className="comentario-acciones">
                                 {esMiComentario && (
-                                  <button
-                                    className="btn-comentario-accion"
-                                    onClick={() => iniciarEdicionComentario(c)}
-                                    title="Editar comentario"
-                                  >
-                                    ✏️
-                                  </button>
+                                  <button className="btn-comentario-accion" onClick={() => iniciarEdicionComentario(c)} title="Editar comentario">✏️</button>
                                 )}
                                 {puedeBorrar && (
-                                  <button
-                                    className="btn-comentario-accion eliminar"
-                                    onClick={() =>
-                                      eliminarComentario(c.id_comentario)
-                                    }
-                                    title="Eliminar comentario"
-                                  >
-                                    🗑️
-                                  </button>
+                                  <button className="btn-comentario-accion eliminar" onClick={() => eliminarComentario(c.id_comentario)} title="Eliminar comentario">🗑️</button>
                                 )}
                               </div>
                             </div>
@@ -1053,21 +715,12 @@ function Feed({ onSwitch }) {
                         type="text"
                         placeholder="Escribe un comentario..."
                         value={comentarios[post.id_publicacion] || ""}
-                        onChange={(e) =>
-                          setComentarios((prev) => ({
-                            ...prev,
-                            [post.id_publicacion]: e.target.value,
-                          }))
-                        }
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter")
-                            crearComentario(post.id_publicacion);
-                        }}
+                        disabled={enviando}
+                        onChange={(e) => setComentarios((prev) => ({ ...prev, [post.id_publicacion]: e.target.value }))}
+                        onKeyDown={(e) => { if (e.key === "Enter" && !enviando) crearComentario(post.id_publicacion); }}
                       />
-                      <button
-                        onClick={() => crearComentario(post.id_publicacion)}
-                      >
-                        Enviar
+                      <button onClick={() => crearComentario(post.id_publicacion)} disabled={enviando}>
+                        {enviando ? <span className="spinner" /> : "Enviar"}
                       </button>
                     </div>
                   </div>
@@ -1077,7 +730,6 @@ function Feed({ onSwitch }) {
           })}
         </main>
 
-        {/* SIDEBAR DERECHO (desktop) */}
         <aside className="sidebar-right">{SidebarRightContent}</aside>
       </div>
     </>

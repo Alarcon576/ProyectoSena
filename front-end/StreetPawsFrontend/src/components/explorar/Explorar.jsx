@@ -108,12 +108,7 @@ function Explorar({ onSwitch }) {
       <div className="exp-hero-strip">
         <div className="exp-hero-text">
           <p className="exp-hero-eyebrow">Descubrir</p>
-          <h1>Explora historias,<br />mascotas y personas</h1>
-        </div>
-        <div className="exp-hero-stats">
-          <div className="exp-stat"><span className="exp-stat-num">{posts.length}</span><span>publicaciones</span></div>
-          <div className="exp-stat"><span className="exp-stat-num">{mascotas.length}</span><span>mascotas</span></div>
-          <div className="exp-stat"><span className="exp-stat-num">{usuariosTop.length}</span><span>usuarios top</span></div>
+          <h1>Explora historias, mascotas y personas</h1>
         </div>
       </div>
 

@@ -73,6 +73,13 @@ function Register({ onSwitch }) {
       return;
     }
 
+    // Teléfono obligatorio
+    if (!form.telefono || !form.telefono.trim()) {
+      newErrors.telefono = "El teléfono es obligatorio";
+    } else if (!/^\d{9,12}$/.test(form.telefono.trim())) {
+      newErrors.telefono = "Ingresa un número válido (9 a 12 dígitos)";
+    }
+
     const pwdErrors = validatePassword(form.password);
     if (pwdErrors.length > 0) newErrors.password = pwdErrors.join(" · ");
     if (form.password !== form.confirmPassword)
@@ -94,7 +101,7 @@ function Register({ onSwitch }) {
             email:     form.email,
             contrasena: form.password,
             direccion: form.direccion || "",
-            telefono:  form.telefono  || "",
+            telefono:  form.telefono,
           }),
         },
       );
@@ -102,6 +109,8 @@ function Register({ onSwitch }) {
       const data = await res.json();
 
       if (res.ok) {
+        // Bandera para que Login muestre el mensaje de cuenta nueva
+        localStorage.setItem("cuentaRecienCreada", "1");
         setShowSuccessModal(true);
         setForm({
           nombre: "",
@@ -266,17 +275,19 @@ function Register({ onSwitch }) {
               </div>
 
               <div className="reg-field">
-                <label>Teléfono</label>
+                <label>Teléfono *</label>
                 <div className="reg-input-box">
                   <span className="reg-icon"><IconPhone /></span>
                   <input
                     name="telefono"
-                    type="number"
+                    type="tel"
+                    inputMode="numeric"
                     placeholder="Número de teléfono"
                     value={form.telefono}
                     onChange={handleChange}
                   />
                 </div>
+                {errors.telefono && <p className="error-text">{errors.telefono}</p>}
               </div>
             </div>
 
@@ -289,7 +300,7 @@ function Register({ onSwitch }) {
                   <input
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder="Escribe una contraseña"
                     value={form.password}
                     onChange={handleChange}
                   />

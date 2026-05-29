@@ -4,6 +4,8 @@ import { verificarToken } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/upload.middleware.js";
 import { obtenerMiPerfil } from "../controllers/profile.controller.js";
 import { obtenerPerfilPorId } from "../controllers/profile.controller.js";
+import { actualizarPerfil } from "../controllers/profile.controller.js";
+import { cambiarPassword } from "../controllers/profile.controller.js";
 const router = Router();
 
 router.put(
@@ -13,5 +15,7 @@ router.put(
   actualizarFotoPerfil
 );
 router.get("/me", verificarToken, obtenerMiPerfil);
+router.put("/me", verificarToken, actualizarPerfil); 
+router.put("/password", verificarToken, cambiarPassword);
 router.get("/:id", verificarToken, obtenerPerfilPorId);
 export default router;

@@ -1,0 +1,163 @@
+/* ════════════════════════════════════════
+   CONFIGURACIÓN — Configuracion.css
+   Street Paws · consistente con la app
+════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { overflow-x: hidden; }
+
+:root {
+  --orange:    #ff7a00;
+  --orange-lt: #fff3e8;
+  --orange-dk: #e86d00;
+  --cream:     #faf7f3;
+  --cream-2:   #f5f0ea;
+  --bark:      #b86e1a;
+  --text:      #1c1c1e;
+  --text-2:    #6b7280;
+  --text-3:    #9ca3af;
+  --border:    #ece8e2;
+  --white:     #ffffff;
+  --sh-sm:     0 2px 10px rgba(0,0,0,.07);
+  --r-md: 14px; --r-lg: 20px;
+}
+
+.cfg-root { font-family: 'Nunito', sans-serif; color: var(--text); background: var(--cream); min-height: 100vh; }
+
+/* ── Navbar ── */
+.cfg-navbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: 56px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.06);
+}
+.cfg-navbar-brand { font-size: 20px; font-weight: 900; color: var(--orange); letter-spacing: -.5px; }
+.cfg-navbar-brand::before { content: '🐾 '; font-size: 17px; }
+.cfg-back-btn {
+  padding: 8px 18px; border-radius: 10px; font-size: 14px; font-weight: 700;
+  font-family: inherit; cursor: pointer; border: none;
+  background: var(--orange-lt); color: var(--orange); transition: background .15s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.cfg-back-btn:hover { background: #ffe0cc; }
+.cfg-navbar-spacer { width: 90px; flex-shrink: 0; }
+
+/* ── Contenedor ── */
+.cfg-container { max-width: 720px; margin: 0 auto; padding: 32px 20px 56px; }
+
+.cfg-header { margin-bottom: 24px; }
+.cfg-header h1 { font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 900; color: var(--text); margin-bottom: 4px; }
+.cfg-header p { font-size: .9rem; color: var(--text-2); }
+
+/* ── Tabs ── */
+.cfg-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.cfg-tab {
+  padding: 10px 22px; border-radius: 50px; border: 1.5px solid var(--border);
+  background: var(--white); font-weight: 700; font-size: .88rem; color: var(--text-2);
+  cursor: pointer; transition: .2s; font-family: inherit; white-space: nowrap;
+}
+.cfg-tab:hover { border-color: var(--orange); color: var(--orange); }
+.cfg-tab--active { background: var(--orange); color: #fff; border-color: var(--orange); box-shadow: 0 4px 14px rgba(255,122,0,.28); }
+
+/* ── Card ── */
+.cfg-card {
+  background: var(--white); border-radius: var(--r-lg);
+  box-shadow: var(--sh-sm); border: 1px solid var(--border);
+  padding: 28px;
+}
+
+/* ── Form ── */
+.cfg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+.cfg-field { margin-bottom: 18px; }
+.cfg-field label {
+  display: block; font-size: 12px; font-weight: 700; color: #444;
+  margin-bottom: 7px; letter-spacing: .2px;
+}
+.cfg-field input, .cfg-field textarea {
+  width: 100%; padding: 12px 14px;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  background: var(--cream); color: var(--text);
+  outline: none; font-size: 14px; font-family: inherit;
+  transition: border-color .2s, box-shadow .2s;
+}
+.cfg-field textarea { resize: vertical; line-height: 1.5; }
+.cfg-field input:focus, .cfg-field textarea:focus {
+  border-color: var(--orange); box-shadow: 0 0 0 3px rgba(255,122,0,.1); background: var(--white);
+}
+.cfg-field input:disabled {
+  background: var(--cream-2); color: var(--text-3); cursor: not-allowed;
+}
+.cfg-hint { font-size: 11px; color: var(--text-3); margin-top: 4px; display: block; }
+
+/* ── Checkbox ── */
+.cfg-checkbox {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .82rem; color: var(--text-2); font-weight: 600;
+  cursor: pointer; margin-bottom: 14px;
+}
+.cfg-checkbox input { width: 16px; height: 16px; accent-color: var(--orange); cursor: pointer; }
+
+/* ── Requisitos contraseña ── */
+.cfg-pwd-reqs { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 18px; }
+.cfg-pwd-reqs span { font-size: 12px; color: var(--text-3); transition: color .2s; font-weight: 600; }
+.cfg-pwd-reqs span.ok { color: #16a34a; }
+
+/* ── Mensajes ── */
+.cfg-error {
+  background: #fff5f5; border: 1px solid #ffd0d0; color: #c0392b;
+  font-size: .82rem; font-weight: 600; padding: 10px 14px;
+  border-radius: 10px; margin-bottom: 14px;
+}
+.cfg-ok {
+  background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a;
+  font-size: .82rem; font-weight: 700; padding: 10px 14px;
+  border-radius: 10px; margin-bottom: 14px;
+}
+
+/* ── Botón guardar ── */
+.cfg-btn-guardar {
+  background: var(--orange); color: #fff; border: none;
+  border-radius: 12px; padding: 13px 32px;
+  font-size: 14px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: background .2s, transform .15s;
+  box-shadow: 0 4px 14px rgba(255,122,0,.28);
+  display: inline-flex; align-items: center; justify-content: center; min-width: 160px;
+}
+.cfg-btn-guardar:hover:not(:disabled) { background: var(--orange-dk); transform: translateY(-1px); }
+.cfg-btn-guardar:disabled { opacity: .7; cursor: not-allowed; }
+
+/* ── Loading / spinner ── */
+.cfg-loading {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 48px 20px; gap: 12px; color: var(--text-2);
+}
+.cfg-spinner {
+  width: 32px; height: 32px; border: 3px solid var(--cream-2);
+  border-top-color: var(--orange); border-radius: 50%; animation: cfgSpin .7s linear infinite;
+}
+.cfg-spinner--btn {
+  width: 16px; height: 16px; border-width: 2.5px;
+  border-color: rgba(255,255,255,.4); border-top-color: #fff;
+}
+@keyframes cfgSpin { to { transform: rotate(360deg); } }
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .cfg-navbar { padding: 0 12px; }
+  .cfg-navbar-brand { font-size: 16px; }
+  .cfg-back-btn { padding: 7px 13px; font-size: 13px; }
+  .cfg-navbar-spacer { width: 60px; }
+  .cfg-container { padding: 24px 14px 44px; }
+  .cfg-card { padding: 20px; }
+  .cfg-row { grid-template-columns: 1fr; gap: 0; }
+  .cfg-btn-guardar { width: 100%; }
+}
+
+@media (max-width: 400px) {
+  .cfg-navbar-brand { font-size: 14px; }
+  .cfg-tab { padding: 9px 16px; font-size: .82rem; }
+}

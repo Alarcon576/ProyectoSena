@@ -184,12 +184,21 @@ function Adopciones({ onSwitch, user }) {
         </div>
       </nav>
 
-      {/* ── Tabs admin ── */}
+      {/* ── Banner + Tabs admin ── */}
       {esAdmin && (
-        <div className="admin-tabs">
-          <button className={`admin-tab ${tabAdmin === "mascotas" ? "admin-tab--active" : ""}`} onClick={() => setTabAdmin("mascotas")}>🐾 Mascotas</button>
-          <button className={`admin-tab ${tabAdmin === "solicitudes" ? "admin-tab--active" : ""}`} onClick={() => setTabAdmin("solicitudes")}>📋 Solicitudes</button>
-        </div>
+        <>
+          <section className="adopt-top-cta">
+            <div className="adopt-top-cta-inner">
+              <span className="adopt-top-cta-eyebrow">Panel de administración</span>
+              <h2>Gestiona las mascotas y sus solicitudes</h2>
+              <p>Agrega, edita y administra los animales en adopción, y revisa las solicitudes de la comunidad.</p>
+            </div>
+          </section>
+          <div className="admin-tabs">
+            <button className={`admin-tab ${tabAdmin === "mascotas" ? "admin-tab--active" : ""}`} onClick={() => setTabAdmin("mascotas")}>🐾 Mascotas</button>
+            <button className={`admin-tab ${tabAdmin === "solicitudes" ? "admin-tab--active" : ""}`} onClick={() => setTabAdmin("solicitudes")}>📋 Solicitudes</button>
+          </div>
+        </>
       )}
 
       {/* ── Modal detalle ── */}
@@ -275,12 +284,12 @@ function Adopciones({ onSwitch, user }) {
       {/* ════ VISTA USUARIO NORMAL ════ */}
       {!esAdmin && (
         <>
-          <section className="adopt-hero">
-            <div className="adopt-hero-overlay" />
-            <div className="adopt-hero-content">
-              <p className="adopt-hero-eyebrow">Adopción responsable</p>
-              <h1>Cada animal merece<br />un hogar con amor</h1>
-              <p className="adopt-hero-desc">Aquí encontrarás compañeros de vida que esperan una segunda oportunidad.</p>
+          {/* ── Banner superior: CTA + buscador, difuminado suave ── */}
+          <section className="adopt-top-cta">
+            <div className="adopt-top-cta-inner">
+              <span className="adopt-top-cta-eyebrow">Adopta, no compres</span>
+              <h2>Encuentra a tu alma gemela peluda</h2>
+              <p>Cada animal merece una segunda oportunidad. Dale un hogar definitivo a una mascota de la calle hoy y siente el amor incondicional.</p>
               <div className="adopt-search-bar">
                 <span className="adopt-search-icon">🔍</span>
                 <input
@@ -307,6 +316,7 @@ function Adopciones({ onSwitch, user }) {
               <div className="adopt-filters-group">
                 <FilterDropdown label="Especie" options={ESPECIES} value={filtroEspecie} onChange={setFiltroEspecie} />
                 <FilterDropdown label="Edad"    options={EDADES}   value={filtroEdad}    onChange={setFiltroEdad}    />
+                <FilterDropdown label="Tamaño"  options={TAMANIOS} value={filtroTamanio} onChange={setFiltroTamanio} />
                 <FilterDropdown label="Género"  options={GENEROS}  value={filtroGenero}  onChange={setFiltroGenero}  />
               </div>
             </div>
@@ -316,6 +326,7 @@ function Adopciones({ onSwitch, user }) {
               <div className="adopt-active-filters">
                 {filtroEspecie !== "Todos" && <span className="adopt-filter-chip">{filtroEspecie} <button onClick={() => setFiltroEspecie("Todos")}>✕</button></span>}
                 {filtroEdad    !== "Todos" && <span className="adopt-filter-chip">{filtroEdad}    <button onClick={() => setFiltroEdad("Todos")}>✕</button></span>}
+                {filtroTamanio !== "Todos" && <span className="adopt-filter-chip">{filtroTamanio} <button onClick={() => setFiltroTamanio("Todos")}>✕</button></span>}
                 {filtroGenero  !== "Todos" && <span className="adopt-filter-chip">{filtroGenero}  <button onClick={() => setFiltroGenero("Todos")}>✕</button></span>}
                 {busqueda && <span className="adopt-filter-chip">"{busqueda}" <button onClick={() => setBusqueda("")}>✕</button></span>}
               </div>
@@ -384,20 +395,27 @@ function Adopciones({ onSwitch, user }) {
               <div className="adopt-footer-brand">
                 <span className="footer-brand-icon">🐾</span>
                 <strong>Street Paws</strong>
-                <p>Ayudando a los animales de la calle a encontrar hogares amorosos.</p>
-              </div>
-              <div className="adopt-footer-links">
-                <div>
-                  <h4>Compañía</h4>
-                  <span>Sobre Nosotros</span>
-                  <span>Contacto</span>
-                  <span>Nuestro Equipo</span>
-                </div>
-                <div>
-                  <h4>Ayuda</h4>
-                  <span>Proceso de Adopción</span>
+                <p>Ayudando a los animales de la calle a encontrar hogares amorosos. Tu adopción puede salvar una vida y traerte alegría.</p>
+                <div className="footer-social">
+                  <button title="Compartir">↗</button>
+                  <button title="Favoritos">♡</button>
+                  <button title="Contacto">✉</button>
                 </div>
               </div>
+              <div className="adopt-footer-col">
+                <h4>Compañía</h4>
+                <span>Sobre Nosotros</span>
+                <span>Contacto</span>
+                <span>Nuestro Equipo</span>
+              </div>
+              <div className="adopt-footer-col">
+                <h4>Ayuda</h4>
+                <span>Proceso de Adopción</span>
+                <span>Preguntas Frecuentes</span>
+              </div>
+            </div>
+            <div className="adopt-footer-bottom">
+              © {new Date().getFullYear()} Street Paws · Hecho con 🐾 para los animales
             </div>
           </footer>
         </>

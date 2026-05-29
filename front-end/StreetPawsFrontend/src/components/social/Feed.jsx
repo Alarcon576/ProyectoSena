@@ -14,6 +14,23 @@ const URL_IA = "https://proyectosena-production-4ad5.up.railway.app/api/ia";
 const URL_NOTICIAS =
   "https://proyectosena-production-4ad5.up.railway.app/api/noticias";
 
+  const TIPS = [
+  "🐶 Pasea a tu perro al menos 30 minutos al día para mantenerlo saludable.",
+  "🐱 Los gatos necesitan agua fresca disponible en todo momento.",
+  "💉 Mantén el esquema de vacunación de tu mascota al día.",
+  "🦴 Evita dar huesos cocidos a los perros, pueden astillarse.",
+  "❤️ Dedica tiempo diario para jugar con tu mascota.",
+  "🥕 Algunas verduras son excelentes premios saludables.",
+  "🌞 Evita pasear a tu mascota en horas de calor extremo.",
+  "🧼 Limpia regularmente los recipientes de agua y comida.",
+  "🏥 Realiza chequeos veterinarios periódicos.",
+  "🐾 La esterilización ayuda a prevenir enfermedades.",
+  "🚰 La deshidratación puede ser peligrosa incluso en días frescos.",
+  "🐕 El ejercicio reduce el estrés y la ansiedad en perros.",
+  "🐈 Los gatos también necesitan estimulación mental diaria.",
+  "💚 Adoptar salva vidas y ayuda a reducir el abandono animal."
+];
+
 function Feed({ onSwitch }) {
   const [posts, setPosts] = useState([]);
   const [contenido, setContenido] = useState("");
@@ -54,7 +71,8 @@ function Feed({ onSwitch }) {
   const [sintomasIA, setSintomasIA] = useState("");
   const [respuestaIA, setRespuestaIA] = useState(null);
   const [loadingIA, setLoadingIA] = useState(false);
-
+  // tip del dia
+  const [tipDelDia, setTipDelDia] = useState("");
   /* ── Cerrar menús al click fuera ── */
   useEffect(() => {
     const cerrar = (e) => {
@@ -98,6 +116,18 @@ function Feed({ onSwitch }) {
   };
 
   useEffect(() => { cargarPosts(); cargarUsuarioActual(); }, []);
+
+ useEffect(() => {
+  const hoy = new Date();
+
+  const indice =
+    (hoy.getDate() +
+      hoy.getMonth() +
+      hoy.getFullYear()) %
+    TIPS.length;
+
+  setTipDelDia(TIPS[indice]);
+}, []);
 
   /* ════ CREAR POST ════ */
   const crearPost = async (e) => {
@@ -359,20 +389,20 @@ function Feed({ onSwitch }) {
 
   /* ── Sidebar izquierdo ── */
   const SidebarLeftContent = useMemo(
-    () => (
+  () => (
       <>
         <ul className="menu-list">
           <li onClick={() => onSwitch("noticias")}>
   Noticias</li>
         </ul>
         <div className="tip-box">
-          <h4>💡 Tip del día</h4>
-          <p>¿Sabías que el contacto visual con tu mascota libera oxitocina tanto en ti como en él?</p>
-        </div>
+  <h4>💡 Tip del día</h4>
+  <p>{tipDelDia}</p>
+</div>
       </>
     ),
-    [],
-  );
+   [tipDelDia],
+);
 
   const SidebarRightContent = useMemo(
     () => (

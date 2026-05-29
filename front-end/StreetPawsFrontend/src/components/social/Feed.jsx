@@ -360,7 +360,6 @@ function Feed({ onSwitch }) {
       <>
         <ul className="menu-list">
           <li onClick={() => onSwitch("feed")}>Noticias</li>
-          <li onClick={() => onSwitch("adopciones")}>Mis Adopciones</li>
         </ul>
         <div className="tip-box">
           <h4>💡 Tip del día</h4>

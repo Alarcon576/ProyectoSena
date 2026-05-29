@@ -5,7 +5,6 @@ import SolicitudesAdopcion from "../solicitudes/solicitudesAdopcion";
 
 const URL_MASCOTAS    = "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";
 const URL_SOLICITUDES = "https://proyectosena-production-4ad5.up.railway.app/api/solicitudes";
-const URL_FAVORITOS   = "https://proyectosena-production-4ad5.up.railway.app/api/favoritos";
 const URL_PROFILE     = "https://proyectosena-production-4ad5.up.railway.app/api/profile";
 
 const ESPECIES = ["Todos","Perro","Gato"];
@@ -36,8 +35,6 @@ function Adopciones({ onSwitch, user }) {
   const [filtroEdad, setFiltroEdad]         = useState("Todos");
   const [filtroTamanio, setFiltroTamanio]   = useState("Todos");
   const [filtroGenero, setFiltroGenero]     = useState("Todos");
-  const [favoritos, setFavoritos]           = useState([]);
-  const [togglingId, setTogglingId]         = useState(null);
   const [mascotaSeleccionada, setMascotaSeleccionada] = useState(null);
   const [modalSolicitud, setModalSolicitud] = useState(null);
   const [notas, setNotas]           = useState("");
@@ -60,7 +57,7 @@ function Adopciones({ onSwitch, user }) {
 
   useEffect(() => {
     cargarMascotas();
-    if (token) { cargarIdsFavoritos(); cargarUsuarioActual(); }
+    if (token) { cargarUsuarioActual(); }
   }, []);
 
   useEffect(() => {
@@ -79,30 +76,11 @@ function Adopciones({ onSwitch, user }) {
     finally { setLoading(false); }
   };
 
-  const cargarIdsFavoritos = async () => {
-    try {
-      const res  = await fetch(`${URL_FAVORITOS}/ids`, { headers: { Authorization: `Bearer ${token}` } });
-      const data = await res.json();
-      setFavoritos(Array.isArray(data) ? data : []);
-    } catch {}
-  };
-
   const cargarUsuarioActual = async () => {
     try {
       const res  = await fetch(`${URL_PROFILE}/me`, { headers: { Authorization: `Bearer ${token}` } });
       setUsuarioActual(await res.json());
     } catch {}
-  };
-
-  const toggleFavorito = async (id_mascota) => {
-    if (!token) { alert("Debes iniciar sesión para guardar favoritos"); return; }
-    setTogglingId(id_mascota);
-    try {
-      const res  = await fetch(`${URL_FAVORITOS}/${id_mascota}`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
-      const data = await res.json();
-      setFavoritos(prev => data.accion === "agregado" ? [...prev, id_mascota] : prev.filter(id => id !== id_mascota));
-    } catch {}
-    finally { setTimeout(() => setTogglingId(null), 300); }
   };
 
   const clasificarEdad = e => e <= 1 ? "Cachorro (0-1 año)" : e <= 3 ? "Joven (1-3 años)" : e <= 7 ? "Adulto (3-7 años)" : "Adulto mayor (+7 años)";
@@ -113,7 +91,7 @@ function Adopciones({ onSwitch, user }) {
     return ESTADO_INFO[k] || { label: estado || "Desconocido", cls: "badge--otro" };
   };
   const getBtnTexto = (disponible, estado) => {
-    if (disponible) return "Quiero adoptarme 🐾";
+    if (disponible) return "Adoptame 🐾";
     const k = estado?.toLowerCase() || "";
     return TEXTO_BTN_NO_DISPONIBLE[k] || "Momentáneamente no disponible";
   };
@@ -124,7 +102,6 @@ function Adopciones({ onSwitch, user }) {
       (!busqueda || m.nombre?.toLowerCase().includes(txt) || m.raza?.toLowerCase().includes(txt) || m.especie?.toLowerCase().includes(txt)) &&
       (filtroEspecie === "Todos" || m.especie?.toLowerCase() === filtroEspecie.toLowerCase()) &&
       (filtroEdad    === "Todos" || clasificarEdad(m.edad) === filtroEdad) &&
-      (filtroTamanio === "Todos" || m.tamanio?.toLowerCase() === filtroTamanio.toLowerCase()) &&
       (filtroGenero  === "Todos" || m.sexo?.toLowerCase()   === filtroGenero.toLowerCase())
     );
   });
@@ -224,7 +201,7 @@ function Adopciones({ onSwitch, user }) {
               </div>
               {mascotaSeleccionada.estado_adopcion?.toLowerCase() === "disponible" && (
                 <button className="btn-adoptar-modal" onClick={() => { setMascotaSeleccionada(null); setModalSolicitud(mascotaSeleccionada); }}>
-                  ¡Quiero adoptarme! 🐾
+                  ¡Adoptame! 🐾
                 </button>
               )}
             </div>
@@ -316,7 +293,6 @@ function Adopciones({ onSwitch, user }) {
               <div className="adopt-filters-group">
                 <FilterDropdown label="Especie" options={ESPECIES} value={filtroEspecie} onChange={setFiltroEspecie} />
                 <FilterDropdown label="Edad"    options={EDADES}   value={filtroEdad}    onChange={setFiltroEdad}    />
-                <FilterDropdown label="Tamaño"  options={TAMANIOS} value={filtroTamanio} onChange={setFiltroTamanio} />
                 <FilterDropdown label="Género"  options={GENEROS}  value={filtroGenero}  onChange={setFiltroGenero}  />
               </div>
             </div>
@@ -326,7 +302,6 @@ function Adopciones({ onSwitch, user }) {
               <div className="adopt-active-filters">
                 {filtroEspecie !== "Todos" && <span className="adopt-filter-chip">{filtroEspecie} <button onClick={() => setFiltroEspecie("Todos")}>✕</button></span>}
                 {filtroEdad    !== "Todos" && <span className="adopt-filter-chip">{filtroEdad}    <button onClick={() => setFiltroEdad("Todos")}>✕</button></span>}
-                {filtroTamanio !== "Todos" && <span className="adopt-filter-chip">{filtroTamanio} <button onClick={() => setFiltroTamanio("Todos")}>✕</button></span>}
                 {filtroGenero  !== "Todos" && <span className="adopt-filter-chip">{filtroGenero}  <button onClick={() => setFiltroGenero("Todos")}>✕</button></span>}
                 {busqueda && <span className="adopt-filter-chip">"{busqueda}" <button onClick={() => setBusqueda("")}>✕</button></span>}
               </div>
@@ -345,7 +320,6 @@ function Adopciones({ onSwitch, user }) {
               <div className="adopt-grid">
                 {mascotasOrdenadas.map(mascota => {
                   const disponible = mascota.estado_adopcion?.toLowerCase() === "disponible";
-                  const esFavorito = favoritos.includes(mascota.id_mascota);
                   const badge      = getBadge(mascota.estado_adopcion);
                   return (
                     <div
@@ -356,13 +330,6 @@ function Adopciones({ onSwitch, user }) {
                         {mascota.fotos?.[0]?.url_foto
                           ? <img src={mascota.fotos[0].url_foto} alt={mascota.nombre} className="adopt-card-img" />
                           : <div className="adopt-card-img-placeholder">🐾</div>}
-                        <button
-                          className={`adopt-card-heart ${esFavorito ? "adopt-card-heart--active" : ""} ${togglingId === mascota.id_mascota ? "adopt-card-heart--toggling" : ""}`}
-                          onClick={e => { e.stopPropagation(); toggleFavorito(mascota.id_mascota); }}
-                          title={esFavorito ? "Quitar de favoritos" : "Guardar en favoritos"}
-                        >
-                          {esFavorito ? "❤️" : "🤍"}
-                        </button>
                         <span className={`adopt-card-status-badge ${badge.cls}`}>{badge.label}</span>
                       </div>
                       <div className="adopt-card-body">
@@ -398,7 +365,6 @@ function Adopciones({ onSwitch, user }) {
                 <p>Ayudando a los animales de la calle a encontrar hogares amorosos. Tu adopción puede salvar una vida y traerte alegría.</p>
                 <div className="footer-social">
                   <button title="Compartir">↗</button>
-                  <button title="Favoritos">♡</button>
                   <button title="Contacto">✉</button>
                 </div>
               </div>

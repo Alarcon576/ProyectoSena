@@ -199,8 +199,8 @@ function Mascotas({ onSwitch, user, embebido = false }) {
 
                 <select name="estado_adopcion" value={form.estado_adopcion} onChange={handleChange}>
                   <option value="">Seleccione estado</option>
-                  <option value="Disponible">Disponible</option>
-                  <option value="No disponible">No disponible</option>
+                  <option value="Disponible">Busca hogar 🐾</option>
+                  <option value="No disponible">Momentaneamente no disponible 🐾</option>
                 </select>
 
                 <input type="file" onChange={handleFileChange} />

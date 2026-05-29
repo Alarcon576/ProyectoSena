@@ -70,6 +70,9 @@ const validarComentario = async (contenido) => {
     "pedófilo",
     "hp",
     "prb",
+    "sebastian",
+    "duque",
+    "alvaro",
 
 
   ];

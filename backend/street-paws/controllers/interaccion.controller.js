@@ -30,7 +30,25 @@ const validarComentario = async (contenido) => {
     "imbecil",
     "mierda",
     "gonorrea",
-    "malparido"
+    "malparido",
+    "pendejo",
+    "puta",
+    "maricon",
+    "zorra",
+    "cabrón",
+    "hijo de puta",
+    "petro",
+    "uribe",
+    "farc",
+    "guerrillero",
+    "terrorista",
+    "abelardo",
+    "corrupto",
+    "ladrón", 
+    "rata",
+    "payaso",
+    "tonto",
+    "cepeda"
   ];
 
   const contieneBloqueado =

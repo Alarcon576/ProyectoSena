@@ -24,7 +24,6 @@ const validarComentario = async (contenido) => {
     return "No se permiten links en comentarios";
   }
 
-  // 🚫 blacklist insultos + política + religión
   const palabrasProhibidas = [
     "idiota",
     "estupido",
@@ -32,50 +31,61 @@ const validarComentario = async (contenido) => {
     "mierda",
     "gonorrea",
     "malparido",
-    "hp",
+    "pendejo",
+    "puta",
+    "maricon",
+    "zorra",
+    "cabrón",
+    "hijo de puta",
     "petro",
     "uribe",
-    "presidente",
-    "senado",
-    "congreso",
-    "izquierda",
-    "derecha",
-    "religion",
-    "dios",
-    "jesus",
-    "iglesia"
+    "farc",
+    "guerrillero",
+    "terrorista",
+    "abelardo",
+    "corrupto",
+    "ladrón", 
+    "rata",
+    "payaso",
+    "tonto",
+    "cepeda",
+    "mamahuevo",
+    "hpta",
+    "huevón",
+    "mlp",
+    "violador",
+    "asesino",
+    "racista",
+    "machista",
+    "homofóbico",
+    "transfóbico",
+    "xenófobo",
+    "misógino",
+    "misándrico",
+    "nazi",
+    "fascista",
+    "terrorista",
+    "dictador",
+    "genocida",
+    "pedófilo",
+    "hp",
+    "prb",
+    "sebastian",
+    "duque",
+    "alvaro",
+
+
   ];
 
-  const contieneBloqueado = palabrasProhibidas.some((p) =>
-    texto.includes(p)
-  );
+  const contieneBloqueado =
+    palabrasProhibidas.some((p) =>
+      texto.includes(p)
+    );
 
   if (contieneBloqueado) {
-    return "El comentario contiene lenguaje no permitido";
+    return "El comentario contiene lenguaje ofensivo";
   }
 
-  // 🐾 solo mascotas
-  const palabrasMascotas = [
-    "perro",
-    "gato",
-    "mascota",
-    "adopcion",
-    "animal",
-    "peludo",
-    "rescate",
-    "cachorro",
-    "veterinario"
-  ];
-
-  const relacionadoMascotas = palabrasMascotas.some((p) =>
-    texto.includes(p)
-  );
-
-  if (!relacionadoMascotas) {
-    return "Los comentarios deben estar relacionados con mascotas";
-  }
-
-  // 🤖 IA como segunda capa
   const revision = await moderarTexto(contenido);
 
   if (revision.flagged) {
@@ -84,7 +94,6 @@ const validarComentario = async (contenido) => {
 
   return null;
 };
-
 /* =====================
    ❤️ TOGGLE LIKE
 ===================== */

@@ -1,10 +1,47 @@
 import { Router } from "express";
-import { actualizarFotoPerfil } from "../controllers/profile.controller.js";
+
+import {
+  actualizarFotoPerfil,
+  obtenerMiPerfil,
+  obtenerPerfilPorId,
+  actualizarPerfil,
+  cambiarPassword
+} from "../controllers/profile.controller.js";
+
 import { verificarToken } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/upload.middleware.js";
-import { obtenerMiPerfil } from "../controllers/profile.controller.js";
-import { obtenerPerfilPorId } from "../controllers/profile.controller.js";
+
 const router = Router();
+
+// ==========================
+// PERFIL PROPIO
+// ==========================
+
+router.get(
+  "/me",
+  verificarToken,
+  obtenerMiPerfil
+);
+
+router.put(
+  "/me",
+  verificarToken,
+  actualizarPerfil
+);
+
+// ==========================
+// PASSWORD
+// ==========================
+
+router.put(
+  "/password",
+  verificarToken,
+  cambiarPassword
+);
+
+// ==========================
+// FOTO PERFIL
+// ==========================
 
 router.put(
   "/foto",
@@ -12,6 +49,15 @@ router.put(
   upload.single("foto"),
   actualizarFotoPerfil
 );
-router.get("/me", verificarToken, obtenerMiPerfil);
-router.get("/:id", verificarToken, obtenerPerfilPorId);
+
+// ==========================
+// PERFIL PUBLICO
+// ==========================
+
+router.get(
+  "/:id",
+  verificarToken,
+  obtenerPerfilPorId
+);
+
 export default router;

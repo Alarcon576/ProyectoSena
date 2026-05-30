@@ -23,9 +23,18 @@ function App() {
 
   /* ── Cambio de vista + push al historial del navegador ── */
   const handleSwitch = (viewName, userId = null) => {
+    // Si intenta abrir el perfil público de sí mismo → redirigir a su propio perfil
+    if (viewName === "perfilPublico" && userId && user) {
+      const miId = user.id || user.id_usuario;
+      if (String(userId) === String(miId)) {
+        setSelectedUserId(null);
+        setView("perfil");
+        window.history.pushState({ view: "perfil", userId: null }, "", "#perfil");
+        return;
+      }
+    }
     setSelectedUserId(userId);
     setView(viewName);
-    // Empuja un estado al historial para que el botón "atrás" funcione
     window.history.pushState({ view: viewName, userId }, "", `#${viewName}`);
   };
 
@@ -37,7 +46,6 @@ function App() {
         setSelectedUserId(st.userId || null);
         setView(st.view);
       } else {
-        // Sin estado previo: vuelve al feed si hay sesión, si no al login
         const token = localStorage.getItem("token");
         setView(token ? "feed" : "login");
       }
@@ -70,25 +78,16 @@ function App() {
   return (
     <div className="app-root">
       {view === "login" && <Login onSwitch={handleSwitch} onLogin={handleLogin} />}
-
       {view === "register" && <Register onSwitch={handleSwitch} />}
-
       {view === "mascotas" && user?.rol === 2 && (
         <Mascotas onSwitch={handleSwitch} user={user} />
       )}
-
       {view === "feed" && <Feed onSwitch={handleSwitch} user={user} />}
-
       {view === "explorar" && <Explorar onSwitch={handleSwitch} />}
-
       {view === "adopciones" && <Adopciones onSwitch={handleSwitch} user={user} />}
-
       {view === "noticias" && <Noticias onSwitch={handleSwitch} />}
-
       {view === "perfil" && <Perfil onSwitch={handleSwitch} />}
-
       {view === "configuracion" && <Configuracion onSwitch={handleSwitch} user={user} />}
-
       {view === "perfilPublico" && selectedUserId && (
         <PerfilPublico onSwitch={handleSwitch} userId={selectedUserId} />
       )}

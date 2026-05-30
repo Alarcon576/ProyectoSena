@@ -11,10 +11,7 @@ const URL_PROFILE =
   "https://proyectosena-production-4ad5.up.railway.app/api/profile";
 const URL_IA = "https://proyectosena-production-4ad5.up.railway.app/api/ia";
 
-const URL_NOTICIAS =
-  "https://proyectosena-production-4ad5.up.railway.app/api/noticias";
-
-  const TIPS = [
+const TIPS = [
   "🐶 Pasea a tu perro al menos 30 minutos al día para mantenerlo saludable.",
   "🐱 Los gatos necesitan agua fresca disponible en todo momento.",
   "💉 Mantén el esquema de vacunación de tu mascota al día.",
@@ -52,7 +49,6 @@ function Feed({ onSwitch }) {
   const [textoComentarioEditado, setTextoComentarioEditado] = useState("");
   const [loadingComentario, setLoadingComentario] = useState(false);
 
-  // ── NUEVO: spinner al ENVIAR un comentario nuevo (por post) ──
   const [enviandoComentario, setEnviandoComentario] = useState(null);
 
   // Menús
@@ -69,10 +65,18 @@ function Feed({ onSwitch }) {
   const [mascotasRandom, setMascotasRandom] = useState([]);
 
   const [sintomasIA, setSintomasIA] = useState("");
-  const [respuestaIA, setRespuestaIA] = useState(null);
+  const [historialIA, setHistorialIA] = useState([]);
   const [loadingIA, setLoadingIA] = useState(false);
-  // tip del dia
+
+  // Tip del día — cambia diariamente según la fecha
   const [tipDelDia, setTipDelDia] = useState("");
+
+  useEffect(() => {
+    const hoy = new Date();
+    const indice = (hoy.getDate() + hoy.getMonth() + hoy.getFullYear()) % TIPS.length;
+    setTipDelDia(TIPS[indice]);
+  }, []);
+
   /* ── Cerrar menús al click fuera ── */
   useEffect(() => {
     const cerrar = (e) => {
@@ -117,22 +121,9 @@ function Feed({ onSwitch }) {
 
   useEffect(() => { cargarPosts(); cargarUsuarioActual(); }, []);
 
- useEffect(() => {
-  const hoy = new Date();
-
-  const indice =
-    (hoy.getDate() +
-      hoy.getMonth() +
-      hoy.getFullYear()) %
-    TIPS.length;
-
-  setTipDelDia(TIPS[indice]);
-}, []);
-
   /* ════ CREAR POST ════ */
   const crearPost = async (e) => {
     e.preventDefault();
-    // Permite publicar con SOLO imagen, SOLO texto, o ambos. Bloquea solo si faltan ambos.
     if (!contenido.trim() && !imagen) {
       alert("Escribe algo o agrega una imagen para publicar 🐾");
       return;
@@ -188,7 +179,7 @@ function Feed({ onSwitch }) {
   const crearComentario = async (idPost) => {
     const texto = comentarios[idPost];
     if (!texto?.trim()) return;
-    setEnviandoComentario(idPost); // ← activa spinner para este post
+    setEnviandoComentario(idPost);
     try {
       const res = await fetch(`${URL_INTERACCIONES}/comentario/${idPost}`, {
         method: "POST",
@@ -205,7 +196,7 @@ function Feed({ onSwitch }) {
     } catch (err) {
       console.error("Error comentando:", err);
     } finally {
-      setEnviandoComentario(null); // ← apaga spinner
+      setEnviandoComentario(null);
     }
   };
 
@@ -310,9 +301,14 @@ function Feed({ onSwitch }) {
     } catch (err) { console.error("Error eliminando:", err); }
   };
 
-  const postsFiltrados = posts.filter((p) =>
-    p.usuario.nombre.toLowerCase().includes(busqueda.toLowerCase()),
-  );
+  const esFiltroHashtag = busqueda.startsWith("#");
+  const postsFiltrados = posts.filter((p) => {
+    if (!busqueda.trim()) return true;
+    const q = busqueda.toLowerCase();
+    const enNombre    = p.usuario.nombre.toLowerCase().includes(q);
+    const enContenido = (p.contenido_texto || "").toLowerCase().includes(q);
+    return enNombre || enContenido;
+  });
 
   const lideresComunidad = Object.values(
     posts.reduce((acc, post) => {
@@ -371,58 +367,106 @@ function Feed({ onSwitch }) {
 
   const consultarSaludIA = async () => {
     if (!sintomasIA.trim()) return;
+    const consultaTexto = sintomasIA.trim();
+    setSintomasIA("");
     setLoadingIA(true);
+    setHistorialIA(prev => [...prev, { consulta: consultaTexto, respuesta: null, nivel: null }]);
     try {
       const res = await fetch(`${URL_IA}/salud`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ especie: "Mascota", edad: 1, sintomas: sintomasIA }),
+        body: JSON.stringify({ especie: "Mascota", edad: 1, sintomas: consultaTexto }),
       });
       const data = await res.json();
-      if (!res.ok) { alert(data.error || "No se pudo consultar la IA"); return; }
+      if (!res.ok) {
+        setHistorialIA(prev => {
+          const copia = [...prev];
+          copia[copia.length - 1] = { ...copia[copia.length - 1], respuesta: "No se pudo consultar la IA.", nivel: "error" };
+          return copia;
+        });
+        return;
+      }
       let texto = data.resultado.replace(/```json|```/g, "").trim();
-      try { setRespuestaIA(JSON.parse(texto)); }
-      catch { setRespuestaIA({ nivel: "desconocido", orientacion: texto }); }
-    } catch (error) { console.error("Error salud IA:", error); alert("Error consultando la IA"); }
-    finally { setLoadingIA(false); }
+      let parsed;
+      try { parsed = JSON.parse(texto); }
+      catch { parsed = { nivel: "desconocido", orientacion: texto }; }
+      setHistorialIA(prev => {
+        const copia = [...prev];
+        copia[copia.length - 1] = { ...copia[copia.length - 1], respuesta: parsed.orientacion, nivel: parsed.nivel };
+        return copia;
+      });
+    } catch {
+      setHistorialIA(prev => {
+        const copia = [...prev];
+        copia[copia.length - 1] = { ...copia[copia.length - 1], respuesta: "Error de conexión.", nivel: "error" };
+        return copia;
+      });
+    } finally {
+      setLoadingIA(false);
+    }
   };
 
   /* ── Sidebar izquierdo ── */
   const SidebarLeftContent = useMemo(
-  () => (
+    () => (
       <>
         <ul className="menu-list">
-          <li onClick={() => onSwitch("noticias")}>
-  Noticias</li>
+          <li onClick={() => onSwitch("noticias")}>Noticias</li>
         </ul>
         <div className="tip-box">
-  <h4>💡 Tip del día</h4>
-  <p>{tipDelDia}</p>
-</div>
+          <h4>💡 Tip del día</h4>
+          <p>{tipDelDia}</p>
+        </div>
       </>
     ),
-   [tipDelDia],
-);
+    [tipDelDia],
+  );
 
   const SidebarRightContent = useMemo(
     () => (
       <>
         <div className="widget-card salud-ia">
           <h3>Orientación básica de salud</h3>
-          <textarea
-            className="salud-ia-input"
-            placeholder="Ej: mi perro no quiere comer y está vomitando"
-            value={sintomasIA}
-            onChange={(e) => setSintomasIA(e.target.value)}
-          />
-          <button className="btn-salud-ia" onClick={consultarSaludIA} disabled={loadingIA}>
-            {loadingIA ? "Consultando..." : "Consultar IA"}
-          </button>
-          {respuestaIA && (
-            <div className={`salud-ia-respuesta nivel-${respuestaIA.nivel}`}>
-              <h4>Nivel: {respuestaIA.nivel}</h4>
-              <p>{respuestaIA.orientacion}</p>
+
+          {historialIA.length > 0 && (
+            <div className="ia-chat-historial">
+              {historialIA.map((item, i) => (
+                <div key={i} className="ia-chat-turno">
+                  <div className="ia-burbuja ia-burbuja--usuario">
+                    <span>{item.consulta}</span>
+                  </div>
+                  {item.respuesta === null ? (
+                    <div className="ia-burbuja ia-burbuja--ia ia-burbuja--loading">
+                      <span className="ia-dot" /><span className="ia-dot" /><span className="ia-dot" />
+                    </div>
+                  ) : (
+                    <div className={`ia-burbuja ia-burbuja--ia nivel-burbuja-${item.nivel}`}>
+                      {item.nivel && item.nivel !== "desconocido" && item.nivel !== "error" && (
+                        <span className="ia-nivel-tag">Nivel: {item.nivel}</span>
+                      )}
+                      <span>{item.respuesta}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
+          )}
+
+          <div className="ia-input-row">
+            <textarea
+              className="salud-ia-input"
+              placeholder="Ej: mi perro no quiere comer…"
+              value={sintomasIA}
+              onChange={(e) => setSintomasIA(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); consultarSaludIA(); } }}
+              rows={2}
+            />
+            <button className="btn-salud-ia-send" onClick={consultarSaludIA} disabled={loadingIA || !sintomasIA.trim()} title="Enviar">
+              {loadingIA ? <span className="spinner spinner-dark-sm" /> : "↑"}
+            </button>
+          </div>
+          {historialIA.length > 0 && (
+            <button className="ia-limpiar-btn" onClick={() => setHistorialIA([])}>Limpiar historial</button>
           )}
         </div>
 
@@ -432,7 +476,11 @@ function Feed({ onSwitch }) {
             <p>No hay tendencias aún</p>
           ) : (
             hashtagsDinamicos.map(([tag, total]) => (
-              <div className="tendencia-item" key={tag}>
+              <div
+                className={`tendencia-item ${busqueda === tag ? "tendencia-item--active" : ""}`}
+                key={tag}
+                onClick={() => { setBusqueda(busqueda === tag ? "" : tag); setDrawerAbierto(false); }}
+              >
                 <span className="tendencia-tag">{tag}</span>
                 <span className="tendencia-count">{total} publicaciones</span>
               </div>
@@ -480,7 +528,7 @@ function Feed({ onSwitch }) {
         </div>
       </>
     ),
-    [sintomasIA, respuestaIA, loadingIA, hashtagsDinamicos, mascotasRandom, lideresComunidad],
+    [sintomasIA, historialIA, loadingIA, hashtagsDinamicos, mascotasRandom, lideresComunidad, busqueda],
   );
 
   return (
@@ -631,12 +679,35 @@ function Feed({ onSwitch }) {
                 <input ref={inputImagenRef} type="file" accept="image/*" hidden
                   onChange={(e) => { if (e.target.files[0]) setImagen(e.target.files[0]); }} />
               </label>
-              {/* Permite publicar con solo imagen O solo texto */}
               <button type="submit" disabled={loadingPost || (!contenido.trim() && !imagen)}>
                 {loadingPost ? <span className="spinner" /> : "Publicar"}
               </button>
             </div>
           </form>
+
+          {/* ── Chip filtro activo ── */}
+          {busqueda.trim() && (
+            <div className="feed-filtro-activo">
+              <span className="feed-filtro-chip">
+                {esFiltroHashtag ? "🏷️" : "🔍"} {busqueda}
+                <button onClick={() => setBusqueda("")} title="Limpiar filtro">✕</button>
+              </span>
+              <span className="feed-filtro-count">
+                {postsFiltrados.length === 0
+                  ? "Sin resultados"
+                  : `${postsFiltrados.length} publicación${postsFiltrados.length !== 1 ? "es" : ""}`}
+              </span>
+            </div>
+          )}
+
+          {/* ── Sin resultados ── */}
+          {busqueda.trim() && postsFiltrados.length === 0 && (
+            <div className="feed-empty">
+              <span>🔍</span>
+              <p>No hay publicaciones con <strong>{busqueda}</strong></p>
+              <button onClick={() => setBusqueda("")}>Limpiar filtro</button>
+            </div>
+          )}
 
           {/* ── Posts ── */}
           {postsFiltrados.map((post) => {

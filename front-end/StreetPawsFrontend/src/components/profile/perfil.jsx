@@ -123,7 +123,7 @@ function Perfil({ onSwitch, userId }) {
   ).length;
 
   return (
-    <>
+    <div style={{ background: 'var(--cream, #faf7f3)', minHeight: '100vh', fontFamily: "'Nunito', sans-serif" }}>
       {/* ── NAVBAR ── */}
       <nav className="perfil-navbar">
         <div className="perfil-logo" onClick={() => onSwitch("feed")}>
@@ -143,6 +143,11 @@ function Perfil({ onSwitch, userId }) {
           )}
         </div>
       </nav>
+
+      {/* ── BANNER ── */}
+      <div className="perfil-banner">
+        <div className="perfil-banner-bg" />
+      </div>
 
       <div className="perfil-container">
         {/* ── CARD PERFIL ── */}
@@ -356,7 +361,7 @@ function Perfil({ onSwitch, userId }) {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

@@ -4,7 +4,7 @@ import "./Noticias.css";
 const URL_NOTICIAS =
   "https://proyectosena-production-4ad5.up.railway.app/api/noticias";
 
-function Noticias() {
+function Noticias({ onSwitch }) {
   const [noticias, setNoticias] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,19 +27,41 @@ function Noticias() {
 
   if (loading) {
     return (
-      <div className="noticias-loading">
-        <div className="noticias-spinner" />
-        <p>Cargando noticias…</p>
+      <div style={{ background: 'var(--cream, #faf7f3)', minHeight: '100vh' }}>
+        <nav className="noticias-navbar">
+          <div className="noticias-nav-brand" onClick={() => onSwitch("feed")}>Street Paws</div>
+          <div className="noticias-nav-links">
+            <span onClick={() => onSwitch("feed")}>Inicio</span>
+            <span onClick={() => onSwitch("explorar")}>Explorar</span>
+            <span onClick={() => onSwitch("adopciones")}>Adopciones</span>
+          </div>
+          <button className="noticias-back-btn" onClick={() => onSwitch("feed")}>← Volver</button>
+        </nav>
+        <div className="noticias-loading">
+          <div className="noticias-spinner" />
+          <p>Cargando noticias…</p>
+        </div>
       </div>
     );
   }
 
   if (noticias.length === 0) {
     return (
-      <div className="noticias-container">
-        <div className="noticias-empty">
-          <span>📰</span>
-          <p>No hay noticias disponibles por el momento</p>
+      <div style={{ background: 'var(--cream, #faf7f3)', minHeight: '100vh' }}>
+        <nav className="noticias-navbar">
+          <div className="noticias-nav-brand" onClick={() => onSwitch("feed")}>Street Paws</div>
+          <div className="noticias-nav-links">
+            <span onClick={() => onSwitch("feed")}>Inicio</span>
+            <span onClick={() => onSwitch("explorar")}>Explorar</span>
+            <span onClick={() => onSwitch("adopciones")}>Adopciones</span>
+          </div>
+          <button className="noticias-back-btn" onClick={() => onSwitch("feed")}>← Volver</button>
+        </nav>
+        <div className="noticias-container">
+          <div className="noticias-empty">
+            <span>📰</span>
+            <p>No hay noticias disponibles por el momento</p>
+          </div>
         </div>
       </div>
     );
@@ -53,7 +75,20 @@ function Noticias() {
   const handleImgError = (e) => { e.target.src = IMG_FALLBACK; };
 
   return (
-    <div className="noticias-container">
+    <div style={{ background: 'var(--cream, #faf7f3)', minHeight: '100vh', fontFamily: "'Nunito', sans-serif" }}>
+
+      {/* ── Navbar ── */}
+      <nav className="noticias-navbar">
+        <div className="noticias-nav-brand" onClick={() => onSwitch("feed")}>Street Paws</div>
+        <div className="noticias-nav-links">
+          <span onClick={() => onSwitch("feed")}>Inicio</span>
+          <span onClick={() => onSwitch("explorar")}>Explorar</span>
+          <span onClick={() => onSwitch("adopciones")}>Adopciones</span>
+        </div>
+        <button className="noticias-back-btn" onClick={() => onSwitch("feed")}>← Volver</button>
+      </nav>
+
+      <div className="noticias-container">
 
       {/* ── Encabezado editorial ── */}
       <div className="noticias-header">
@@ -114,6 +149,7 @@ function Noticias() {
         </div>
       )}
 
+    </div>
     </div>
   );
 }

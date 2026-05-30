@@ -47,7 +47,7 @@ body { font-family: 'Nunito', sans-serif; color: var(--text); background: var(--
 .pp-navbar {
   position: sticky; top: 0; z-index: 100;
   background: var(--white); border-bottom: 1px solid var(--border);
-  padding: 0 24px; height: 56px;
+  padding: 0 24px; height: 64px;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   box-shadow: 0 1px 6px rgba(0,0,0,.06);
 }
@@ -71,7 +71,11 @@ body { font-family: 'Nunito', sans-serif; color: var(--text); background: var(--
 .pp-banner { width: 100%; height: 160px; overflow: hidden; }
 .pp-banner-bg {
   width: 100%; height: 100%;
-  background: linear-gradient(120deg, #fff3e8 0%, #ffe8cc 55%, #ffd4a0 100%);
+  background: linear-gradient(180deg,
+    #ffe8cc 0%,
+    #fff0de 40%,
+    #faf7f3 100%   /* mismo valor que --cream: sin línea */
+  );
   position: relative;
 }
 .pp-banner-bg::after {

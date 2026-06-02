@@ -67,7 +67,6 @@ body {
   flex-shrink: 0;
   cursor: pointer;
   letter-spacing: -.5px;
-  min-width: 160px;
 }
 
 .ad-nav-brand::before {
@@ -104,8 +103,6 @@ body {
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  min-width: 160px;
-  justify-content: flex-end;
 }
 
 .ad-nav-avatar-wrapper {
@@ -1213,4 +1210,10 @@ body {
   .adopt-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .adopt-card-img-wrap { height: 120px; }
   .ad-nav-links span { padding: 6px 6px; }
+}
+
+/* ── Centrado navbar desktop ── */
+@media (min-width: 769px) {
+  .ad-nav-brand { min-width: 160px; }
+  .ad-nav-right { min-width: 160px; justify-content: flex-end; }
 }

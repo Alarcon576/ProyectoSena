@@ -67,7 +67,6 @@ body {
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
-  min-width: 160px;
 }
 
 .top-navbar .nav-brand::before {
@@ -2105,4 +2104,10 @@ input::placeholder, textarea::placeholder {
 .notificacion-item small {
   font-size: 11px;
   color: #aaa;
+}
+
+/* ── Centrado navbar desktop ── */
+@media (min-width: 769px) {
+  .top-navbar .nav-brand { min-width: 160px; }
+  .top-navbar .nav-search { min-width: 160px; justify-content: flex-end; }
 }

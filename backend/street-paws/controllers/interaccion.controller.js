@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { moderarTexto } from "../services/moderation.service.js";
+import { crearNotificacion } from "../services/notificacion.service.js";
 
 const prisma = new PrismaClient();
 
@@ -44,7 +45,7 @@ const validarComentario = async (contenido) => {
     "terrorista",
     "abelardo",
     "corrupto",
-    "ladrón", 
+    "ladrón",
     "rata",
     "payaso",
     "tonto",
@@ -64,7 +65,6 @@ const validarComentario = async (contenido) => {
     "misándrico",
     "nazi",
     "fascista",
-    "terrorista",
     "dictador",
     "genocida",
     "pedófilo",
@@ -72,9 +72,7 @@ const validarComentario = async (contenido) => {
     "prb",
     "sebastian",
     "duque",
-    "alvaro",
-
-
+    "alvaro"
   ];
 
   const contieneBloqueado =
@@ -94,6 +92,7 @@ const validarComentario = async (contenido) => {
 
   return null;
 };
+
 /* =====================
    ❤️ TOGGLE LIKE
 ===================== */
@@ -116,7 +115,9 @@ export const toggleLike = async (req, res) => {
         }
       });
 
-      return res.json({ mensaje: "Like eliminado" });
+      return res.json({
+        mensaje: "Like eliminado"
+      });
     }
 
     await prisma.like.create({
@@ -127,24 +128,62 @@ export const toggleLike = async (req, res) => {
       }
     });
 
-    res.json({ mensaje: "Like agregado" });
+    const publicacion =
+      await prisma.publicacion.findUnique({
+        where: {
+          id_publicacion
+        }
+      });
+
+    if (
+      publicacion &&
+      publicacion.id_usuario !== id_usuario
+    ) {
+      await crearNotificacion(
+        publicacion.id_usuario,
+        "❤️ Nuevo Like",
+        "Alguien dio like a tu publicación",
+        "LIKE"
+      );
+    }
+
+    res.json({
+      mensaje: "Like agregado"
+    });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(
+      "Error toggleLike:",
+      error
+    );
+
+    res.status(500).json({
+      error: error.message
+    });
   }
 };
 
 /* =====================
    💬 CREAR COMENTARIO
 ===================== */
-export const crearComentario = async (req, res) => {
+export const crearComentario = async (
+  req,
+  res
+) => {
   try {
-    const id_publicacion = parseInt(req.params.id);
-    const id_usuario = req.user.id;
-    const { contenido } = req.body;
+    const id_publicacion =
+      parseInt(req.params.id);
 
-    const errorValidacion = await validarComentario(
-      contenido
-    );
+    const id_usuario =
+      req.user.id;
+
+    const { contenido } =
+      req.body;
+
+    const errorValidacion =
+      await validarComentario(
+        contenido
+      );
 
     if (errorValidacion) {
       return res.status(400).json({
@@ -152,7 +191,6 @@ export const crearComentario = async (req, res) => {
       });
     }
 
-    // 🔁 evitar spam repetido
     const ultimoComentario =
       await prisma.comentario.findFirst({
         where: {
@@ -166,61 +204,116 @@ export const crearComentario = async (req, res) => {
 
     if (
       ultimoComentario &&
-      ultimoComentario.contenido.toLowerCase().trim() ===
-        contenido.toLowerCase().trim()
+      ultimoComentario.contenido
+        .toLowerCase()
+        .trim() ===
+      contenido
+        .toLowerCase()
+        .trim()
     ) {
       return res.status(400).json({
-        error: "No puedes repetir el mismo comentario"
+        error:
+          "No puedes repetir el mismo comentario"
       });
     }
 
-    const comentario = await prisma.comentario.create({
-      data: {
-        id_publicacion,
-        id_usuario,
-        contenido,
-        fecha_comentario: new Date()
-      },
-      include: {
-        usuario: true
-      }
+    const comentario =
+      await prisma.comentario.create({
+        data: {
+          id_publicacion,
+          id_usuario,
+          contenido,
+          fecha_comentario:
+            new Date()
+        },
+        include: {
+          usuario: true
+        }
+      });
+
+    const publicacion =
+      await prisma.publicacion.findUnique({
+        where: {
+          id_publicacion
+        }
+      });
+
+    if (
+      publicacion &&
+      publicacion.id_usuario !==
+        id_usuario
+    ) {
+      await crearNotificacion(
+        publicacion.id_usuario,
+        "💬 Nuevo comentario",
+        "Han comentado tu publicación",
+        "COMENTARIO"
+      );
+    }
+
+    res.status(201).json(
+      comentario
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Error creando comentario:",
+      error
+    );
+
+    res.status(500).json({
+      error: error.message
     });
 
-    res.status(201).json(comentario);
-  } catch (error) {
-    console.error("Error creando comentario:", error);
-    res.status(500).json({ error: error.message });
   }
 };
 
 /* =====================
    ✏️ EDITAR COMENTARIO
 ===================== */
-export const actualizarComentario = async (req, res) => {
+export const actualizarComentario = async (
+  req,
+  res
+) => {
   try {
-    const id_comentario = parseInt(req.params.id);
-    const id_usuario = req.user.id;
-    const { contenido } = req.body;
+    const id_comentario =
+      parseInt(req.params.id);
 
-    const comentario = await prisma.comentario.findUnique({
-      where: { id_comentario }
-    });
+    const id_usuario =
+      req.user.id;
+
+    const { contenido } =
+      req.body;
+
+    const comentario =
+      await prisma.comentario.findUnique({
+        where: {
+          id_comentario
+        }
+      });
 
     if (!comentario) {
       return res.status(404).json({
-        error: "Comentario no encontrado"
+        error:
+          "Comentario no encontrado"
       });
     }
 
-    if (comentario.id_usuario !== id_usuario) {
+    if (
+      comentario.id_usuario !==
+      id_usuario
+    ) {
       return res.status(403).json({
-        error: "No autorizado"
+        error:
+          "No autorizado"
       });
     }
 
-    const errorValidacion = await validarComentario(
-      contenido
-    );
+    const errorValidacion =
+      await validarComentario(
+        contenido
+      );
 
     if (errorValidacion) {
       return res.status(400).json({
@@ -228,48 +321,91 @@ export const actualizarComentario = async (req, res) => {
       });
     }
 
-    const actualizado = await prisma.comentario.update({
-      where: { id_comentario },
-      data: { contenido }
-    });
+    const actualizado =
+      await prisma.comentario.update({
+        where: {
+          id_comentario
+        },
+        data: {
+          contenido
+        }
+      });
 
     res.json(actualizado);
+
   } catch (error) {
-    console.error("Error editando comentario:", error);
-    res.status(500).json({ error: error.message });
+
+    console.error(
+      "Error editando comentario:",
+      error
+    );
+
+    res.status(500).json({
+      error: error.message
+    });
+
   }
 };
 
 /* =====================
    🗑 ELIMINAR COMENTARIO
 ===================== */
-export const eliminarComentario = async (req, res) => {
+export const eliminarComentario = async (
+  req,
+  res
+) => {
   try {
-    const id_comentario = parseInt(req.params.id);
-    const id_usuario = req.user.id;
+    const id_comentario =
+      parseInt(req.params.id);
 
-    const comentario = await prisma.comentario.findUnique({
-      where: { id_comentario }
-    });
+    const id_usuario =
+      req.user.id;
+
+    const comentario =
+      await prisma.comentario.findUnique({
+        where: {
+          id_comentario
+        }
+      });
 
     if (!comentario) {
       return res.status(404).json({
-        error: "Comentario no encontrado"
+        error:
+          "Comentario no encontrado"
       });
     }
 
-    if (comentario.id_usuario !== id_usuario) {
+    if (
+      comentario.id_usuario !==
+      id_usuario
+    ) {
       return res.status(403).json({
-        error: "No autorizado"
+        error:
+          "No autorizado"
       });
     }
 
     await prisma.comentario.delete({
-      where: { id_comentario }
+      where: {
+        id_comentario
+      }
     });
 
-    res.json({ mensaje: "Comentario eliminado" });
+    res.json({
+      mensaje:
+        "Comentario eliminado"
+    });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+
+    console.error(
+      "Error eliminando comentario:",
+      error
+    );
+
+    res.status(500).json({
+      error: error.message
+    });
+
   }
 };

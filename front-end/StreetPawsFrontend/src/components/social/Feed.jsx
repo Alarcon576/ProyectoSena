@@ -10,6 +10,8 @@ const URL_INTERACCIONES =
 const URL_PROFILE =
   "https://proyectosena-production-4ad5.up.railway.app/api/profile";
 const URL_IA = "https://proyectosena-production-4ad5.up.railway.app/api/ia";
+const URL_NOTIFICACIONES =
+  "https://proyectosena-production-4ad5.up.railway.app/api/notificaciones";
 
 const TIPS = [
   "🐶 Pasea a tu perro al menos 30 minutos al día para mantenerlo saludable.",
@@ -58,6 +60,9 @@ function Feed({ onSwitch }) {
   // Drawer móvil
   const [drawerAbierto, setDrawerAbierto] = useState(false);
 
+  const [notificaciones, setNotificaciones] = useState([]);
+const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
+
   const inputImagenRef = useRef(null);
   const token = localStorage.getItem("token");
 
@@ -68,8 +73,41 @@ function Feed({ onSwitch }) {
   const [historialIA, setHistorialIA] = useState([]);
   const [loadingIA, setLoadingIA] = useState(false);
 
+  
+
   // Tip del día — cambia diariamente según la fecha
   const [tipDelDia, setTipDelDia] = useState("");
+
+  const notificacionesNoLeidas =
+  notificaciones.filter(n => !n.leida).length;
+
+  const cargarNotificaciones = async () => {
+  try {
+
+    const res = await fetch(
+      URL_NOTIFICACIONES,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    setNotificaciones(
+      Array.isArray(data) ? data : []
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Error cargando notificaciones:",
+      error
+    );
+
+  }
+};
 
   useEffect(() => {
     const hoy = new Date();
@@ -119,8 +157,11 @@ function Feed({ onSwitch }) {
     } catch (err) { console.error("Error cargando usuario:", err); }
   };
 
-  useEffect(() => { cargarPosts(); cargarUsuarioActual(); }, []);
-
+  useEffect(() => {
+  cargarPosts();
+  cargarUsuarioActual();
+  cargarNotificaciones();
+}, []);
   /* ════ CREAR POST ════ */
   const crearPost = async (e) => {
     e.preventDefault();
@@ -616,7 +657,46 @@ function Feed({ onSwitch }) {
             onClick={(e) => { e.stopPropagation(); setDrawerAbierto((v) => !v); }}
             aria-label="Abrir panel lateral" title="IA, Tendencias y más"
           >✦</button>
+
+            <button
+    className="btn-notificaciones"
+    onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}
+  >
+    🔔
+
+    {mostrarNotificaciones && (
+  <div className="dropdown-notificaciones">
+
+    {notificaciones.length === 0 ? (
+      <div className="notificacion-item">
+        No tienes notificaciones
+      </div>
+    ) : (
+      notificaciones.map((n) => (
+        <div
+          key={n.id_notificacion}
+          className={`notificacion-item ${
+            !n.leida ? "no-leida" : ""
+          }`}
+        >
+          <strong>{n.titulo}</strong>
+
+          <p>{n.mensaje}</p>
+
+          <small>
+            {new Date(n.fecha)
+              .toLocaleString()}
+          </small>
+        </div>
+      ))
+    )}
+
+  </div>
+)}
+  </button>
+
           <div className="nav-avatar-wrapper" onClick={(e) => { e.stopPropagation(); setMenuAvatarAbierto((v) => !v); }}>
+           
             <div className="nav-avatar">
               {usuarioActual?.foto_perfil
                 ? <img src={usuarioActual.foto_perfil} alt={usuarioActual.nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} />

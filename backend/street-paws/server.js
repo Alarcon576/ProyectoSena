@@ -10,6 +10,7 @@ import profileRoutes from "./routes/profile.routes.js";
 import iaRoutes from "./routes/ia.routes.js";
 import solicitudRoutes from "./routes/solicitud.routes.js";
 import noticiaRoutes from "./routes/noticia.routes.js";
+import notificacionRoutes from "./routes/notificacion.routes.js";
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
 const app = express();
@@ -48,6 +49,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/ia", iaRoutes);
 app.use("/api/solicitudes", solicitudRoutes);
 app.use("/api/noticias", noticiaRoutes);
+app.use("/api/notificaciones", notificacionRoutes);
 // 🔹 Puerto (mejor usar variable de entorno)
 const PORT = process.env.PORT || 3000;
 

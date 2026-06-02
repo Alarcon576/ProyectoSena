@@ -1981,3 +1981,86 @@ input::placeholder, textarea::placeholder {
   background: #ffd4a0;
   border-radius: 99px;
 }
+
+.btn-notificaciones {
+  position: relative;
+  width: 38px;
+  height: 38px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #fff3e8;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+
+  transition: 0.2s;
+}
+
+.btn-notificaciones:hover {
+  background: #ffe0c4;
+}
+
+.badge-notificaciones {
+  position: absolute;
+
+  top: -4px;
+  right: -2px;
+
+  min-width: 18px;
+  height: 18px;
+
+  border-radius: 999px;
+
+  background: #e53935;
+  color: white;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 5px;
+}
+.dropdown-notificaciones {
+  position: absolute;
+
+  top: 50px;
+  right: 0;
+
+  width: 340px;
+  max-height: 420px;
+
+  overflow-y: auto;
+
+  background: white;
+
+  border-radius: 16px;
+
+  box-shadow: 0 8px 30px rgba(0,0,0,.15);
+
+  z-index: 999;
+}
+
+.notificacion-item {
+  padding: 14px;
+  border-bottom: 1px solid #eee;
+
+  cursor: pointer;
+}
+
+.notificacion-item:hover {
+  background: #fafafa;
+}
+
+.notificacion-item.no-leida {
+  background: #fff8f1;
+}

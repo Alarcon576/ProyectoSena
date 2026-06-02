@@ -2,8 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
-import { sendEmail } from "../services/email.service.js";
-
+import { enviarCorreoRecuperacion as sendEmail } from "../services/email.service.js";
 const prisma = new PrismaClient();
 
 // ========================

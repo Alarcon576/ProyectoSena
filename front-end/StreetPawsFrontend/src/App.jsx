@@ -77,19 +77,19 @@ function App() {
 
   return (
     <div className="app-root">
-      {view === "login" && <Login onSwitch={handleSwitch} onLogin={handleLogin} />}
-      {view === "register" && <Register onSwitch={handleSwitch} />}
+      {view === "login" && <Login key="login" onSwitch={handleSwitch} onLogin={handleLogin} />}
+      {view === "register" && <Register key="register" onSwitch={handleSwitch} />}
       {view === "mascotas" && user?.rol === 2 && (
-        <Mascotas onSwitch={handleSwitch} user={user} />
+        <Mascotas key="mascotas" onSwitch={handleSwitch} user={user} />
       )}
-      {view === "feed" && <Feed onSwitch={handleSwitch} user={user} />}
-      {view === "explorar" && <Explorar onSwitch={handleSwitch} />}
-      {view === "adopciones" && <Adopciones onSwitch={handleSwitch} user={user} />}
-      {view === "noticias" && <Noticias onSwitch={handleSwitch} />}
-      {view === "perfil" && <Perfil onSwitch={handleSwitch} />}
-      {view === "configuracion" && <Configuracion onSwitch={handleSwitch} user={user} />}
+      {view === "feed" && <Feed key="feed" onSwitch={handleSwitch} user={user} />}
+      {view === "explorar" && <Explorar key="explorar" onSwitch={handleSwitch} />}
+      {view === "adopciones" && <Adopciones key="adopciones" onSwitch={handleSwitch} user={user} />}
+      {view === "noticias" && <Noticias key="noticias" onSwitch={handleSwitch} />}
+      {view === "perfil" && <Perfil key="perfil" onSwitch={handleSwitch} />}
+      {view === "configuracion" && <Configuracion key="configuracion" onSwitch={handleSwitch} user={user} />}
       {view === "perfilPublico" && selectedUserId && (
-        <PerfilPublico onSwitch={handleSwitch} userId={selectedUserId} />
+        <PerfilPublico key={`perfilPublico-${selectedUserId}`} onSwitch={handleSwitch} userId={selectedUserId} />
       )}
     </div>
   );

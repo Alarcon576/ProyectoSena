@@ -60,8 +60,8 @@ function Explorar({ onSwitch }) {
     }, {}))
     .sort((a, b) => b.puntos - a.puntos).slice(0, 5), [posts]);
 
-  /* Navbar reutilizable */
-  const NavBar = () => (
+  /* ── Navbar como JSX directo, no como componente interno ── */
+  const navbar = (
     <nav className="exp-navbar">
       <div className="exp-nav-brand" onClick={() => onSwitch("feed")}>Street Paws</div>
       <div className="exp-nav-links">
@@ -95,14 +95,15 @@ function Explorar({ onSwitch }) {
   );
 
   if (loading) return (
-    <><NavBar />
+    <>
+      {navbar}
       <div className="explorar-loading"><div className="explorar-spinner" /><p>Cargando explorar…</p></div>
     </>
   );
 
   return (
     <>
-      <NavBar />
+      {navbar}
 
       {/* ── Hero cálido, sin negro ── */}
       <div className="exp-hero-strip">

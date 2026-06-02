@@ -67,6 +67,7 @@ body {
   flex-shrink: 0;
   cursor: pointer;
   letter-spacing: -.5px;
+  min-width: 160px;
 }
 
 .ad-nav-brand::before {
@@ -103,6 +104,8 @@ body {
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  min-width: 160px;
+  justify-content: flex-end;
 }
 
 .ad-nav-avatar-wrapper {

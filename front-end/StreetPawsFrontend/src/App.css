@@ -25,14 +25,12 @@ body {
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
 .app-root {
   width: 100%;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
   overflow-x: hidden;
+  /* Sin display:flex — evita que dos vistas se apilen verticalmente
+     durante el frame de transición entre componentes */
 }

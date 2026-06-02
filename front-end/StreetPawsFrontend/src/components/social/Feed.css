@@ -67,6 +67,7 @@ body {
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
+  min-width: 160px;
 }
 
 .top-navbar .nav-brand::before {

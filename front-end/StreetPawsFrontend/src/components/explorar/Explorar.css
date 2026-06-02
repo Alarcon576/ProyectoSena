@@ -39,6 +39,7 @@ body { font-family: 'Nunito', sans-serif; color: var(--text); background: var(--
   font-size: 20px; font-weight: 900; color: var(--orange);
   display: flex; align-items: center; gap: 6px;
   white-space: nowrap; flex-shrink: 0; cursor: pointer; letter-spacing: -.5px;
+  min-width: 160px;
 }
 .exp-nav-brand::before { content: '🐾'; font-size: 17px; }
 .exp-nav-links { display: flex; gap: 4px; flex: 1; justify-content: center; }
@@ -47,7 +48,7 @@ body { font-family: 'Nunito', sans-serif; color: var(--text); background: var(--
   color: var(--text-2); cursor: pointer; transition: background .15s, color .15s; white-space: nowrap;
 }
 .exp-nav-links span:hover,.exp-nav-links span.active { background: var(--orange-lt); color: var(--orange); }
-.exp-nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.exp-nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; min-width: 160px; justify-content: flex-end; }
 .exp-nav-avatar-wrapper { position: relative; cursor: pointer; }
 .exp-nav-avatar {
   width: 36px; height: 36px; border-radius: 50%; background: var(--orange); color: #fff;

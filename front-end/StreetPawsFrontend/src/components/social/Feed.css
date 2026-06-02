@@ -1513,17 +1513,25 @@ input::placeholder, textarea::placeholder {
   /* Buscador oculto en móvil */
   .top-navbar .nav-search input { display: none; }
 
+  /* nav-search: botones de acción comprimidos */
   .top-navbar .nav-search {
-    gap: 6px;
+    gap: 4px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
   }
 
+  /* Links: no crecen más allá de lo justo */
+  .top-navbar .nav-links {
+    flex: 0 1 auto;
+  }
+
+  /* Botones de acción: tamaño reducido uniforme */
   .nav-avatar {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     font-size: 12px;
+    flex-shrink: 0;
   }
 
   .dropdown-avatar {
@@ -1534,9 +1542,29 @@ input::placeholder, textarea::placeholder {
 
   .btn-sidebar-toggle {
     display: flex;
-    width: 34px;
-    height: 34px;
-    font-size: 16px;
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  /* Notificaciones: mismo tamaño que los demás botones */
+  .btn-notificaciones {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 15px !important;
+    flex-shrink: 0;
+  }
+
+  .notificaciones-wrapper {
+    flex-shrink: 0;
+  }
+
+  /* Dropdown de notificaciones: posición fija para no romperse */
+  .dropdown-notificaciones {
+    top: 60px;
+    right: 4px;
+    width: min(320px, calc(100vw - 16px));
   }
 
   /* ── LAYOUT: solo columna de feed ── */
@@ -1660,8 +1688,10 @@ input::placeholder, textarea::placeholder {
     padding: 6px 6px;
   }
 
-  .nav-avatar { width: 30px; height: 30px; font-size: 11px; }
-  .btn-sidebar-toggle { width: 30px; height: 30px; font-size: 14px; }
+  .nav-avatar { width: 28px; height: 28px; font-size: 11px; }
+  .btn-sidebar-toggle { width: 28px; height: 28px; font-size: 13px; }
+  .btn-notificaciones { width: 28px !important; height: 28px !important; font-size: 14px !important; }
+  .top-navbar .nav-search { gap: 3px; }
 
   .post-actions button { font-size: 12px; padding: 7px 4px; }
   .avatar-mini { width: 38px; height: 38px; font-size: 14px; }
@@ -1982,169 +2012,9 @@ input::placeholder, textarea::placeholder {
   border-radius: 99px;
 }
 
-.btn-notificaciones {
-  position: relative;
-  width: 38px;
-  height: 38px;
-
-  border: none;
-  border-radius: 50%;
-
-  background: #fff3e8;
-
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 18px;
-
-  transition: 0.2s;
-}
-
-.btn-notificaciones:hover {
-  background: #ffe0c4;
-}
-
-.badge-notificaciones {
-  position: absolute;
-
-  top: -4px;
-  right: -2px;
-
-  min-width: 18px;
-  height: 18px;
-
-  border-radius: 999px;
-
-  background: #e53935;
-  color: white;
-
-  font-size: 11px;
-  font-weight: 700;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0 5px;
-}
-.dropdown-notificaciones {
-  position: absolute;
-
-  top: 50px;
-  right: 0;
-
-  width: 340px;
-  max-height: 420px;
-
-  overflow-y: auto;
-
-  background: white;
-
-  border-radius: 16px;
-
-  box-shadow: 0 8px 30px rgba(0,0,0,.15);
-
-  z-index: 999;
-}
-
-.notificacion-item {
-  padding: 14px;
-  border-bottom: 1px solid #eee;
-
-  cursor: pointer;
-}
-
-.notificacion-item:hover {
-  background: #fafafa;
-}
-
-.notificacion-item.no-leida {
-  background: #fff8f1;
-}
-
-.notificaciones-wrapper {
-  position: relative;
-}
-
-.btn-notificaciones {
-  position: relative;
-
-  width: 40px;
-  height: 40px;
-
-  border: none;
-  border-radius: 50%;
-
-  background: #fff3e8;
-
-  cursor: pointer;
-
-  font-size: 18px;
-}
-
-.badge-notificaciones {
-  position: absolute;
-
-  top: -4px;
-  right: -4px;
-
-  min-width: 18px;
-  height: 18px;
-
-  border-radius: 999px;
-
-  background: #e53935;
-  color: white;
-
-  font-size: 11px;
-  font-weight: 700;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dropdown-notificaciones {
-  position: absolute;
-
-  top: 50px;
-  right: 0;
-
-  width: 340px;
-  max-height: 400px;
-
-  overflow-y: auto;
-
-  background: white;
-
-  border-radius: 16px;
-
-  box-shadow:
-    0 8px 30px rgba(0,0,0,.15);
-
-  z-index: 9999;
-}
-
-.notificacion-item {
-  padding: 14px;
-
-  border-bottom:
-    1px solid #eee;
-
-  cursor: pointer;
-}
-
-.notificacion-item:hover {
-  background: #fafafa;
-}
-
-.notificacion-item.no-leida {
-  background: #fff8f1;
-}
-
+/* ════════════════════════════════════════
+   NOTIFICACIONES — definición única limpia
+════════════════════════════════════════ */
 .notificaciones-wrapper {
   position: relative;
   flex-shrink: 0;
@@ -2152,8 +2022,8 @@ input::placeholder, textarea::placeholder {
 
 .btn-notificaciones {
   position: relative;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: 50%;
   background: #fff3e8;
@@ -2161,7 +2031,8 @@ input::placeholder, textarea::placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 17px;
+  flex-shrink: 0;
   transition: background 0.2s;
   color: inherit;
 }
@@ -2197,11 +2068,17 @@ input::placeholder, textarea::placeholder {
   overflow-y: auto;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px rgba(0,0,0,.15);
   border: 1px solid #e4e6ea;
   z-index: 9999;
   animation: fadeDown 0.18s ease;
+  scrollbar-width: thin;
+  scrollbar-color: #ffd4a0 transparent;
 }
+
+.dropdown-notificaciones::-webkit-scrollbar { width: 4px; }
+.dropdown-notificaciones::-webkit-scrollbar-track { background: transparent; }
+.dropdown-notificaciones::-webkit-scrollbar-thumb { background: #ffd4a0; border-radius: 99px; }
 
 .notificacion-item {
   padding: 14px;
@@ -2209,17 +2086,9 @@ input::placeholder, textarea::placeholder {
   cursor: pointer;
 }
 
-.notificacion-item:last-child {
-  border-bottom: none;
-}
-
-.notificacion-item:hover {
-  background: #fafafa;
-}
-
-.notificacion-item.no-leida {
-  background: #fff8f1;
-}
+.notificacion-item:last-child { border-bottom: none; }
+.notificacion-item:hover      { background: #fafafa; }
+.notificacion-item.no-leida   { background: #fff8f1; }
 
 .notificacion-item strong {
   display: block;

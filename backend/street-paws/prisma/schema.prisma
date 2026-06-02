@@ -1,116 +1,124 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
- 
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
 model Roles {
-  id_rol   Int      @id @default(autoincrement())
+  id_rol   Int       @id @default(autoincrement())
   rol      String
   usuarios Usuario[]
 }
 
 model Usuario {
-  id_usuario      Int       @id @default(autoincrement())
-  nombre          String
-  direccion       String
-  telefono        String
-  email           String    @unique
-  contrasena      String
-  fecha_registro  DateTime
-  resetToken    String?
-  resetTokenExp DateTime?
-  foto_perfil   String?
-
-  id_rol          Int
-  rol             Roles     @relation(fields: [id_rol], references: [id_rol])
-
-  publicaciones   Publicacion[]
-  comentarios     Comentario[]
-  likes           Like[]
-  solicitudes     Solicitud_Adopcion[]
+  id_usuario     Int                  @id @default(autoincrement())
+  nombre         String
+  direccion      String
+  telefono       String
+  email          String               @unique
+  contrasena     String
+  fecha_registro DateTime
+  id_rol         Int
+  foto_perfil    String?
+  resetToken     String?
+  resetTokenExp  DateTime?
+  comentarios    Comentario[]
+  Favorito       Favorito[]
   historialSalud Historial_IA_Salud[]
+  likes          Like[]
+  publicaciones  Publicacion[]
+  solicitudes    Solicitud_Adopcion[]
+  rol            Roles                @relation(fields: [id_rol], references: [id_rol])
 }
-model Publicacion {
-  id_publicacion     Int       @id @default(autoincrement())
-  id_usuario         Int
-  contenido_texto    String
-  fecha_publicacion  DateTime
 
-  usuario     Usuario    @relation(fields: [id_usuario], references: [id_usuario])
-  comentarios  Comentario[]
-  likes        Like[]
-  imagenes     Imagen_Post[]
+model Publicacion {
+  id_publicacion    Int           @id @default(autoincrement())
+  id_usuario        Int
+  contenido_texto   String
+  fecha_publicacion DateTime
+  comentarios       Comentario[]
+  imagenes          Imagen_Post[]
+  likes             Like[]
+  usuario           Usuario       @relation(fields: [id_usuario], references: [id_usuario])
 }
 
 model Comentario {
-  id_comentario    Int       @id @default(autoincrement())
+  id_comentario    Int         @id @default(autoincrement())
   id_publicacion   Int
   id_usuario       Int
   contenido        String
   fecha_comentario DateTime
-
-  publicacion Publicacion @relation(fields: [id_publicacion], references: [id_publicacion])
-  usuario     Usuario     @relation(fields: [id_usuario], references: [id_usuario])
+  publicacion      Publicacion @relation(fields: [id_publicacion], references: [id_publicacion])
+  usuario          Usuario     @relation(fields: [id_usuario], references: [id_usuario])
 }
 
 model Like {
-  id_like       Int      @id @default(autoincrement())
+  id_like        Int         @id @default(autoincrement())
   id_publicacion Int
   id_usuario     Int
   fecha_like     DateTime
-
-  publicacion Publicacion @relation(fields: [id_publicacion], references: [id_publicacion])
-  usuario     Usuario     @relation(fields: [id_usuario], references: [id_usuario])
+  publicacion    Publicacion @relation(fields: [id_publicacion], references: [id_publicacion])
+  usuario        Usuario     @relation(fields: [id_usuario], references: [id_usuario])
 }
 
 model Imagen_Post {
-  id_imagen      Int    @id @default(autoincrement())
+  id_imagen      Int         @id @default(autoincrement())
   id_publicacion Int
   url_imagen     String
-
-  publicacion Publicacion @relation(fields: [id_publicacion], references: [id_publicacion])
+  publicacion    Publicacion @relation(fields: [id_publicacion], references: [id_publicacion])
 }
 
 model Mascota {
-  id_mascota        Int      @id @default(autoincrement())
-  nombre           String
-  especie          String
-  raza             String
-  edad             Int
-  sexo             String
-  estado_salud     String
-  fecha_ingreso    DateTime
-  estado_adopcion  String
+  id_mascota        Int                  @id @default(autoincrement())
+  nombre            String
+  especie           String
+  raza              String
+  edad              Int
+  sexo              String
+  estado_salud      String
+  fecha_ingreso     DateTime
+  estado_adopcion   String
   id_admin_registro Int
-
-  fotos       Foto_Mascota[]
-  solicitudes Solicitud_Adopcion[]
+  Favorito          Favorito[]
+  fotos             Foto_Mascota[]
+  solicitudes       Solicitud_Adopcion[]
 }
 
 model Foto_Mascota {
   id_foto      Int     @id @default(autoincrement())
-  id_mascota    Int
+  id_mascota   Int
   url_foto     String
   es_principal Boolean
-
-  mascota Mascota @relation(fields: [id_mascota], references: [id_mascota])
+  mascota      Mascota @relation(fields: [id_mascota], references: [id_mascota])
 }
 
 model Solicitud_Adopcion {
-  id_solicitud  Int      @id @default(autoincrement())
-  id_usuario    Int
-  id_mascota     Int
+  id_solicitud    Int                  @id @default(autoincrement())
+  id_usuario      Int
+  id_mascota      Int
   fecha_solicitud DateTime
-  estado        String
-  notas         String?
+  estado          String
+  notas           String?
+  formulario      Formulario_Adopcion?
+  mascota         Mascota              @relation(fields: [id_mascota], references: [id_mascota])
+  usuario         Usuario              @relation(fields: [id_usuario], references: [id_usuario])
+}
 
-  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
-  mascota  Mascota  @relation(fields: [id_mascota], references: [id_mascota])
+model Formulario_Adopcion {
+  id_formulario        Int                @id @default(autoincrement())
+  id_solicitud         Int                @unique
+  nombre_completo      String
+  telefono             String
+  correo               String
+  direccion            String
+  tipo_vivienda        String
+  experiencia_mascotas String
+  motivo_adopcion      String
+  fecha_creacion       DateTime           @default(now())
+  solicitud            Solicitud_Adopcion @relation(fields: [id_solicitud], references: [id_solicitud])
 }
 
 model Historial_IA_Salud {
@@ -120,6 +128,16 @@ model Historial_IA_Salud {
   consulta     String
   respuesta    String
   fecha        DateTime @default(now())
+  usuario      Usuario  @relation(fields: [id_usuario], references: [id_usuario])
+}
 
-  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+model Favorito {
+  id_favorito Int      @id @default(autoincrement())
+  id_usuario  Int
+  id_mascota  Int
+  fecha       DateTime @default(now())
+  Mascota     Mascota  @relation(fields: [id_mascota], references: [id_mascota])
+  Usuario     Usuario  @relation(fields: [id_usuario], references: [id_usuario])
+
+  @@unique([id_usuario, id_mascota])
 }

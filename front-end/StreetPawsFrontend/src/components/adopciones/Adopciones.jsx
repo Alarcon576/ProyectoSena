@@ -136,14 +136,12 @@ function Adopciones({ onSwitch, user }) {
     );
   });
 
-  const mascotasOrdenadas = [
-    ...mascotasFiltradas.filter(
-      m => m.estado_adopcion?.toLowerCase() === "disponible"
-    ),
-    ...mascotasFiltradas.filter(
-      m => m.estado_adopcion?.toLowerCase() !== "disponible"
-    ),
-  ];
+ const mascotasOrdenadas = mascotasFiltradas.filter(
+  m =>
+    m.estado_adopcion
+      ?.toLowerCase()
+      .trim() === "disponible"
+);
 
   return (
     <>

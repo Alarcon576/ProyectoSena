@@ -30,9 +30,24 @@ function Mascotas({ onSwitch, user, embebido = false }) {
 
   const cargarMascotas = async () => {
     try {
-      const res = await fetch(URL);
-      const data = await res.json();
-      setMascotas(data);
+     const data = await res.json();
+
+if (!esAdmin) {
+
+  const disponibles = data.filter(
+    (m) =>
+      m.estado_adopcion
+        ?.toLowerCase()
+        .trim() === "disponible"
+  );
+
+  setMascotas(disponibles);
+
+} else {
+
+  setMascotas(data);
+
+}
     } catch {
       console.error("Error DB");
     }

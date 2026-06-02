@@ -110,6 +110,37 @@ const [postObjetivo, setPostObjetivo] = useState(null);
   }
 };
 
+const marcarNotificacionLeida = async (id) => {
+  try {
+
+    await fetch(
+      `https://proyectosena-production-4ad5.up.railway.app/api/notificaciones/${id}/leida`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    setNotificaciones((prev) =>
+      prev.map((n) =>
+        n.id_notificacion === id
+          ? { ...n, leida: true }
+          : n
+      )
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Error marcando notificación:",
+      error
+    );
+
+  }
+};
+
   useEffect(() => {
     const hoy = new Date();
     const indice = (hoy.getDate() + hoy.getMonth() + hoy.getFullYear()) % TIPS.length;
@@ -706,29 +737,33 @@ useEffect(() => {
                 ? "no-leida"
                 : ""
             }`}
-            onClick={() => {
+            onClick={async () => {
 
-              if (n.referencia_id) {
+  await marcarNotificacionLeida(
+    n.id_notificacion
+  );
 
-                const elemento =
-                  document.getElementById(
-                    `post-${n.referencia_id}`
-                  );
+  if (n.referencia_id) {
 
-                if (elemento) {
+    const elemento =
+      document.getElementById(
+        `post-${n.referencia_id}`
+      );
 
-                  elemento.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                  });
+    if (elemento) {
 
-                }
+      elemento.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
 
-              }
+    }
 
-              setMostrarNotificaciones(false);
+  }
 
-            }}
+  setMostrarNotificaciones(false);
+
+}}
           >
 
             <strong>

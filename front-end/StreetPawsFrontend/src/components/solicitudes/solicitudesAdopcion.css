@@ -163,9 +163,138 @@
     font-style: italic;
 }
 
+/* ── Botón Ver formulario ── */
+.ts-btn-ver-formulario {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1.5px solid #f28c28;
+    background: #fff7ed;
+    color: #b45309;
+    padding: 6px 13px;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.2s,
+        color 0.2s,
+        transform 0.1s,
+        box-shadow 0.2s;
+    white-space: nowrap;
+}
+
+.ts-btn-ver-formulario:hover {
+    background: #f28c28;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(242, 140, 40, 0.3);
+}
+
+.ts-btn-ver-formulario--full {
+    width: 100%;
+    justify-content: center;
+}
+
+.ts-btn-ver-icon {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
 /* ── Cards móvil (ocultas en desktop) ── */
 .ts-cards-mobile {
     display: none;
+}
+
+/* ════════════════════════════════════════
+   MODAL SOLO LECTURA
+════════════════════════════════════════ */
+
+.adopt-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+    animation: ts-fade-in 0.2s ease;
+}
+
+@keyframes ts-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Insignia "Solo lectura" */
+.vf-readonly-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f1f5f9;
+    border: 1.5px solid #cbd5e1;
+    color: #475569;
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 50px;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+}
+
+/* Badge de estado dentro del preview de mascota */
+.vf-estado-badge {
+    margin-left: auto;
+}
+
+/* Fecha de envío en el pie */
+.vf-fecha-envio {
+    font-size: 0.78rem;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── Bloqueo visual de inputs, selects y textareas ── */
+.vf-readonly .formulario-grid input:disabled,
+.vf-readonly .formulario-grid select:disabled,
+.vf-readonly .formulario-grid textarea:disabled {
+    background: #f8f8f8;
+    color: #1a1a1a;
+    border-color: #e8e8e8;
+    cursor: default;
+    opacity: 1;
+    -webkit-text-fill-color: #1a1a1a;
+    pointer-events: none;
+}
+
+.vf-readonly .formulario-grid {
+    cursor: default;
+    user-select: text;
+}
+
+.vf-readonly .formulario-grid input:disabled:focus,
+.vf-readonly .formulario-grid select:disabled:focus,
+.vf-readonly .formulario-grid textarea:disabled:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Pie del modal con espacio entre fecha y botón */
+.vf-readonly .solicitud-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 /* ════════════════════════════════════════
@@ -182,7 +311,6 @@
 ════════════════════════════════════════ */
 @media (max-width: 640px) {
 
-    /* Ocultar tabla, mostrar cards */
     .ts-table-wrapper {
         background: transparent;
         box-shadow: none;
@@ -288,5 +416,25 @@
         flex: 1;
         text-align: center;
         margin-right: 0;
+    }
+
+    .adopt-modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .adopt-modal-solicitud {
+        border-radius: 20px 20px 0 0;
+        max-height: 92vh;
+    }
+
+    .vf-readonly .solicitud-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .vf-readonly .solicitud-actions .btn-cancelar-solicitud {
+        width: 100%;
+        text-align: center;
     }
 }

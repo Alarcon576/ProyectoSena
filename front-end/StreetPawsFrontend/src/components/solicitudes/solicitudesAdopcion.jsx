@@ -11,6 +11,8 @@ function ModalVerFormulario({ solicitud, onClose }) {
   if (!solicitud) return null;
 
   const mascota = solicitud.mascota;
+  // ← Los datos del formulario vienen en solicitud.formulario
+  const f = solicitud.formulario;
 
   const getEdadTexto = (edad) => {
     if (!edad && edad !== 0) return "";
@@ -25,12 +27,8 @@ function ModalVerFormulario({ solicitud, onClose }) {
         className="adopt-modal-solicitud formulario-adopcion vf-readonly"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Botón cerrar */}
-        <button className="adopt-modal-close" onClick={onClose}>
-          ✕
-        </button>
+        <button className="adopt-modal-close" onClick={onClose}>✕</button>
 
-        {/* Insignia solo lectura */}
         <div className="vf-readonly-badge">
           <span>👁 Solo lectura</span>
         </div>
@@ -50,101 +48,70 @@ function ModalVerFormulario({ solicitud, onClose }) {
             <strong>{mascota?.nombre || `#${solicitud.id_mascota}`}</strong>
             <span>
               {mascota?.raza}
-              {mascota?.edad !== undefined
-                ? ` · ${getEdadTexto(mascota.edad)}`
-                : ""}
+              {mascota?.edad !== undefined ? ` · ${getEdadTexto(mascota.edad)}` : ""}
             </span>
           </div>
-          {/* Badge estado */}
-          <span
-            className={`ts-badge ts-badge--${solicitud.estado?.toLowerCase()} vf-estado-badge`}
-          >
+          <span className={`ts-badge ts-badge--${solicitud.estado?.toLowerCase()} vf-estado-badge`}>
             {solicitud.estado}
           </span>
         </div>
 
-        {/* Grid de campos — idéntico al formulario original, todos disabled */}
-        <div className="formulario-grid">
-          <div className="input-group">
-            <label>Nombre completo</label>
-            <input
-              type="text"
-              value={solicitud.nombre_completo || ""}
-              disabled
-              readOnly
-            />
+        {/* Si no hay formulario */}
+        {!f ? (
+          <div style={{ padding: "24px", textAlign: "center", color: "#888" }}>
+            <p>Esta solicitud no tiene formulario adjunto.</p>
           </div>
-
-          <div className="input-group">
-            <label>Teléfono</label>
-            <input
-              type="text"
-              value={solicitud.telefono || ""}
-              disabled
-              readOnly
-            />
-          </div>
-
-          <div className="input-group">
-            <label>Correo electrónico</label>
-            <input
-              type="email"
-              value={solicitud.correo || ""}
-              disabled
-              readOnly
-            />
-          </div>
-
-          <div className="input-group">
-            <label>Dirección</label>
-            <input
-              type="text"
-              value={solicitud.direccion || ""}
-              disabled
-              readOnly
-            />
-          </div>
-
-          <div className="input-group">
-            <label>Tipo de vivienda</label>
-            <select value={solicitud.tipo_vivienda || ""} disabled>
-              <option value="">Selecciona</option>
-              <option value="Casa">Casa</option>
-              <option value="Apartamento">Apartamento</option>
-              <option value="Finca">Finca</option>
-            </select>
-          </div>
-
-          <div className="input-group full-width">
-            <label>¿Has tenido mascotas antes?</label>
-            <textarea
-              rows={3}
-              value={solicitud.experiencia_mascotas || ""}
-              disabled
-              readOnly
-            />
-          </div>
-
-          <div className="input-group full-width">
-            <label>¿Por qué deseas adoptar?</label>
-            <textarea
-              rows={4}
-              value={solicitud.motivo_adopcion || ""}
-              disabled
-              readOnly
-            />
-          </div>
-
-          {/* Notas de la solicitud si existen */}
-          {solicitud.notas && (
-            <div className="input-group full-width">
-              <label>Notas adicionales</label>
-              <textarea rows={2} value={solicitud.notas} disabled readOnly />
+        ) : (
+          <div className="formulario-grid">
+            <div className="input-group">
+              <label>Nombre completo</label>
+              <input type="text" value={f.nombre_completo || ""} disabled readOnly />
             </div>
-          )}
-        </div>
 
-        {/* Pie */}
+            <div className="input-group">
+              <label>Teléfono</label>
+              <input type="text" value={f.telefono || ""} disabled readOnly />
+            </div>
+
+            <div className="input-group">
+              <label>Correo electrónico</label>
+              <input type="email" value={f.correo || ""} disabled readOnly />
+            </div>
+
+            <div className="input-group">
+              <label>Dirección</label>
+              <input type="text" value={f.direccion || ""} disabled readOnly />
+            </div>
+
+            <div className="input-group">
+              <label>Tipo de vivienda</label>
+              <select value={f.tipo_vivienda || ""} disabled>
+                <option value="">Selecciona</option>
+                <option value="Casa">Casa</option>
+                <option value="Apartamento">Apartamento</option>
+                <option value="Finca">Finca</option>
+              </select>
+            </div>
+
+            <div className="input-group full-width">
+              <label>¿Has tenido mascotas antes?</label>
+              <textarea rows={3} value={f.experiencia_mascotas || ""} disabled readOnly />
+            </div>
+
+            <div className="input-group full-width">
+              <label>¿Por qué deseas adoptar?</label>
+              <textarea rows={4} value={f.motivo_adopcion || ""} disabled readOnly />
+            </div>
+
+            {solicitud.notas && (
+              <div className="input-group full-width">
+                <label>Notas adicionales</label>
+                <textarea rows={2} value={solicitud.notas} disabled readOnly />
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="solicitud-actions">
           <span className="vf-fecha-envio">
             📅 Enviado el{" "}
@@ -243,21 +210,19 @@ function TablaSolicitudes({ token }) {
                   <td>{sol.mascota?.nombre || `#${sol.id_mascota}`}</td>
                   <td>{sol.usuario?.nombre || `#${sol.id_usuario}`}</td>
                   <td>{new Date(sol.fecha_solicitud).toLocaleDateString()}</td>
-
-                  {/* ── Columna Detalles ── */}
                   <td>
                     <button
                       className="ts-btn-ver-formulario"
                       onClick={() => setSolicitudVista(sol)}
+                      disabled={!sol.formulario}
+                      title={!sol.formulario ? "Sin formulario" : "Ver formulario"}
                     >
-                      <span className="ts-btn-ver-icon">📋</span> Formulario
+                      <span className="ts-btn-ver-icon">📋</span>
+                      {sol.formulario ? "Formulario" : "Sin formulario"}
                     </button>
                   </td>
-
                   <td>
-                    <span
-                      className={`ts-badge ts-badge--${sol.estado?.toLowerCase()}`}
-                    >
+                    <span className={`ts-badge ts-badge--${sol.estado?.toLowerCase()}`}>
                       {sol.estado}
                     </span>
                   </td>
@@ -266,17 +231,13 @@ function TablaSolicitudes({ token }) {
                       <>
                         <button
                           className="ts-btn ts-btn--aceptar"
-                          onClick={() =>
-                            gestionarSolicitud(sol.id_solicitud, "Aceptada")
-                          }
+                          onClick={() => gestionarSolicitud(sol.id_solicitud, "Aceptada")}
                         >
                           Aceptar
                         </button>
                         <button
                           className="ts-btn ts-btn--rechazar"
-                          onClick={() =>
-                            gestionarSolicitud(sol.id_solicitud, "Rechazada")
-                          }
+                          onClick={() => gestionarSolicitud(sol.id_solicitud, "Rechazada")}
                         >
                           Rechazar
                         </button>
@@ -300,21 +261,14 @@ function TablaSolicitudes({ token }) {
               <div className="ts-card-header">
                 <div className="ts-card-avatar">
                   {sol.mascota?.fotos?.[0]?.url_foto ? (
-                    <img
-                      src={sol.mascota.fotos[0].url_foto}
-                      alt={sol.mascota.nombre}
-                    />
-                  ) : (
-                    "🐾"
-                  )}
+                    <img src={sol.mascota.fotos[0].url_foto} alt={sol.mascota.nombre} />
+                  ) : "🐾"}
                 </div>
                 <div className="ts-card-title">
                   <strong>{sol.mascota?.nombre || `#${sol.id_mascota}`}</strong>
                   <span>{sol.usuario?.nombre || `#${sol.id_usuario}`}</span>
                 </div>
-                <span
-                  className={`ts-badge ts-badge--${sol.estado?.toLowerCase()}`}
-                >
+                <span className={`ts-badge ts-badge--${sol.estado?.toLowerCase()}`}>
                   {sol.estado}
                 </span>
               </div>
@@ -329,25 +283,23 @@ function TablaSolicitudes({ token }) {
               <button
                 className="ts-btn-ver-formulario ts-btn-ver-formulario--full"
                 onClick={() => setSolicitudVista(sol)}
+                disabled={!sol.formulario}
               >
-                <span className="ts-btn-ver-icon">📋</span> Ver formulario
+                <span className="ts-btn-ver-icon">📋</span>
+                {sol.formulario ? "Ver formulario" : "Sin formulario"}
               </button>
 
               {sol.estado === "Pendiente" && (
                 <div className="ts-card-footer">
                   <button
                     className="ts-btn ts-btn--aceptar"
-                    onClick={() =>
-                      gestionarSolicitud(sol.id_solicitud, "Aceptada")
-                    }
+                    onClick={() => gestionarSolicitud(sol.id_solicitud, "Aceptada")}
                   >
                     Aceptar
                   </button>
                   <button
                     className="ts-btn ts-btn--rechazar"
-                    onClick={() =>
-                      gestionarSolicitud(sol.id_solicitud, "Rechazada")
-                    }
+                    onClick={() => gestionarSolicitud(sol.id_solicitud, "Rechazada")}
                   >
                     Rechazar
                   </button>
@@ -358,7 +310,6 @@ function TablaSolicitudes({ token }) {
         </div>
       </div>
 
-      {/* Modal global */}
       {solicitudVista && (
         <ModalVerFormulario
           solicitud={solicitudVista}

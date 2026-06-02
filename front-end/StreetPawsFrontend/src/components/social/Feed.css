@@ -1461,37 +1461,38 @@ input::placeholder, textarea::placeholder {
   html, body { overflow-x: hidden; }
 
   /* ──────────────────────────────────────
-     NAVBAR MÓVIL — solo texto, sin emojis
+     NAVBAR MÓVIL — sin emoji brand, todo compacto
   ────────────────────────────────────── */
   .top-navbar {
     height: 60px;
-    padding: 0 10px;
-    gap: 4px;
+    padding: 0 8px;
+    gap: 2px;
   }
 
   .top-navbar .nav-brand {
-    font-size: 15px;
-    gap: 4px;
+    font-size: 14px;
+    gap: 0;
     flex-shrink: 0;
   }
 
+  /* Sin emoji de patas en móvil */
   .top-navbar .nav-brand::before {
-    font-size: 16px;
+    content: none;
   }
 
-  /* Links: texto horizontal compacto (sin emoji, sin reducir letra) */
+  /* Links: texto compacto sin emojis */
   .top-navbar .nav-links {
     display: flex;
-    gap: 2px;
+    gap: 1px;
     flex: 1;
     justify-content: center;
     flex-wrap: nowrap;
   }
 
   .top-navbar .nav-links span {
-    padding: 6px 8px;
+    padding: 6px 7px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: #65676b;
     cursor: pointer;
@@ -1499,7 +1500,6 @@ input::placeholder, textarea::placeholder {
     transition: background 0.15s, color 0.15s;
   }
 
-  /* Sin emojis en el menú */
   .top-navbar .nav-links span:nth-child(1)::before,
   .top-navbar .nav-links span:nth-child(2)::before,
   .top-navbar .nav-links span:nth-child(3)::before { content: none; }
@@ -1513,17 +1513,12 @@ input::placeholder, textarea::placeholder {
   /* Buscador oculto en móvil */
   .top-navbar .nav-search input { display: none; }
 
-  /* nav-search: botones de acción comprimidos */
+  /* nav-search: botones de acción compactos */
   .top-navbar .nav-search {
     gap: 4px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
-  }
-
-  /* Links: no crecen más allá de lo justo */
-  .top-navbar .nav-links {
-    flex: 0 1 auto;
   }
 
   /* Botones de acción: tamaño reducido uniforme */
@@ -1548,7 +1543,7 @@ input::placeholder, textarea::placeholder {
     flex-shrink: 0;
   }
 
-  /* Notificaciones: mismo tamaño que los demás botones */
+  /* Notificaciones: mismo tamaño */
   .btn-notificaciones {
     width: 30px !important;
     height: 30px !important;
@@ -1560,7 +1555,7 @@ input::placeholder, textarea::placeholder {
     flex-shrink: 0;
   }
 
-  /* Dropdown de notificaciones: posición fija para no romperse */
+  /* Dropdown de notificaciones */
   .dropdown-notificaciones {
     top: 60px;
     right: 4px;
@@ -1688,10 +1683,11 @@ input::placeholder, textarea::placeholder {
     padding: 6px 6px;
   }
 
-  .nav-avatar { width: 28px; height: 28px; font-size: 11px; }
-  .btn-sidebar-toggle { width: 28px; height: 28px; font-size: 13px; }
-  .btn-notificaciones { width: 28px !important; height: 28px !important; font-size: 14px !important; }
-  .top-navbar .nav-search { gap: 3px; }
+  .nav-avatar { width: 30px; height: 30px; font-size: 11px; }
+  .btn-sidebar-toggle { width: 30px; height: 30px; font-size: 14px; }
+  .btn-notificaciones { width: 30px !important; height: 30px !important; font-size: 14px !important; }
+  .top-navbar .nav-search { gap: 4px; }
+  .top-navbar { padding: 0 8px; }
 
   .post-actions button { font-size: 12px; padding: 7px 4px; }
   .avatar-mini { width: 38px; height: 38px; font-size: 14px; }

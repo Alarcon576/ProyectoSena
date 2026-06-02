@@ -42,6 +42,9 @@ function Adopciones({ onSwitch, user }) {
 
   const token   = localStorage.getItem("token");
   const esAdmin = user?.rol === 2;
+  console.log("USER:", user);
+console.log("ROL:", user?.rol);
+console.log("ID_ROL:", user?.id_rol);
 
   const hayFiltros = busqueda || filtroEspecie !== "Todos" || filtroEdad !== "Todos"
     || filtroTamanio !== "Todos" || filtroGenero !== "Todos";
@@ -64,18 +67,30 @@ function Adopciones({ onSwitch, user }) {
     return () => document.removeEventListener("click", c);
   }, []);
 
-  const cargarMascotas = async () => {
+const cargarMascotas = async () => {
+  try {
+
     setLoading(true);
-    try {
-      const res  = await fetch(URL_MASCOTAS);
-      const data = await res.json();
-      setMascotas(Array.isArray(data) ? data : []);
-    } catch {
-      setMascotas([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+    const res = await fetch(URL_MASCOTAS);
+
+    const data = await res.json();
+
+    setMascotas(data);
+
+  } catch (error) {
+
+    console.error(
+      "ERROR COMPLETO:",
+      error
+    );
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
 
   const cargarUsuarioActual = async () => {
     try {
@@ -136,12 +151,14 @@ function Adopciones({ onSwitch, user }) {
     );
   });
 
- const mascotasOrdenadas = mascotasFiltradas.filter(
-  m =>
-    m.estado_adopcion
-      ?.toLowerCase()
-      .trim() === "disponible"
-);
+ const mascotasOrdenadas = esAdmin
+  ? mascotasFiltradas
+  : mascotasFiltradas.filter(
+      (m) =>
+        m.estado_adopcion
+          ?.toLowerCase()
+          .trim() === "disponible"
+    );
 
   return (
     <>

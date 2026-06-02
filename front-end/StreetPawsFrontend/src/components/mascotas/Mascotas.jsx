@@ -28,31 +28,21 @@ function Mascotas({ onSwitch, user, embebido = false }) {
   const token = localStorage.getItem("token");
   const esAdmin = user?.rol === 2;
 
-  const cargarMascotas = async () => {
-    try {
-     const data = await res.json();
+ const cargarMascotas = async () => {
+  try {
 
-if (!esAdmin) {
+    const res = await fetch(URL);
 
-  const disponibles = data.filter(
-    (m) =>
-      m.estado_adopcion
-        ?.toLowerCase()
-        .trim() === "disponible"
-  );
+    const data = await res.json();
 
-  setMascotas(disponibles);
+    setMascotas(data);
 
-} else {
+  } catch (error) {
 
-  setMascotas(data);
+    console.error("Error DB:", error);
 
-}
-    } catch {
-      console.error("Error DB");
-    }
-  };
-
+  }
+};
   useEffect(() => {
     cargarMascotas();
   }, []);

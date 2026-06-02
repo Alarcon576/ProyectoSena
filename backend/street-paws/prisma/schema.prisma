@@ -144,15 +144,20 @@ model Favorito {
 }
 
 model Notificacion {
-  id_notificacion Int      @id @default(autoincrement())
-  id_usuario      Int
+  id_notificacion Int @id @default(autoincrement())
 
-  titulo          String
-  mensaje         String
-  tipo            String
+  id_usuario Int
 
-  leida           Boolean  @default(false)
-  fecha           DateTime @default(now())
+  titulo String
+  mensaje String
 
-  usuario         Usuario  @relation(fields: [id_usuario], references: [id_usuario])
+  tipo String
+
+  referencia_id Int?
+
+  leida Boolean @default(false)
+
+  fecha DateTime @default(now())
+
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
 }

@@ -143,7 +143,8 @@ export const toggleLike = async (req, res) => {
         publicacion.id_usuario,
         "❤️ Nuevo Like",
         "Alguien dio like a tu publicación",
-        "LIKE"
+        "LIKE",
+        id_publicacion
       );
     }
 
@@ -247,7 +248,8 @@ export const crearComentario = async (
         publicacion.id_usuario,
         "💬 Nuevo comentario",
         "Han comentado tu publicación",
-        "COMENTARIO"
+        "COMENTARIO",
+        id_publicacion
       );
     }
 

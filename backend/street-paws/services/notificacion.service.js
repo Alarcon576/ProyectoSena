@@ -6,14 +6,16 @@ export const crearNotificacion = async (
   id_usuario,
   titulo,
   mensaje,
-  tipo
+  tipo,
+  referencia_id = null
 ) => {
   return prisma.notificacion.create({
     data: {
       id_usuario,
       titulo,
       mensaje,
-      tipo
+      tipo,
+      referencia_id
     }
   });
 };

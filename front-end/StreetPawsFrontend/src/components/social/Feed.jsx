@@ -62,6 +62,7 @@ function Feed({ onSwitch }) {
 
   const [notificaciones, setNotificaciones] = useState([]);
 const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
+const [postObjetivo, setPostObjetivo] = useState(null);
 
   const inputImagenRef = useRef(null);
   const token = localStorage.getItem("token");
@@ -157,10 +158,17 @@ const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
     } catch (err) { console.error("Error cargando usuario:", err); }
   };
 
-  useEffect(() => {
+useEffect(() => {
   cargarPosts();
   cargarUsuarioActual();
   cargarNotificaciones();
+
+  const intervalo = setInterval(() => {
+    cargarNotificaciones();
+  }, 10000);
+
+  return () => clearInterval(intervalo);
+
 }, []);
   /* ════ CREAR POST ════ */
   const crearPost = async (e) => {
@@ -658,42 +666,96 @@ const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
             aria-label="Abrir panel lateral" title="IA, Tendencias y más"
           >✦</button>
 
-            <button
+            <div className="notificaciones-wrapper">
+
+  <button
     className="btn-notificaciones"
-    onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}
+    onClick={() =>
+      setMostrarNotificaciones(
+        !mostrarNotificaciones
+      )
+    }
   >
     🔔
 
-    {mostrarNotificaciones && (
-  <div className="dropdown-notificaciones">
-
-    {notificaciones.length === 0 ? (
-      <div className="notificacion-item">
-        No tienes notificaciones
-      </div>
-    ) : (
-      notificaciones.map((n) => (
-        <div
-          key={n.id_notificacion}
-          className={`notificacion-item ${
-            !n.leida ? "no-leida" : ""
-          }`}
-        >
-          <strong>{n.titulo}</strong>
-
-          <p>{n.mensaje}</p>
-
-          <small>
-            {new Date(n.fecha)
-              .toLocaleString()}
-          </small>
-        </div>
-      ))
+    {notificacionesNoLeidas > 0 && (
+      <span className="badge-notificaciones">
+        {notificacionesNoLeidas}
+      </span>
     )}
-
-  </div>
-)}
   </button>
+
+  {mostrarNotificaciones && (
+
+    <div className="dropdown-notificaciones">
+
+      {notificaciones.length === 0 ? (
+
+        <div className="notificacion-item">
+          No tienes notificaciones
+        </div>
+
+      ) : (
+
+        notificaciones.map((n) => (
+
+          <div
+            key={n.id_notificacion}
+            className={`notificacion-item ${
+              !n.leida
+                ? "no-leida"
+                : ""
+            }`}
+            onClick={() => {
+
+              if (n.referencia_id) {
+
+                const elemento =
+                  document.getElementById(
+                    `post-${n.referencia_id}`
+                  );
+
+                if (elemento) {
+
+                  elemento.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                  });
+
+                }
+
+              }
+
+              setMostrarNotificaciones(false);
+
+            }}
+          >
+
+            <strong>
+              {n.titulo}
+            </strong>
+
+            <p>
+              {n.mensaje}
+            </p>
+
+            <small>
+              {new Date(
+                n.fecha
+              ).toLocaleString()}
+            </small>
+
+          </div>
+
+        ))
+
+      )}
+
+    </div>
+
+  )}
+
+</div>
 
           <div className="nav-avatar-wrapper" onClick={(e) => { e.stopPropagation(); setMenuAvatarAbierto((v) => !v); }}>
            
@@ -796,7 +858,7 @@ const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
             const enviando = enviandoComentario === post.id_publicacion;
 
             return (
-              <div className="post-card" key={post.id_publicacion}>
+              <div className="post-card" key={post.id_publicacion}  id={`post-${post.id_publicacion}`}>
                 <div className="post-header">
                   <div className="post-user">
                     <div className="avatar-mini">

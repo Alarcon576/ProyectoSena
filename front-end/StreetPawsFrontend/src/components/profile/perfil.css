@@ -376,9 +376,29 @@
   .perfil-tab { padding: 12px 4px; font-size: .78rem; }
   .perfil-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
 
-  .solicitud-card { padding: 12px; gap: 10px; flex-wrap: wrap; }
-  .solicitud-img { width: 54px; height: 54px; }
-  .solicitud-right { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
+  .solicitud-card {
+    padding: 12px;
+    gap: 12px;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    flex-direction: row;
+  }
+  .solicitud-img { width: 56px; height: 56px; flex-shrink: 0; }
+  .solicitud-info { flex: 1; min-width: 0; }
+  .solicitud-info h4 { font-size: .9rem; }
+  .solicitud-meta { font-size: .74rem; }
+  .solicitud-fecha { font-size: .7rem; }
+  .solicitud-notas { font-size: .74rem; }
+  .solicitud-right {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+    width: auto;
+    justify-content: flex-start;
+  }
+  .solicitud-estado { font-size: .72rem; padding: 4px 10px; }
+  .solicitud-cancelar { font-size: .7rem; padding: 4px 10px; }
 
   .modal-overlay { padding: 12px; }
   .modal-content { padding: 1.5rem; }
@@ -396,6 +416,7 @@
   .stat-card { padding: .65rem .8rem; min-width: 60px; }
   .stat-card strong { font-size: 1.1rem; }
   .stat-card span { font-size: .62rem; }
-  .solicitud-card { flex-direction: column; align-items: flex-start; }
-  .solicitud-right { flex-direction: row; width: 100%; justify-content: space-between; }
+  .solicitud-card { flex-direction: row; align-items: flex-start; flex-wrap: nowrap; }
+  .solicitud-img { width: 48px; height: 48px; }
+  .solicitud-right { flex-direction: column; align-items: flex-end; width: auto; justify-content: flex-start; }
 }

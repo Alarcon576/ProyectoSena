@@ -1217,3 +1217,186 @@ body {
   .ad-nav-brand { min-width: 160px; }
   .ad-nav-right { min-width: 160px; justify-content: flex-end; }
 }
+
+/* ════════════════════════════════════════
+   MODAL PROCESO DE ADOPCIÓN
+════════════════════════════════════════ */
+.adopt-proceso-modal {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  max-width: 520px;
+  width: 100%;
+  padding: 32px 28px 28px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,.18);
+  animation: adMI .2s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.adopt-proceso-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.adopt-proceso-eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--bark);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.adopt-proceso-header h2 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.adopt-proceso-header p {
+  font-size: .88rem;
+  color: var(--text-2);
+  line-height: 1.5;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* Pasos */
+.adopt-proceso-pasos {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.adopt-proceso-paso {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+  padding-bottom: 24px;
+}
+
+.adopt-proceso-paso:last-child {
+  padding-bottom: 0;
+}
+
+.adopt-proceso-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(255,122,0,.3);
+}
+
+.adopt-proceso-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.adopt-proceso-info { flex: 1; min-width: 0; }
+
+.adopt-proceso-info h3 {
+  font-size: .95rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.adopt-proceso-info p {
+  font-size: .82rem;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+/* Línea conectora entre pasos */
+.adopt-proceso-linea {
+  position: absolute;
+  left: 17px;
+  top: 36px;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--orange) 0%, #ffd4a0 100%);
+  opacity: .4;
+}
+
+/* Botón CTA */
+.adopt-proceso-cta {
+  width: 100%;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px;
+  font-size: .95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .2s, transform .1s;
+  box-shadow: 0 4px 14px rgba(255,122,0,.3);
+}
+
+.adopt-proceso-cta:hover {
+  background: var(--orange-dk);
+  transform: translateY(-1px);
+}
+
+/* ════════════════════════════════════════
+   FOOTER — links e instagram
+════════════════════════════════════════ */
+.adopt-footer-link {
+  font-size: .8rem;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: color .15s;
+  text-decoration: none;
+  display: block;
+}
+
+.adopt-footer-link:hover { color: var(--orange); }
+
+.footer-social-btn {
+  background: var(--cream-2);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .2s;
+  color: var(--bark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.footer-social-btn:hover { background: #ffe0b5; }
+
+/* Scrollbar del modal proceso */
+.adopt-proceso-modal::-webkit-scrollbar { width: 4px; }
+.adopt-proceso-modal::-webkit-scrollbar-track { background: transparent; }
+.adopt-proceso-modal::-webkit-scrollbar-thumb { background: #ffd4a0; border-radius: 99px; }
+
+@media (max-width: 480px) {
+  .adopt-proceso-modal { padding: 24px 18px 22px; }
+  .adopt-proceso-header h2 { font-size: 1.25rem; }
+  .adopt-proceso-num { width: 30px; height: 30px; font-size: 11px; }
+  .adopt-proceso-icon { font-size: 1.2rem; }
+  .adopt-proceso-info h3 { font-size: .88rem; }
+  .adopt-proceso-linea { left: 14px; }
+}

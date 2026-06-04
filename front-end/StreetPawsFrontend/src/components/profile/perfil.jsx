@@ -7,7 +7,7 @@ const URL_SOLICITUDES = "https://proyectosena-production-4ad5.up.railway.app/api
 
 const ESTADO_CONFIG = {
   pendiente:  { label: "Pendiente",  color: "#b45309", bg: "#fef3c7" },
-  aprobada:   { label: "Aprobada",   color: "#16a34a", bg: "#dcfce7" },
+  aceptada:   { label: "Aceptada",   color: "#16a34a", bg: "#dcfce7" },
   rechazada:  { label: "Rechazada",  color: "#dc2626", bg: "#fee2e2" },
 };
 
@@ -85,7 +85,7 @@ function Perfil({ onSwitch, userId }) {
   if (!user) return <p className="loading">Cargando perfil...</p>;
 
   const totalLikes     = misPosts.reduce((acc, p) => acc + p.likes.length, 0);
-  const totalAdoptados = solicitudes.filter((s) => s.estado?.toLowerCase() === "aprobada").length;
+  const totalAdoptados = solicitudes.filter((s) => s.estado?.toLowerCase() === "aceptada").length;
 
   return (
     <div style={{ background: 'var(--cream, #faf7f3)', minHeight: '100vh', fontFamily: "'Nunito', sans-serif" }}>
@@ -124,7 +124,6 @@ function Perfil({ onSwitch, userId }) {
           </div>
 
           <h2 className="perfil-nombre">{user.nombre}</h2>
-          <p className="perfil-ubicacion">📍 Mi casa</p>
 
           {/* ── Descripción: real si existe, vacío si no ── */}
           {user.descripcion ? (

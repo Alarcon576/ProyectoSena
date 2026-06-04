@@ -6,12 +6,12 @@ const URL_PROFILE = "https://proyectosena-production-4ad5.up.railway.app/api/pro
 function Configuracion({ onSwitch }) {
   const token = localStorage.getItem("token");
 
-  const [tab, setTab] = useState("perfil"); // "perfil" | "password"
+  const [tab, setTab] = useState("perfil");
   const [cargandoPerfil, setCargandoPerfil] = useState(true);
 
   // ── Datos de perfil ──
   const [form, setForm] = useState({
-    nombre: "", email: "", telefono: "", direccion: "",
+    nombre: "", email: "", telefono: "", direccion: "", descripcion: "",
   });
   const [guardando, setGuardando] = useState(false);
   const [okPerfil, setOkPerfil] = useState(false);
@@ -31,10 +31,11 @@ function Configuracion({ onSwitch }) {
         const res = await fetch(`${URL_PROFILE}/me`, { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
         setForm({
-          nombre: data.nombre || "",
-          email: data.email || "",
-          telefono: data.telefono || "",
-          direccion: data.direccion || "",
+          nombre:      data.nombre      || "",
+          email:       data.email       || "",
+          telefono:    data.telefono    || "",
+          direccion:   data.direccion   || "",
+          descripcion: data.descripcion || "",
         });
       } catch (err) { console.error("Error cargando perfil:", err); }
       finally { setCargandoPerfil(false); }
@@ -65,9 +66,10 @@ function Configuracion({ onSwitch }) {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          nombre: form.nombre.trim(),
-          telefono: form.telefono.trim(),
-          direccion: form.direccion.trim(),
+          nombre:      form.nombre.trim(),
+          telefono:    form.telefono.trim(),
+          direccion:   form.direccion.trim(),
+          descripcion: form.descripcion.trim(),
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -97,7 +99,7 @@ function Configuracion({ onSwitch }) {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           contrasena_actual: pwd.actual,
-          contrasena_nueva: pwd.nueva,
+          contrasena_nueva:  pwd.nueva,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -162,6 +164,20 @@ function Configuracion({ onSwitch }) {
                     <label>Dirección</label>
                     <input name="direccion" type="text" value={form.direccion} onChange={handleChange} placeholder="Tu dirección" />
                   </div>
+                </div>
+
+                {/* ── Descripción ── */}
+                <div className="cfg-field">
+                  <label>Descripción</label>
+                  <textarea
+                    name="descripcion"
+                    value={form.descripcion}
+                    onChange={handleChange}
+                    placeholder="Cuéntanos algo sobre ti…"
+                    rows={3}
+                    maxLength={300}
+                  />
+                  <span className="cfg-hint">{form.descripcion.length}/300 caracteres</span>
                 </div>
 
                 {errorPerfil && <p className="cfg-error">{errorPerfil}</p>}

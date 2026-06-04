@@ -23,6 +23,7 @@ model Usuario {
   fecha_registro DateTime
   id_rol         Int
   foto_perfil    String?
+  descripcion    String?
   resetToken     String?
   resetTokenExp  DateTime?
   comentarios    Comentario[]
@@ -144,20 +145,13 @@ model Favorito {
 }
 
 model Notificacion {
-  id_notificacion Int @id @default(autoincrement())
-
-  id_usuario Int
-
-  titulo String
-  mensaje String
-
-  tipo String
-
-  referencia_id Int?
-
-  leida Boolean @default(false)
-
-  fecha DateTime @default(now())
-
-  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  id_notificacion Int      @id @default(autoincrement())
+  id_usuario      Int
+  titulo          String
+  mensaje         String
+  tipo            String
+  referencia_id   Int?
+  leida           Boolean  @default(false)
+  fecha           DateTime @default(now())
+  usuario         Usuario  @relation(fields: [id_usuario], references: [id_usuario])
 }

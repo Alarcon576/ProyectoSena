@@ -85,7 +85,7 @@
     flex-shrink: 0;
 }
 
-/* ── Buscador (solo Feed) ── */
+/* ── Buscador ── */
 .nb-search {
     width: 220px;
     padding: 8px 16px;
@@ -108,7 +108,7 @@
     color: #aaa;
 }
 
-/* ── Botón drawer ✦ (solo Feed móvil) ── */
+/* ── Botón drawer ✦ (móvil) ── */
 .nb-sidebar-toggle {
     display: none;
     background: var(--nb-orange-lt);
@@ -242,34 +242,6 @@
     color: #aaa;
 }
 
-/* ── Botones de acción extra (Perfil) ── */
-.nb-action-btn {
-    padding: 8px 18px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    font-family: 'Nunito', inherit;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    white-space: nowrap;
-    border: none;
-    background: var(--nb-orange-lt);
-    color: var(--nb-orange);
-}
-
-.nb-action-btn:hover {
-    background: var(--nb-orange-dark);
-}
-
-.nb-action-btn.nb-logout {
-    background: #fff5f5;
-    color: #c0392b;
-}
-
-.nb-action-btn.nb-logout:hover {
-    background: #fecaca;
-}
-
 /* ── Avatar ── */
 .nb-avatar-wrapper {
     position: relative;
@@ -376,6 +348,90 @@
     background: #fff5f5 !important;
 }
 
+/* ════ MODAL CONFIRMACIÓN LOGOUT ════ */
+.nb-logout-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: nbFadeDown 0.18s ease;
+}
+
+.nb-logout-modal {
+    background: var(--nb-white);
+    border-radius: 20px;
+    border: 1px solid var(--nb-border);
+    padding: 2rem 1.75rem;
+    width: min(340px, calc(100vw - 32px));
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.nb-logout-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.nb-logout-modal h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--nb-text);
+    margin: 0 0 8px;
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+}
+
+.nb-logout-modal p {
+    font-size: 14px;
+    color: var(--nb-text-2);
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+}
+
+.nb-logout-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.nb-logout-cancel {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1.5px solid var(--nb-border);
+    background: var(--nb-bg);
+    color: var(--nb-text);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.nb-logout-cancel:hover {
+    background: #e2e4e8;
+}
+
+.nb-logout-confirm {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #fff5f5;
+    color: #c0392b;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.nb-logout-confirm:hover {
+    background: #fecaca;
+}
+
 /* ════ RESPONSIVE — Tablet ≤1024px ════ */
 @media (max-width: 1024px) {
     .nb-search {
@@ -400,7 +456,6 @@
         gap: 0;
     }
 
-    /* Sin emoji de patas en móvil */
     .nb-brand::before {
         content: none;
     }
@@ -417,7 +472,6 @@
         font-size: 12px;
     }
 
-    /* Buscador oculto en móvil */
     .nb-search {
         display: none;
     }
@@ -438,7 +492,6 @@
         max-width: calc(100vw - 24px);
     }
 
-    /* Botón ✦ visible en móvil */
     .nb-sidebar-toggle {
         display: flex;
         width: 30px;
@@ -446,7 +499,6 @@
         font-size: 15px;
     }
 
-    /* Notificaciones compactas */
     .nb-notif-btn {
         width: 30px;
         height: 30px;
@@ -458,10 +510,16 @@
         right: 4px;
     }
 
-    /* Botones de acción */
-    .nb-action-btn {
-        padding: 7px 12px;
-        font-size: 12px;
+    .nb-logout-modal {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .nb-logout-icon {
+        font-size: 34px;
+    }
+
+    .nb-logout-modal h3 {
+        font-size: 16px;
     }
 }
 
@@ -495,11 +553,6 @@
 
     .nb-right {
         gap: 4px;
-    }
-
-    .nb-action-btn {
-        padding: 6px 10px;
-        font-size: 11px;
     }
 }
 

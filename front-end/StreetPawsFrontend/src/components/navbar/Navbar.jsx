@@ -6,21 +6,6 @@ const URL_PROFILE =
 const URL_NOTIFICACIONES =
   "https://proyectosena-production-4ad5.up.railway.app/api/notificaciones";
 
-/**
- * Navbar unificada de Street Paws
- *
- * Props:
- *  - onSwitch(view, payload?)  → navegación entre vistas
- *  - activeView                → string con la vista activa ("feed"|"explorar"|"adopciones"|...)
- *  - showSearch                → muestra input de búsqueda (solo Feed)
- *  - searchValue               → valor del input de búsqueda
- *  - onSearchChange            → handler onChange del buscador
- *  - showNotifications         → muestra el botón de notificaciones (solo Feed)
- *  - showSidebarToggle         → muestra el botón ✦ del drawer móvil (solo Feed)
- *  - onSidebarToggle           → handler del botón ✦
- *  - showNavActions            → muestra botones de acción tipo Perfil ("Feed", "Salir")
- *  - extraActions              → array de { label, onClick, className? } para botones extra
- */
 function Navbar({
   onSwitch,
   activeView = "",
@@ -30,13 +15,12 @@ function Navbar({
   showNotifications = false,
   showSidebarToggle = false,
   onSidebarToggle,
-  showNavActions = false,
-  extraActions = [],
 }) {
   const [usuarioActual, setUsuarioActual] = useState(null);
   const [menuAvatarAbierto, setMenuAvatarAbierto] = useState(false);
   const [notificaciones, setNotificaciones] = useState([]);
   const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
+  const [mostrarConfirmLogout, setMostrarConfirmLogout] = useState(false);
 
   const token = localStorage.getItem("token");
   const notificacionesNoLeidas = notificaciones.filter((n) => !n.leida).length;
@@ -52,7 +36,7 @@ function Navbar({
       .catch(() => {});
   }, [token]);
 
-  /* ── Cargar notificaciones (solo si se muestran) ── */
+  /* ── Cargar notificaciones ── */
   useEffect(() => {
     if (!showNotifications || !token) return;
 
@@ -92,9 +76,16 @@ function Navbar({
     } catch {}
   };
 
-  const handleLogout = (e) => {
+  /* ── Logout con confirmación ── */
+  const handleLogoutClick = (e) => {
     e.stopPropagation();
+    setMenuAvatarAbierto(false);
+    setMostrarConfirmLogout(true);
+  };
+
+  const handleLogoutConfirm = () => {
     localStorage.removeItem("token");
+    setMostrarConfirmLogout(false);
     onSwitch("login");
   };
 
@@ -129,7 +120,7 @@ function Navbar({
 
       {/* ── Lado derecho ── */}
       <div className="nb-right">
-        {/* Buscador — solo Feed */}
+        {/* Buscador */}
         {showSearch && (
           <input
             className="nb-search"
@@ -140,7 +131,7 @@ function Navbar({
           />
         )}
 
-        {/* Botón drawer móvil — solo Feed */}
+        {/* Botón drawer móvil */}
         {showSidebarToggle && (
           <button
             className="nb-sidebar-toggle"
@@ -155,7 +146,7 @@ function Navbar({
           </button>
         )}
 
-        {/* Notificaciones — solo Feed */}
+        {/* Notificaciones */}
         {showNotifications && (
           <div
             className="nb-notif-wrapper"
@@ -206,19 +197,7 @@ function Navbar({
           </div>
         )}
 
-        {/* Botones extra (ej: "Feed", "Salir" en Perfil) */}
-        {showNavActions &&
-          extraActions.map((accion, i) => (
-            <button
-              key={i}
-              className={`nb-action-btn ${accion.className || ""}`}
-              onClick={accion.onClick}
-            >
-              {accion.label}
-            </button>
-          ))}
-
-        {/* Avatar + dropdown — siempre visible si hay token */}
+        {/* Avatar + dropdown */}
         {token && (
           <div
             className="nb-avatar-wrapper"
@@ -269,7 +248,10 @@ function Navbar({
                   ⚙️ Configuración
                 </button>
                 <div className="nb-dropdown-divider" />
-                <button className="nb-dropdown-logout" onClick={handleLogout}>
+                <button
+                  className="nb-dropdown-logout"
+                  onClick={handleLogoutClick}
+                >
                   🚪 Cerrar sesión
                 </button>
               </div>
@@ -277,6 +259,37 @@ function Navbar({
           </div>
         )}
       </div>
+
+      {/* ── Modal confirmación de logout ── */}
+      {mostrarConfirmLogout && (
+        <div
+          className="nb-logout-overlay"
+          onClick={() => setMostrarConfirmLogout(false)}
+        >
+          <div className="nb-logout-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="nb-logout-icon">🚪</div>
+            <h3>¿Cerrar sesión?</h3>
+            <p>
+              Tu sesión se cerrará y tendrás que iniciar sesión nuevamente para
+              acceder.
+            </p>
+            <div className="nb-logout-actions">
+              <button
+                className="nb-logout-cancel"
+                onClick={() => setMostrarConfirmLogout(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="nb-logout-confirm"
+                onClick={handleLogoutConfirm}
+              >
+                Sí, cerrar sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

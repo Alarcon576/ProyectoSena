@@ -3,7 +3,7 @@ import "./Adopciones.css";
 import Mascotas from "../mascotas/Mascotas";
 import SolicitudesAdopcion from "../solicitudes/solicitudesAdopcion";
 import ModalSolicitudAdopcion from "./AdopcionesForm";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../navbar/Navbar";
 
 const URL_MASCOTAS =
   "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";

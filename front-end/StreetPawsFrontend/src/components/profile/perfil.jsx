@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./perfil.css";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../navbar/Navbar";
 
 const URL_POSTS =
   "https://proyectosena-production-4ad5.up.railway.app/api/publicaciones";

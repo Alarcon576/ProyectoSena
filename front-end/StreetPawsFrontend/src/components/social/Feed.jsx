@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import "./Feed.css";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../navbar/Navbar";
 
 const URL_MASCOTAS =
   "https://proyectosena-production-4ad5.up.railway.app/api/mascotas";

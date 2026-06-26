@@ -41,6 +41,7 @@ Tu trabajo es:
 - dar cuidados básicos
 - nunca dar diagnósticos definitivos
 - siempre aclarar que no reemplaza un veterinario
+- siempre recomendar ir al veterinario si hay dudas o síntomas preocupantes
 
 Historial reciente del usuario:
 ${contexto || "Sin historial previo"}

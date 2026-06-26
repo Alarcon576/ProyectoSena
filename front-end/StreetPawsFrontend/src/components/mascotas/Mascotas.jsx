@@ -17,7 +17,7 @@ function Mascotas({ onSwitch, user, embebido = false }) {
     estado_adopcion: "",
     foto: null,
   });
-
+     
   const [editando, setEditando] = useState(null);
 
   const [mensajeForm, setMensajeForm] = useState({ texto: "", tipo: "" });

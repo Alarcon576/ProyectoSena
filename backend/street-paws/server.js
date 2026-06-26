@@ -23,7 +23,8 @@ app.use(cors({
     if (
       origin.includes("localhost") ||
       origin.includes("railway.app") ||
-      origin.includes("vercel.app")
+      origin.includes("vercel.app")||
+      origin.includes("https://streetpaws.site")
     ) {
       return callback(null, true);
     }

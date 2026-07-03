@@ -133,6 +133,12 @@ body {
   flex-direction: column;
   gap: 16px;
   min-width: 0;
+  max-height: calc(100vh - 84px - 24px);
+  /* altura visible disponible bajo el navbar */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  /* evita que el scrollbar tape el contenido */
 }
 
 /* ════════════════════════════════════════
